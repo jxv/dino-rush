@@ -1,0 +1,7 @@
+resolver: lts-9.14
+packages:
+- '.'
+extra-deps:
+- 'animate-0.4.0'
+flags: {}
+extra-package-dbs: []
