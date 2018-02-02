@@ -1,7 +1,6 @@
 {-# LANGUAGE TemplateHaskell #-}
 module DinoRush.Title where
 
-
 import qualified SDL
 import qualified Animate
 import Foreign.C.Types
@@ -43,23 +42,15 @@ rectFromClip Animate.SpriteClip{scX,scY,scW,scH} = SDL.Rectangle (SDL.P (V2 (num
   where
     num = fromIntegral
 
-titleLoop :: (HasTitleVars s, MonadReader Config m, MonadState s m, Logger m, Clock m, Renderer m, Input m) => m ()
-titleLoop = do
+titleStep :: (HasTitleVars s, MonadReader Config m, MonadState s m, Logger m, Clock m, Renderer m, Input m) => m ()
+titleStep = do
+  events <- getEventPayloads
   Animate.SpriteSheet{ssAnimations, ssImage} <- asks cDinoSpriteSheet
   pos <- gets (tvPlayer . view titleVars)
-  events <- getEventPayloads
-  let quit = elem SDL.QuitEvent events
   let toNextKey = any detectSpacePressed events
   let pos' = Animate.stepPosition ssAnimations pos frameDeltaSeconds
   let loc = Animate.currentLocation ssAnimations pos'
-  clearScreen
   drawSurfaceToScreen ssImage (Just $ rectFromClip loc) (Just $ SDL.P $ V2 80 60)
-  updateWindowSurface
-  delayMilliseconds frameDeltaMilliseconds
   let pos'' = if toNextKey then Animate.initPosition (Animate.nextKey (Animate.pKey pos')) else pos'
   when toNextKey $ logText $ Animate.keyName (Animate.pKey pos'')
   modify $ titleVars %~ (\tv -> tv { tvPlayer = pos'' })
-  unless quit titleLoop
-  where
-    frameDeltaSeconds = 0.016667
-    frameDeltaMilliseconds = 16

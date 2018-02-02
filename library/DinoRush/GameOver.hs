@@ -6,12 +6,15 @@ import Control.Lens
 
 import DinoRush.Types
 
-data EndVars = EndVars
-  { evPlayer :: Animate.Position DinoKey Seconds
-  , evBackgroundPositionFar :: Percent
-  , evBackgroundPositionClose :: Percent
-  , evForegroundPosition :: Percent
-  , evObstacles :: [(Distance, Obstacle)]
+data GameOverVars = GameOverVars
+  { govPlayer :: Animate.Position DinoKey Seconds
+  , govBackgroundPositionFar :: Percent
+  , govBackgroundPositionClose :: Percent
+  , govForegroundPosition :: Percent
+  , govObstacles :: [(Distance, Obstacle)]
   } deriving (Show, Eq)
 
-makeClassy ''EndVars
+makeClassy ''GameOverVars
+
+gameOverStep :: Monad m => m ()
+gameOverStep = return ()

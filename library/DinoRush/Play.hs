@@ -19,3 +19,6 @@ data PlayVars = PlayVars
   } deriving (Show, Eq)
 
 makeClassy ''PlayVars
+
+playStep :: Monad m => m ()
+playStep = return ()

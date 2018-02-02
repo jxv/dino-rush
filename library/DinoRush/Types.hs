@@ -55,3 +55,9 @@ newtype Seconds = Seconds Float
 
 newtype Score = Score Int
   deriving (Show, Eq, Num, Integral, Real, Ord, Enum)
+
+frameDeltaSeconds :: Fractional a => a
+frameDeltaSeconds = 0.016667
+
+frameDeltaMilliseconds :: Int
+frameDeltaMilliseconds = 16

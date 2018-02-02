@@ -9,7 +9,7 @@ import qualified Data.Text.IO as T
 
 import Control.Monad.IO.Class (MonadIO(..))
 import Control.Monad.Reader (MonadReader(..), ReaderT(..), runReaderT, asks)
-import Control.Monad.State (MonadState(..), StateT(..), evalStateT)
+import Control.Monad.State (MonadState(..), StateT(..), evalStateT, gets, modify)
 import Data.StateVar (($=))
 import SDL.Vect
 
@@ -36,11 +36,11 @@ loadSurface path alpha = do
 main :: IO ()
 main = do
   SDL.initialize [SDL.InitVideo]
-  window <- SDL.createWindow "Dino Rush" SDL.defaultWindow { SDL.windowInitialSize = V2 320 180 }
+  window <- SDL.createWindow "Dino Rush" SDL.defaultWindow { SDL.windowInitialSize = V2 1280 720 }
   SDL.showWindow window
   screen <- SDL.getWindowSurface window
   spriteSheet <- Animate.readSpriteSheetJSON loadSurface "dino.json" :: IO (Animate.SpriteSheet DinoKey SDL.Surface Seconds)
-  runDinoRush (Config window screen spriteSheet) (Vars Scene'Title (TitleVars $ Animate.initPosition DinoKey'Idle)) sceneLoop
+  runDinoRush (Config window screen spriteSheet) initVars sceneLoop
   SDL.destroyWindow window
   SDL.quit
 
@@ -70,4 +70,6 @@ instance Renderer DinoRush where
     drawSurfaceToScreen' screen surface maybeClip maybeLoc
 
 instance Input DinoRush where
-  getEventPayloads = getEventPayloads'
+  pollEventPayloads = pollEventPayloads'
+  getEventPayloads = gets vEventPayloads
+  setEventPayloads events = modify (\v -> v { vEventPayloads = events })
