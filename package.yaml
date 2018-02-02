@@ -28,6 +28,8 @@ library:
     - animate
     - bytestring
     - containers
+    - linear
+    - lens
     - mtl
     - sdl2
     - sdl2-image

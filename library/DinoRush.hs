@@ -17,25 +17,12 @@ import Foreign.C.Types
 import SDL.Vect
 import Data.Text (Text)
 
-data DinoKey
-  = DinoKey'Idle
-  | DinoKey'Move
-  | DinoKey'Kick
-  | DinoKey'Hurt
-  | DinoKey'Sneak
-  deriving (Show, Eq, Ord, Bounded, Enum)
-
-instance Animate.Key DinoKey
-instance Animate.KeyName DinoKey where
-  keyName = dinoKey'keyName
-
-dinoKey'keyName :: DinoKey -> Text
-dinoKey'keyName = \case
-  DinoKey'Idle -> "Idle"
-  DinoKey'Move -> "Move"
-  DinoKey'Kick -> "Kick"
-  DinoKey'Hurt -> "Hurt"
-  DinoKey'Sneak -> "Sneak"
+import DinoRush.Collision
+import DinoRush.Types
+import DinoRush.Scene
+import DinoRush.Title
+import DinoRush.Play
+import DinoRush.GameOver
 
 --
 
@@ -85,11 +72,10 @@ main = do
   window <- SDL.createWindow "Dino Rush" SDL.defaultWindow { SDL.windowInitialSize = V2 320 180 }
   SDL.showWindow window
   screen <- SDL.getWindowSurface window
-  spriteSheet <- Animate.readSpriteSheetJSON loadSurface "dino.json" :: IO (Animate.SpriteSheet DinoKey SDL.Surface Float)
-  runDinoRush (Config window screen spriteSheet) (Vars $ Animate.initPosition DinoKey'Idle) loop
+  spriteSheet <- Animate.readSpriteSheetJSON loadSurface "dino.json" :: IO (Animate.SpriteSheet DinoKey SDL.Surface Seconds)
+  runDinoRush (Config window screen spriteSheet) (Vars Scene'Title (Animate.initPosition DinoKey'Idle)) loop
   SDL.destroyWindow window
   SDL.quit
-
 --
 
 detectSpacePressed :: SDL.EventPayload -> Bool
@@ -110,12 +96,12 @@ loop = do
   let pos' = Animate.stepPosition ssAnimations pos frameDeltaSeconds
   let loc = Animate.currentLocation ssAnimations pos'
   clearScreen
-  drawSurfaceToScreen ssImage (Just $ rectFromClip loc) Nothing
+  drawSurfaceToScreen ssImage (Just $ rectFromClip loc) (Just $ SDL.P $ V2 80 60)
   updateWindowSurface
   delayMilliseconds frameDeltaMilliseconds
   let pos'' = if toNextKey then Animate.initPosition (Animate.nextKey (Animate.pKey pos')) else pos'
   when toNextKey $ logText $ Animate.keyName (Animate.pKey pos'')
-  modify (\vars -> vars { vDinoAnimationPosition = pos'' })
+  modify (\v -> v { vDinoAnimationPosition = pos'' })
   unless quit loop
   where
     frameDeltaSeconds = 0.016667
@@ -123,21 +109,11 @@ loop = do
 
 --
 
-data Config = Config
-  { cWindow :: SDL.Window
-  , cScreen :: SDL.Surface
-  , cDinoSpriteSheet :: Animate.SpriteSheet DinoKey SDL.Surface Float
-  }
-
-data Vars = Vars
-  { vDinoAnimationPosition :: Animate.Position DinoKey Float
-  }
-
 newtype DinoRush a = DinoRush (ReaderT Config (StateT Vars IO) a)
   deriving (Functor, Applicative, Monad, MonadReader Config, MonadState Vars, MonadIO)
 
 runDinoRush :: Config -> Vars -> DinoRush a -> IO a
-runDinoRush config vars (DinoRush m) = evalStateT (runReaderT m config) vars
+runDinoRush config v (DinoRush m) = evalStateT (runReaderT m config) v
 
 instance Clock DinoRush where
   delayMilliseconds = liftIO . delayMilliseconds'
