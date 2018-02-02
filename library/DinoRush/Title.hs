@@ -14,7 +14,8 @@ data TitleVars = TitleVars
 
 makeClassy ''TitleVars
 
-f :: (HasTitleVars a, MonadState a m) => m ()
-f = do
-  let initPlayerPosition = Animate.initPosition DinoKey'Idle
-  modify $ titleVars %~ (\tv -> tv { tvPlayer = initPlayerPosition })
+initTitleVars :: TitleVars
+initTitleVars = TitleVars initPlayerPosition
+  where
+    initPlayerPosition :: Animate.Position DinoKey Seconds
+    initPlayerPosition = Animate.initPosition DinoKey'Idle

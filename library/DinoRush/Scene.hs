@@ -1,13 +1,12 @@
 {-# LANGUAGE TemplateHaskell #-}
 module DinoRush.Scene where
 
-import qualified Animate
 import Control.Lens
 import Control.Monad.State (MonadState(..), modify)
 
 import DinoRush.GameOver
 import DinoRush.Play
-import DinoRush.Title
+import DinoRush.Title (initTitleVars, HasTitleVars(..), TitleVars(..))
 import DinoRush.Types
 
 data Scene
@@ -19,12 +18,10 @@ data Scene
 
 data Vars = Vars
   { vScene :: Scene
-  , vDinoAnimationPosition :: Animate.Position DinoKey Seconds
+  , vTitle :: TitleVars
   } deriving (Show, Eq)
 
 makeClassy ''Vars
 
 titleTransition :: (HasTitleVars a, MonadState a m) => m ()
-titleTransition = do
-  let initPlayerPosition = Animate.initPosition DinoKey'Idle
-  modify $ titleVars %~ (\tv -> tv { tvPlayer = initPlayerPosition })
+titleTransition = modify $ titleVars .~ initTitleVars
