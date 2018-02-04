@@ -18,6 +18,7 @@ import DinoRush.Input
 import DinoRush.Logger
 import DinoRush.Renderer
 import DinoRush.Scene
+import DinoRush.Main
 import DinoRush.Types
 
 import DinoRush.Title
@@ -31,6 +32,7 @@ loadSurface path alpha = do
     Just (r,g,b) -> SDL.surfaceColorKey surface $= (Just $ V4 r g b 0x00)
     Nothing -> return ()
   return surface
+
 --
 
 main :: IO ()
@@ -69,7 +71,12 @@ instance Renderer DinoRush where
     screen <- asks cScreen
     drawSurfaceToScreen' screen surface maybeClip maybeLoc
 
-instance Input DinoRush where
+instance SDLInput DinoRush where
   pollEventPayloads = pollEventPayloads'
-  getEventPayloads = gets vEventPayloads
-  setEventPayloads events = modify (\v -> v { vEventPayloads = events })
+
+instance HasInput DinoRush where
+  getInput = gets vInput
+  setInput s = modify (\v -> v { vInput = s })
+
+instance SceneManager DinoRush where
+  toScene = toScene'

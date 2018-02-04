@@ -1,10 +1,16 @@
 module DinoRush.Renderer where
 
+import qualified Animate
 import qualified SDL
 
 import Control.Monad.IO.Class (MonadIO(..))
 import Foreign.C.Types
 import SDL.Vect
+
+rectFromClip :: Animate.SpriteClip -> SDL.Rectangle CInt
+rectFromClip Animate.SpriteClip{scX,scY,scW,scH} = SDL.Rectangle (SDL.P (V2 (num scX) (num scY))) (V2 (num scW) (num scH))
+  where
+    num = fromIntegral
 
 class Monad m => Renderer m where
   updateWindowSurface :: m ()

@@ -28,6 +28,7 @@ library:
     - animate
     - bytestring
     - containers
+    - key-state
     - linear
     - lens
     - mtl
