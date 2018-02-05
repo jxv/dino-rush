@@ -2,28 +2,28 @@ module DinoRush.Renderer where
 
 import qualified Animate
 import qualified SDL
-
-import Control.Monad.IO.Class (MonadIO(..))
 import Foreign.C.Types
 import SDL.Vect
+import Control.Monad.Reader
 
-rectFromClip :: Animate.SpriteClip -> SDL.Rectangle CInt
+import DinoRush.SDL.Renderer
+import DinoRush.Types
+
+rectFromClip :: Animate.SpriteClip key -> SDL.Rectangle CInt
 rectFromClip Animate.SpriteClip{scX,scY,scW,scH} = SDL.Rectangle (SDL.P (V2 (num scX) (num scY))) (V2 (num scW) (num scH))
   where
     num = fromIntegral
 
 class Monad m => Renderer m where
-  updateWindowSurface :: m ()
   clearScreen :: m ()
-  drawSurfaceToScreen :: SDL.Surface -> Maybe (SDL.Rectangle CInt)-> Maybe (SDL.Point V2 CInt) -> m ()
+  drawScreen :: m ()
 
-updateWindowSurface' :: MonadIO m => SDL.Window -> m ()
-updateWindowSurface' window = liftIO $ SDL.updateWindowSurface window
+clearScreen' :: (SDLRenderer m, MonadReader Config m) => m ()
+clearScreen' = do
+  screen <- asks cScreen
+  clearSurface screen
 
-clearScreen' :: MonadIO m => SDL.Surface -> m ()
-clearScreen' screen = liftIO $ SDL.surfaceFillRect screen Nothing (V4 0 0 0 0)
-
-drawSurfaceToScreen' :: MonadIO m => SDL.Surface -> SDL.Surface -> Maybe (SDL.Rectangle CInt) -> Maybe (SDL.Point V2 CInt) -> m ()
-drawSurfaceToScreen' screen surface maybeClip maybeLoc = do
-  _ <- liftIO $ SDL.surfaceBlit surface maybeClip screen maybeLoc
-  return ()
+drawScreen' :: (SDLRenderer m, MonadReader Config m) => m ()
+drawScreen' = do
+  window <- asks cWindow
+  updateWindowSurface window

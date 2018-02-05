@@ -8,7 +8,7 @@ import qualified Animate
 import qualified Data.Text.IO as T
 
 import Control.Monad.IO.Class (MonadIO(..))
-import Control.Monad.Reader (MonadReader(..), ReaderT(..), runReaderT, asks)
+import Control.Monad.Reader (MonadReader(..), ReaderT(..), runReaderT)
 import Control.Monad.State (MonadState(..), StateT(..), evalStateT, gets, modify)
 import Data.StateVar (($=))
 import SDL.Vect
@@ -17,11 +17,14 @@ import DinoRush.Clock
 import DinoRush.Input
 import DinoRush.Logger
 import DinoRush.Renderer
+import DinoRush.SDL.Input
+import DinoRush.SDL.Renderer
 import DinoRush.Scene
-import DinoRush.Main
+import DinoRush.Scene.Main
+import DinoRush.Scene.Title
+import DinoRush.Scene.Play
+import DinoRush.Sprite
 import DinoRush.Types
-
-import DinoRush.Title
 
 --
 
@@ -42,7 +45,7 @@ main = do
   SDL.showWindow window
   screen <- SDL.getWindowSurface window
   spriteSheet <- Animate.readSpriteSheetJSON loadSurface "dino.json" :: IO (Animate.SpriteSheet DinoKey SDL.Surface Seconds)
-  runDinoRush (Config window screen spriteSheet) initVars sceneLoop
+  runDinoRush (Config window screen spriteSheet) initVars mainLoop
   SDL.destroyWindow window
   SDL.quit
 
@@ -60,23 +63,32 @@ instance Clock DinoRush where
 instance Logger DinoRush where
   logText = liftIO . T.putStrLn
 
-instance Renderer DinoRush where
-  updateWindowSurface = do
-    window <- asks cWindow
-    updateWindowSurface' window
-  clearScreen = do
-    screen <- asks cScreen
-    clearScreen' screen
-  drawSurfaceToScreen surface maybeClip maybeLoc = do
-    screen <- asks cScreen
-    drawSurfaceToScreen' screen surface maybeClip maybeLoc
+instance SDLRenderer DinoRush where
+  updateWindowSurface = updateWindowSurface'
+  clearSurface = clearSurface'
+  drawSurfaceToSurface = drawSurfaceToSurface'
 
 instance SDLInput DinoRush where
   pollEventPayloads = pollEventPayloads'
 
 instance HasInput DinoRush where
+  updateInput = updateInput'
   getInput = gets vInput
   setInput s = modify (\v -> v { vInput = s })
 
 instance SceneManager DinoRush where
   toScene = toScene'
+
+instance Renderer DinoRush where
+  clearScreen = clearScreen'
+  drawScreen = drawScreen'
+
+instance Title DinoRush where
+  titleStep = titleStep'
+
+instance Play DinoRush where
+  playStep = playStep'
+
+instance SpriteManager DinoRush where
+  getDinoAnimations = getSpriteAnimations cDinoSpriteSheet
+  drawDino = drawSprite cDinoSpriteSheet

@@ -16,7 +16,6 @@ data DinoKey
   | DinoKey'Sneak
   deriving (Show, Eq, Ord, Bounded, Enum)
 
-instance Animate.Key DinoKey
 instance Animate.KeyName DinoKey where
   keyName = dinoKey'keyName
 
@@ -27,6 +26,9 @@ dinoKey'keyName = \case
   DinoKey'Kick -> "Kick"
   DinoKey'Hurt -> "Hurt"
   DinoKey'Sneak -> "Sneak"
+
+data OtherKey = OtherKey
+  deriving (Show, Eq, Ord, Bounded, Enum)
 
 data Config = Config
   { cWindow :: SDL.Window

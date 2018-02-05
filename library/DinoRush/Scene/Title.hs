@@ -1,13 +1,12 @@
 {-# LANGUAGE TemplateHaskell #-}
-module DinoRush.Title where
+module DinoRush.Scene.Title where
 
 import qualified SDL
 import qualified Animate
 import Control.Lens
-import Control.Monad (unless, when)
+import Control.Monad (when)
 import Control.Monad.Reader (MonadReader(..), asks)
 import Control.Monad.State (MonadState(..), modify, gets)
-import Foreign.C.Types
 import Linear
 import KeyState
 
@@ -17,6 +16,9 @@ import DinoRush.Input
 import DinoRush.Renderer
 import DinoRush.Scene
 import DinoRush.Types
+import DinoRush.Sprite
+
+import DinoRush.SDL.Renderer
 
 data TitleVars = TitleVars
   { tvPlayer :: Animate.Position DinoKey Seconds
@@ -30,13 +32,16 @@ initTitleVars = TitleVars initPlayerPosition
     initPlayerPosition :: Animate.Position DinoKey Seconds
     initPlayerPosition = Animate.initPosition DinoKey'Idle
 
-titleStep :: (SceneManager m, HasTitleVars s, MonadReader Config m, MonadState s m, Logger m, Clock m, Renderer m, HasInput m) => m ()
-titleStep = do
+class Monad m => Title m where
+  titleStep :: m ()
+
+titleStep' :: (SceneManager m, HasTitleVars s, MonadReader Config m, MonadState s m, Logger m, Clock m, SDLRenderer m, HasInput m, SpriteManager m) => m ()
+titleStep' = do
   input <- getInput
-  Animate.SpriteSheet{ssAnimations, ssImage} <- asks cDinoSpriteSheet
+  animations <- getDinoAnimations
   pos <- gets (tvPlayer . view titleVars)
-  let pos' = Animate.stepPosition ssAnimations pos frameDeltaSeconds
-  let loc = Animate.currentLocation ssAnimations pos'
-  drawSurfaceToScreen ssImage (Just $ rectFromClip loc) (Just $ SDL.P $ V2 80 60)
+  let pos' = Animate.stepPosition animations pos frameDeltaSeconds
+  let loc = Animate.currentLocation animations pos'
+  drawDino loc (80, 60)
   modify $ titleVars %~ (\tv -> tv { tvPlayer = pos' })
   when (ksStatus (iSpace input) == KeyStatus'Pressed) (toScene Scene'Play)

@@ -1,5 +1,5 @@
 {-# LANGUAGE TemplateHaskell #-}
-module DinoRush.Play where
+module DinoRush.Scene.Play where
 
 import qualified SDL
 import qualified Animate
@@ -15,7 +15,10 @@ import DinoRush.Clock
 import DinoRush.Logger
 import DinoRush.Input
 import DinoRush.Renderer
+import DinoRush.Sprite
 import DinoRush.Types
+
+import DinoRush.SDL.Renderer
 
 data PlayVars = PlayVars
   { pvScore :: Score
@@ -44,16 +47,17 @@ initPlayVars upcomingObstacles = PlayVars
   , pvUpcomingObstacles = upcomingObstacles
   }
 
-playStep :: (HasPlayVars s, MonadReader Config m, MonadState s m, Logger m, Clock m, Renderer m, HasInput m) => m ()
-playStep = do
+class Monad m => Play m where
+  playStep :: m ()
+
+playStep' :: (HasPlayVars s, MonadReader Config m, MonadState s m, Logger m, Clock m, Renderer m, HasInput m, SpriteManager m) => m ()
+playStep' = do
   input <- getInput
-
-  Animate.SpriteSheet{ssAnimations, ssImage} <- asks cDinoSpriteSheet
+  animations <- getDinoAnimations
   pos <- gets (pvPlayer . view playVars)
-  let pos' = Animate.stepPosition ssAnimations pos frameDeltaSeconds
-  let loc = Animate.currentLocation ssAnimations pos'
-  drawSurfaceToScreen ssImage (Just $ rectFromClip loc) (Just $ SDL.P $ V2 80 60)
-
+  let pos' = Animate.stepPosition animations pos frameDeltaSeconds
+  let loc = Animate.currentLocation animations pos'
+  drawDino loc (80, 60)
   let toNextKey = ksStatus (iSpace input) == KeyStatus'Pressed
   let pos'' = if toNextKey then Animate.initPosition (Animate.nextKey (Animate.pKey pos')) else pos'
   when toNextKey $ logText $ Animate.keyName (Animate.pKey pos'')

@@ -1,21 +1,20 @@
 {-# LANGUAGE TemplateHaskell #-}
-module DinoRush.Main where
+module DinoRush.Scene.Main where
 
-import qualified SDL
 import Control.Lens
 import Control.Monad (unless)
 import Control.Monad.State (MonadState(..), modify, gets)
 import Control.Monad.Reader (MonadReader(..))
 
-import DinoRush.GameOver
 import DinoRush.Clock
-import DinoRush.Play
-import DinoRush.Pause
 import DinoRush.Logger
 import DinoRush.Renderer
 import DinoRush.Input
 import DinoRush.Scene
-import DinoRush.Title (titleStep, initTitleVars, TitleVars(..), HasTitleVars(..))
+import DinoRush.Scene.GameOver
+import DinoRush.Scene.Play
+import DinoRush.Scene.Pause
+import DinoRush.Scene.Title
 import DinoRush.Types
 
 data Vars = Vars
@@ -43,11 +42,10 @@ titleTransition = modify $ titleVars .~ initTitleVars
 toScene' :: MonadState Vars m => Scene -> m ()
 toScene' scene = modify (\v -> v { vNextScene = scene })
 
-sceneLoop :: (MonadReader Config m, MonadState Vars m, SceneManager m, Logger m, Clock m, Renderer m, HasInput m, SDLInput m) => m ()
-sceneLoop = do
-  events <- pollEventPayloads
+mainLoop :: (MonadReader Config m, MonadState Vars m, SceneManager m, Logger m, Clock m, Renderer m, HasInput m, Title m, Play m) => m ()
+mainLoop = do
+  updateInput
   input <- getInput
-  setInput (stepControl events input)
   clearScreen
   scene <- gets vScene
   case scene of
@@ -56,9 +54,9 @@ sceneLoop = do
     Scene'Pause -> pauseStep
     Scene'GameOver -> gameOverStep
     Scene'Quit -> return ()
-  updateWindowSurface
+  drawScreen
   delayMilliseconds frameDeltaMilliseconds
   nextScene <- gets vNextScene
-  let quit = nextScene == Scene'Quit || elem SDL.QuitEvent events
+  let quit = nextScene == Scene'Quit || iQuit input
   modify (\v -> v { vScene = nextScene })
-  unless quit sceneLoop
+  unless quit mainLoop

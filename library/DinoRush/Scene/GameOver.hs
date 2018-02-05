@@ -1,5 +1,5 @@
 {-# LANGUAGE TemplateHaskell #-}
-module DinoRush.GameOver where
+module DinoRush.Scene.GameOver where
 
 import qualified Animate
 import Control.Lens
