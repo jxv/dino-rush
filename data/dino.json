@@ -1,5 +1,5 @@
 {
-  "image": "dino.png",
+  "image": "data/dino.png",
   "alpha": [255,0,255],
   "clips": [
     [   0, 0, 48, 48],

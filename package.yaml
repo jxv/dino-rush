@@ -7,6 +7,10 @@ synopsis: Simple Dinosaur theme running game
 description: Simple Dinsource theme running game
 maintainer: Joe Vargas
 copyright: 2018 Joe Vargas
+data-dir: data
+data-files:
+- dino.json
+- dino.png
 extra-source-files:
 - package.yaml
 - README.md

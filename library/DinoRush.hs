@@ -45,7 +45,7 @@ main = do
   window <- SDL.createWindow "Dino Rush" SDL.defaultWindow { SDL.windowInitialSize = V2 1280 720 }
   SDL.showWindow window
   screen <- SDL.getWindowSurface window
-  spriteSheet <- Animate.readSpriteSheetJSON loadSurface "dino.json" :: IO (Animate.SpriteSheet DinoKey SDL.Surface Seconds)
+  spriteSheet <- Animate.readSpriteSheetJSON loadSurface "data/dino.json" :: IO (Animate.SpriteSheet DinoKey SDL.Surface Seconds)
   runDinoRush (Config window screen spriteSheet) initVars mainLoop
   SDL.destroyWindow window
   SDL.quit
