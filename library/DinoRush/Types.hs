@@ -33,6 +33,7 @@ data OtherKey = OtherKey
 data Config = Config
   { cWindow :: SDL.Window
   , cScreen :: SDL.Surface
+  , cBackgroundFar :: SDL.Surface
   , cDinoSpriteSheet :: Animate.SpriteSheet DinoKey SDL.Surface Seconds
   }
 
@@ -47,7 +48,7 @@ newtype Lives = Lives Int
   deriving (Show, Eq, Num, Integral, Real, Ord, Enum)
 
 newtype Percent = Percent Float
-  deriving (Show, Eq, Num, Fractional, Ord)
+  deriving (Show, Eq, Num, Fractional, RealFrac, Real, Ord)
 
 newtype Distance = Distance Float
   deriving (Show, Eq, Num)

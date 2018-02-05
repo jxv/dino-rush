@@ -14,6 +14,7 @@ type DrawSprite key m = Animate.SpriteClip key -> (Int, Int) -> m ()
 class Monad m => SpriteManager m where
   getDinoAnimations :: m (Animations DinoKey)
   drawDino :: DrawSprite DinoKey m
+  drawBackgroundFar :: Int -> m ()
 
 --
 

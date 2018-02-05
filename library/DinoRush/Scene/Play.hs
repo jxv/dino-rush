@@ -48,13 +48,17 @@ class Monad m => Play m where
 playStep' :: (HasPlayVars s, MonadState s m, Logger m, Clock m, Renderer m, HasInput m, SpriteManager m, SceneManager m) => m ()
 playStep' = do
   input <- getInput
+  when (ksStatus (iSpace input) == KeyStatus'Pressed) (toScene Scene'Pause)
   animations <- getDinoAnimations
   pos <- gets (pvPlayer . view playVars)
   let pos' = nextFrame animations pos input
   let loc = Animate.currentLocation animations pos'
-  drawDino loc (200, 400)
-  when (ksStatus (iSpace input) == KeyStatus'Pressed) (toScene Scene'Pause)
-  modify $ playVars %~ (\pv -> pv { pvPlayer = pos' })
+  backPosFar <- gets (pvBackgroundPositionFar . view playVars)
+  drawBackgroundFar (truncate $ 1280 * backPosFar)
+  drawDino loc (200, 500)
+  let backPosFar' = backPosFar - 0.001
+  let backPosFar'' = if backPosFar' <= -1 then 0 else backPosFar'
+  modify $ playVars %~ (\pv -> pv { pvPlayer = pos', pvBackgroundPositionFar = backPosFar'' })
 
 nextFrame :: Animations DinoKey -> Animate.Position DinoKey Seconds -> Input -> Animate.Position DinoKey Seconds
 nextFrame animations pos input = case ksStatus (iDown input) of

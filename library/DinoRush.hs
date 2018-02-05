@@ -8,7 +8,7 @@ import qualified Animate
 import qualified Data.Text.IO as T
 
 import Control.Monad.IO.Class (MonadIO(..))
-import Control.Monad.Reader (MonadReader(..), ReaderT(..), runReaderT)
+import Control.Monad.Reader (MonadReader(..), ReaderT(..), runReaderT, asks)
 import Control.Monad.State (MonadState(..), StateT(..), evalStateT, gets, modify)
 import Data.StateVar (($=))
 import SDL.Vect
@@ -45,8 +45,9 @@ main = do
   window <- SDL.createWindow "Dino Rush" SDL.defaultWindow { SDL.windowInitialSize = V2 1280 720 }
   SDL.showWindow window
   screen <- SDL.getWindowSurface window
+  backgroundFar <- loadSurface "data/background_far.png" Nothing
   spriteSheet <- Animate.readSpriteSheetJSON loadSurface "data/dino.json" :: IO (Animate.SpriteSheet DinoKey SDL.Surface Seconds)
-  runDinoRush (Config window screen spriteSheet) initVars mainLoop
+  runDinoRush (Config window screen backgroundFar spriteSheet) initVars mainLoop
   SDL.destroyWindow window
   SDL.quit
 
@@ -96,3 +97,8 @@ instance Pause DinoRush where
 instance SpriteManager DinoRush where
   getDinoAnimations = getSpriteAnimations cDinoSpriteSheet
   drawDino = drawSprite cDinoSpriteSheet
+  drawBackgroundFar n = do
+    screen <- asks cScreen
+    background <- asks cBackgroundFar
+    drawSurfaceToSurface screen background Nothing (Just $ SDL.P $ SDL.V2 (fromIntegral n) 0)
+    drawSurfaceToSurface screen background Nothing (Just $ SDL.P $ SDL.V2 (fromIntegral n + 1280) 0)
