@@ -22,6 +22,7 @@ import DinoRush.SDL.Renderer
 import DinoRush.Scene
 import DinoRush.Scene.Main
 import DinoRush.Scene.Title
+import DinoRush.Scene.Pause
 import DinoRush.Scene.Play
 import DinoRush.Sprite
 import DinoRush.Types
@@ -88,6 +89,9 @@ instance Title DinoRush where
 
 instance Play DinoRush where
   playStep = playStep'
+
+instance Pause DinoRush where
+  pauseStep = pauseStep'
 
 instance SpriteManager DinoRush where
   getDinoAnimations = getSpriteAnimations cDinoSpriteSheet
