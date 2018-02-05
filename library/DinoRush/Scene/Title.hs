@@ -43,6 +43,6 @@ titleStep' = do
   let pos' = Animate.stepPosition animations pos frameDeltaSeconds
   let loc = Animate.currentLocation animations pos'
   drawBackgroundFar 0
-  drawDino loc (200, 500)
+  drawDino loc (200, 450)
   modify $ titleVars %~ (\tv -> tv { tvPlayer = pos' })
   when (ksStatus (iSpace input) == KeyStatus'Pressed) (toScene Scene'Play)

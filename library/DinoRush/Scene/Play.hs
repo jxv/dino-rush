@@ -55,7 +55,7 @@ playStep' = do
   let loc = Animate.currentLocation animations pos'
   backPosFar <- gets (pvBackgroundPositionFar . view playVars)
   drawBackgroundFar (truncate $ 1280 * backPosFar)
-  drawDino loc (200, 500)
+  drawDino loc (200, 450)
   let backPosFar' = backPosFar - 0.001
   let backPosFar'' = if backPosFar' <= -1 then 0 else backPosFar'
   modify $ playVars %~ (\pv -> pv { pvPlayer = pos', pvBackgroundPositionFar = backPosFar'' })

@@ -22,5 +22,5 @@ pauseStep' = do
   let loc = Animate.currentLocation animations pos
   backPosFar <- gets (pvBackgroundPositionFar . view playVars)
   drawBackgroundFar (truncate $ 1280 * backPosFar)
-  drawDino loc (200, 500)
+  drawDino loc (200, 450)
   when (ksStatus (iSpace input) == KeyStatus'Pressed) (toScene Scene'Play)
