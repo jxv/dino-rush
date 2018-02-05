@@ -14,6 +14,14 @@ keycodePressed keycode event = case event of
     not keyboardEventRepeat
   _ -> False
 
+keycodeReleased :: SDL.Keycode -> SDL.EventPayload -> Bool
+keycodeReleased keycode event = case event of
+  SDL.KeyboardEvent SDL.KeyboardEventData{keyboardEventKeysym = SDL.Keysym{keysymKeycode = code}, keyboardEventKeyMotion = motion, keyboardEventRepeat } ->
+    code == keycode &&
+    motion == SDL.Released &&
+    not keyboardEventRepeat
+  _ -> False
+
 class Monad m => SDLInput m where
   pollEventPayloads :: m [SDL.EventPayload]
 
