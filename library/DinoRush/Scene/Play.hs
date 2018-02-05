@@ -1,14 +1,10 @@
 {-# LANGUAGE TemplateHaskell #-}
 module DinoRush.Scene.Play where
 
-import qualified SDL
 import qualified Animate
-import Control.Lens
 import Control.Monad (when)
-import Control.Monad.Reader (MonadReader(..), asks)
+import Control.Lens
 import Control.Monad.State (MonadState(..), modify, gets)
-import Foreign.C.Types
-import Linear
 import KeyState
 
 import DinoRush.Clock
@@ -16,9 +12,8 @@ import DinoRush.Logger
 import DinoRush.Input
 import DinoRush.Renderer
 import DinoRush.Sprite
+import DinoRush.Scene
 import DinoRush.Types
-
-import DinoRush.SDL.Renderer
 
 data PlayVars = PlayVars
   { pvScore :: Score
@@ -50,7 +45,7 @@ initPlayVars upcomingObstacles = PlayVars
 class Monad m => Play m where
   playStep :: m ()
 
-playStep' :: (HasPlayVars s, MonadReader Config m, MonadState s m, Logger m, Clock m, Renderer m, HasInput m, SpriteManager m) => m ()
+playStep' :: (HasPlayVars s, MonadState s m, Logger m, Clock m, Renderer m, HasInput m, SpriteManager m, SceneManager m) => m ()
 playStep' = do
   input <- getInput
   animations <- getDinoAnimations
@@ -58,6 +53,7 @@ playStep' = do
   let pos' = nextFrame animations pos input
   let loc = Animate.currentLocation animations pos'
   drawDino loc (200, 400)
+  when (ksStatus (iSpace input) == KeyStatus'Pressed) (toScene Scene'Pause)
   modify $ playVars %~ (\pv -> pv { pvPlayer = pos' })
 
 nextFrame :: Animations DinoKey -> Animate.Position DinoKey Seconds -> Input -> Animate.Position DinoKey Seconds
