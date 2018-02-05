@@ -5,6 +5,7 @@ import Control.Lens
 import Control.Monad (unless)
 import Control.Monad.State (MonadState(..), modify, gets)
 import Control.Monad.Reader (MonadReader(..))
+import KeyState
 
 import DinoRush.Clock
 import DinoRush.Logger
@@ -57,6 +58,6 @@ mainLoop = do
   drawScreen
   delayMilliseconds frameDeltaMilliseconds
   nextScene <- gets vNextScene
-  let quit = nextScene == Scene'Quit || iQuit input
+  let quit = nextScene == Scene'Quit || iQuit input || ksStatus (iEscape input) == KeyStatus'Pressed
   modify (\v -> v { vScene = nextScene })
   unless quit mainLoop
