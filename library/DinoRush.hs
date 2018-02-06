@@ -71,8 +71,8 @@ instance SDLInput DinoRush where
 
 instance HasInput DinoRush where
   updateInput = updateInput'
-  getInput = gets vInput
-  setInput s = modify (\v -> v { vInput = s })
+  getInput = getInput'
+  setInput = setInput'
 
 instance SceneManager DinoRush where
   toScene = toScene'

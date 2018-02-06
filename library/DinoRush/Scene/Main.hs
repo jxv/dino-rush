@@ -43,6 +43,12 @@ titleTransition = modify $ titleVars .~ initTitleVars
 toScene' :: MonadState Vars m => Scene -> m ()
 toScene' scene = modify (\v -> v { vNextScene = scene })
 
+getInput' :: MonadState Vars m => m Input
+getInput' = gets vInput
+
+setInput' :: MonadState Vars m => Input -> m ()
+setInput' input = modify (\v -> v { vInput = input })
+
 mainLoop :: (MonadReader Config m, MonadState Vars m, Logger m, Clock m, Renderer m, HasInput m, Title m, Play m, Pause m) => m ()
 mainLoop = do
   updateInput
