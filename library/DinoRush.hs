@@ -27,8 +27,6 @@ import DinoRush.Scene.Play
 import DinoRush.Sprite
 import DinoRush.Types
 
---
-
 loadSurface :: FilePath -> Maybe Animate.Color -> IO SDL.Surface
 loadSurface path alpha = do
   surface <- Image.load path
@@ -37,21 +35,20 @@ loadSurface path alpha = do
     Nothing -> return ()
   return surface
 
---
-
 main :: IO ()
 main = do
   SDL.initialize [SDL.InitVideo]
-  window <- SDL.createWindow "Dino Rush" SDL.defaultWindow { SDL.windowInitialSize = V2 1280 720 }
+  window <- SDL.createWindow "Dino Rush" SDL.defaultWindow { SDL.windowInitialSize = V2 1280 720, SDL.windowMode = SDL.Fullscreen }
   SDL.showWindow window
   screen <- SDL.getWindowSurface window
   backgroundFar <- loadSurface "data/background_far.png" Nothing
+  backgroundNear <- loadSurface "data/background_near.png" Nothing
+  foreground <- loadSurface "data/foreground.png" Nothing
+  nearground <- loadSurface "data/nearground.png" Nothing
   spriteSheet <- Animate.readSpriteSheetJSON loadSurface "data/dino.json" :: IO (Animate.SpriteSheet DinoKey SDL.Surface Seconds)
-  runDinoRush (Config window screen backgroundFar spriteSheet) initVars mainLoop
+  runDinoRush (Config window screen backgroundFar backgroundNear foreground nearground spriteSheet) initVars mainLoop
   SDL.destroyWindow window
   SDL.quit
-
---
 
 newtype DinoRush a = DinoRush (ReaderT Config (StateT Vars IO) a)
   deriving (Functor, Applicative, Monad, MonadReader Config, MonadState Vars, MonadIO)
@@ -97,8 +94,7 @@ instance Pause DinoRush where
 instance SpriteManager DinoRush where
   getDinoAnimations = getSpriteAnimations cDinoSpriteSheet
   drawDino = drawSprite cDinoSpriteSheet
-  drawBackgroundFar n = do
-    screen <- asks cScreen
-    background <- asks cBackgroundFar
-    drawSurfaceToSurface screen background Nothing (Just $ SDL.P $ SDL.V2 (fromIntegral n) 0)
-    drawSurfaceToSurface screen background Nothing (Just $ SDL.P $ SDL.V2 (fromIntegral n + 1280) 0)
+  drawBackgroundFar = drawHorizontalScrollImage cBackgroundFar
+  drawBackgroundNear = drawHorizontalScrollImage cBackgroundNear
+  drawForeground = drawHorizontalScrollImage cForeground
+  drawNearground = drawHorizontalScrollImage cNearground

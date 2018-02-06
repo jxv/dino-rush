@@ -42,7 +42,10 @@ titleStep' = do
   pos <- gets (tvPlayer . view titleVars)
   let pos' = Animate.stepPosition animations pos frameDeltaSeconds
   let loc = Animate.currentLocation animations pos'
-  drawBackgroundFar 0
-  drawDino loc (200, 450)
+  drawBackgroundFar (0, backgroundFarY)
+  drawBackgroundNear (0, backgroundNearY)
+  drawForeground (0, foregroundY)
+  drawDino loc (200, dinoY)
+  drawNearground (0, neargroundY)
   modify $ titleVars %~ (\tv -> tv { tvPlayer = pos' })
   when (ksStatus (iSpace input) == KeyStatus'Pressed) (toScene Scene'Play)

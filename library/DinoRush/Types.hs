@@ -34,6 +34,9 @@ data Config = Config
   { cWindow :: SDL.Window
   , cScreen :: SDL.Surface
   , cBackgroundFar :: SDL.Surface
+  , cBackgroundNear :: SDL.Surface
+  , cForeground :: SDL.Surface
+  , cNearground :: SDL.Surface
   , cDinoSpriteSheet :: Animate.SpriteSheet DinoKey SDL.Surface Seconds
   }
 

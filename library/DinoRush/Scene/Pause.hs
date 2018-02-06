@@ -17,10 +17,5 @@ class Monad m => Pause m where
 pauseStep' :: (HasPlayVars s, MonadState s m, SceneManager m, HasInput m, SpriteManager m) => m ()
 pauseStep' = do
   input <- getInput
-  animations <- getDinoAnimations
-  pos <- gets (pvPlayer . view playVars)
-  let loc = Animate.currentLocation animations pos
-  backPosFar <- gets (pvBackgroundPositionFar . view playVars)
-  drawBackgroundFar (truncate $ 1280 * backPosFar)
-  drawDino loc (200, 450)
+  drawPlay
   when (ksStatus (iSpace input) == KeyStatus'Pressed) (toScene Scene'Play)
