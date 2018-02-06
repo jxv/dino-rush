@@ -11,7 +11,6 @@ import DinoRush.Clock
 import DinoRush.Logger
 import DinoRush.Input
 import DinoRush.Renderer
-import DinoRush.Sprite
 import DinoRush.Scene
 import DinoRush.Types
 
@@ -49,7 +48,7 @@ initPlayVars upcomingObstacles = PlayVars
 class Monad m => Play m where
   playStep :: m ()
 
-drawPlay :: (HasPlayVars s, MonadState s m, SpriteManager m) => m ()
+drawPlay :: (HasPlayVars s, MonadState s m, Renderer m) => m ()
 drawPlay = do
   animations <- getDinoAnimations
   pv <- gets (view playVars)
@@ -60,14 +59,14 @@ drawPlay = do
   drawDino loc (200, dinoY)
   drawNearground (truncate $ 1280 * pvNeargroundPosition pv, neargroundY)
 
-playStep' :: (HasPlayVars s, MonadState s m, Logger m, Clock m, Renderer m, HasInput m, SpriteManager m, SceneManager m) => m ()
+playStep' :: (HasPlayVars s, MonadState s m, Logger m, Clock m, Renderer m, HasInput m, SceneManager m) => m ()
 playStep' = do
   input <- getInput
   when (ksStatus (iSpace input) == KeyStatus'Pressed) (toScene Scene'Pause)
   updatePlay
   drawPlay
 
-updatePlay :: (HasPlayVars s, MonadState s m, Logger m, Clock m, Renderer m, HasInput m, SpriteManager m, SceneManager m) => m ()
+updatePlay :: (HasPlayVars s, MonadState s m, Logger m, Clock m, Renderer m, HasInput m, SceneManager m) => m ()
 updatePlay = do
   input <- getInput
   animations <- getDinoAnimations

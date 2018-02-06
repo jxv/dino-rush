@@ -8,7 +8,7 @@ import qualified Animate
 import qualified Data.Text.IO as T
 
 import Control.Monad.IO.Class (MonadIO(..))
-import Control.Monad.Reader (MonadReader(..), ReaderT(..), runReaderT, asks)
+import Control.Monad.Reader (MonadReader(..), ReaderT(..), runReaderT)
 import Control.Monad.State (MonadState(..), StateT(..), evalStateT, gets, modify)
 import Data.StateVar (($=))
 import SDL.Vect
@@ -24,7 +24,6 @@ import DinoRush.Scene.Main
 import DinoRush.Scene.Title
 import DinoRush.Scene.Pause
 import DinoRush.Scene.Play
-import DinoRush.Sprite
 import DinoRush.Types
 
 loadSurface :: FilePath -> Maybe Animate.Color -> IO SDL.Surface
@@ -81,6 +80,12 @@ instance SceneManager DinoRush where
 instance Renderer DinoRush where
   clearScreen = clearScreen'
   drawScreen = drawScreen'
+  getDinoAnimations = getSpriteAnimations cDinoSpriteSheet
+  drawDino = drawSprite cDinoSpriteSheet
+  drawBackgroundFar = drawHorizontalScrollImage cBackgroundFar
+  drawBackgroundNear = drawHorizontalScrollImage cBackgroundNear
+  drawForeground = drawHorizontalScrollImage cForeground
+  drawNearground = drawHorizontalScrollImage cNearground
 
 instance Title DinoRush where
   titleStep = titleStep'
@@ -90,11 +95,3 @@ instance Play DinoRush where
 
 instance Pause DinoRush where
   pauseStep = pauseStep'
-
-instance SpriteManager DinoRush where
-  getDinoAnimations = getSpriteAnimations cDinoSpriteSheet
-  drawDino = drawSprite cDinoSpriteSheet
-  drawBackgroundFar = drawHorizontalScrollImage cBackgroundFar
-  drawBackgroundNear = drawHorizontalScrollImage cBackgroundNear
-  drawForeground = drawHorizontalScrollImage cForeground
-  drawNearground = drawHorizontalScrollImage cNearground

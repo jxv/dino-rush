@@ -10,13 +10,10 @@ import Control.Monad.State (MonadState(..), modify, gets)
 import Linear
 import KeyState
 
-import DinoRush.Clock
-import DinoRush.Logger
 import DinoRush.Input
 import DinoRush.Renderer
 import DinoRush.Scene
 import DinoRush.Types
-import DinoRush.Sprite
 
 import DinoRush.SDL.Renderer
 
@@ -35,7 +32,7 @@ initTitleVars = TitleVars initPlayerPosition
 class Monad m => Title m where
   titleStep :: m ()
 
-titleStep' :: (SceneManager m, HasTitleVars s, MonadReader Config m, MonadState s m, Logger m, Clock m, SDLRenderer m, HasInput m, SpriteManager m) => m ()
+titleStep' :: (HasTitleVars s, MonadReader Config m, MonadState s m, Renderer m, HasInput m, SceneManager m) => m ()
 titleStep' = do
   input <- getInput
   animations <- getDinoAnimations
