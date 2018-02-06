@@ -30,13 +30,13 @@ class Monad m => Renderer m where
 
 clearScreen' :: (SDLRenderer m, MonadReader Config m) => m ()
 clearScreen' = do
-  screen <- asks cScreen
-  clearSurface screen
+  renderer <- asks cRenderer
+  clearRenderer renderer
 
 drawScreen' :: (SDLRenderer m, MonadReader Config m) => m ()
 drawScreen' = do
-  window <- asks cWindow
-  updateWindowSurface window
+  renderer <- asks cRenderer
+  presentRenderer renderer
 
 --
 
@@ -49,22 +49,25 @@ neargroundY = 16 * 36
 
 --
 
-drawSprite :: (SDLRenderer m, MonadReader Config m) => (Config -> Animate.SpriteSheet key SDL.Surface Seconds) -> Animate.SpriteClip key -> (Int, Int) -> m ()
+drawSprite :: (SDLRenderer m, MonadReader Config m) => (Config -> Animate.SpriteSheet key SDL.Texture Seconds) -> Animate.SpriteClip key -> (Int, Int) -> m ()
 drawSprite ss clip (x,y) = do
-  screen <- asks cScreen
+  renderer <- asks cRenderer
   sheet <- asks (Animate.ssImage . ss)
-  drawSurfaceToSurface
-    screen
+  let clip'@(SDL.Rectangle _ dim) = rectFromClip clip
+  drawTexture
+    renderer
     sheet
-    (Just $ rectFromClip clip)
-    (Just $ SDL.P $ SDL.V2 (fromIntegral x) (fromIntegral y))
+    (Just clip')
+    (Just $ SDL.Rectangle (SDL.P $ SDL.V2 (fromIntegral x) (fromIntegral y)) dim)
 
-getSpriteAnimations :: (MonadReader Config m) => (Config -> Animate.SpriteSheet key SDL.Surface Seconds) -> m (Animations key)
+getSpriteAnimations :: (MonadReader Config m) => (Config -> Animate.SpriteSheet key SDL.Texture Seconds) -> m (Animations key)
 getSpriteAnimations ss = asks (Animate.ssAnimations . ss)
 
-drawHorizontalScrollImage :: (MonadReader Config m, SDLRenderer m) => (Config -> SDL.Surface) -> (Int, Int) -> m ()
-drawHorizontalScrollImage surface (x,y) = do
-  screen <- asks cScreen
-  background <- asks surface
-  drawSurfaceToSurface screen background Nothing (Just $ SDL.P $ SDL.V2 (fromIntegral x) (fromIntegral y))
-  drawSurfaceToSurface screen background Nothing (Just $ SDL.P $ SDL.V2 (fromIntegral x + 1280) (fromIntegral y))
+drawHorizontalScrollImage :: (MonadReader Config m, SDLRenderer m) => (Config -> SDL.Texture) -> (Int, Int) -> m ()
+drawHorizontalScrollImage tex (x,y) = do
+  renderer <- asks cRenderer
+  background <- asks tex
+  SDL.TextureInfo{textureWidth,textureHeight} <- queryTexture background
+  let dim = SDL.V2 textureWidth textureHeight
+  drawTexture renderer background Nothing (Just $ SDL.Rectangle (SDL.P $ SDL.V2 (fromIntegral x) (fromIntegral y)) dim)
+  drawTexture renderer background Nothing (Just $ SDL.Rectangle (SDL.P $ SDL.V2 (fromIntegral x + 1280) (fromIntegral y)) dim)

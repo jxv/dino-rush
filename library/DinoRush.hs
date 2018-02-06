@@ -8,8 +8,8 @@ import qualified Animate
 import qualified Data.Text.IO as T
 
 import Control.Monad.IO.Class (MonadIO(..))
-import Control.Monad.Reader (MonadReader(..), ReaderT(..), runReaderT)
-import Control.Monad.State (MonadState(..), StateT(..), evalStateT, gets, modify)
+import Control.Monad.Reader (MonadReader, ReaderT, runReaderT)
+import Control.Monad.State (MonadState, StateT, evalStateT)
 import Data.StateVar (($=))
 import SDL.Vect
 
@@ -38,14 +38,13 @@ main :: IO ()
 main = do
   SDL.initialize [SDL.InitVideo]
   window <- SDL.createWindow "Dino Rush" SDL.defaultWindow { SDL.windowInitialSize = V2 1280 720, SDL.windowMode = SDL.Fullscreen }
-  SDL.showWindow window
-  screen <- SDL.getWindowSurface window
-  backgroundFar <- loadSurface "data/background_far.png" Nothing
-  backgroundNear <- loadSurface "data/background_near.png" Nothing
-  foreground <- loadSurface "data/foreground.png" Nothing
-  nearground <- loadSurface "data/nearground.png" Nothing
-  spriteSheet <- Animate.readSpriteSheetJSON loadSurface "data/dino.json" :: IO (Animate.SpriteSheet DinoKey SDL.Surface Seconds)
-  runDinoRush (Config window screen backgroundFar backgroundNear foreground nearground spriteSheet) initVars mainLoop
+  renderer <- SDL.createRenderer window (-1) SDL.defaultRenderer
+  backgroundFar <- SDL.createTextureFromSurface renderer =<< loadSurface "data/background_far.png" Nothing
+  backgroundNear <- SDL.createTextureFromSurface renderer =<< loadSurface "data/background_near.png" Nothing
+  foreground <- SDL.createTextureFromSurface renderer =<< loadSurface "data/foreground.png" Nothing
+  nearground <- SDL.createTextureFromSurface renderer =<< loadSurface "data/nearground.png" Nothing
+  spriteSheet <- Animate.readSpriteSheetJSON (\path c -> SDL.createTextureFromSurface renderer =<< loadSurface path c) "data/dino.json" :: IO (Animate.SpriteSheet DinoKey SDL.Texture Seconds)
+  runDinoRush (Config window renderer backgroundFar backgroundNear foreground nearground spriteSheet) initVars mainLoop
   SDL.destroyWindow window
   SDL.quit
 
@@ -62,9 +61,10 @@ instance Logger DinoRush where
   logText = liftIO . T.putStrLn
 
 instance SDLRenderer DinoRush where
-  updateWindowSurface = updateWindowSurface'
-  clearSurface = clearSurface'
-  drawSurfaceToSurface = drawSurfaceToSurface'
+  drawTexture = drawTexture'
+  presentRenderer = presentRenderer'
+  clearRenderer = clearRenderer'
+  queryTexture = queryTexture'
 
 instance SDLInput DinoRush where
   pollEventPayloads = pollEventPayloads'

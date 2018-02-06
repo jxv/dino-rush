@@ -32,12 +32,12 @@ data OtherKey = OtherKey
 
 data Config = Config
   { cWindow :: SDL.Window
-  , cScreen :: SDL.Surface
-  , cBackgroundFar :: SDL.Surface
-  , cBackgroundNear :: SDL.Surface
-  , cForeground :: SDL.Surface
-  , cNearground :: SDL.Surface
-  , cDinoSpriteSheet :: Animate.SpriteSheet DinoKey SDL.Surface Seconds
+  , cRenderer :: SDL.Renderer
+  , cBackgroundFar :: SDL.Texture
+  , cBackgroundNear :: SDL.Texture
+  , cForeground :: SDL.Texture
+  , cNearground :: SDL.Texture
+  , cDinoSpriteSheet :: Animate.SpriteSheet DinoKey SDL.Texture Seconds
   }
 
 data Obstacle
