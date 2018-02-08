@@ -2,7 +2,7 @@
 module DinoRush.Scene.Main where
 
 import Control.Lens
-import Control.Monad (unless)
+import Control.Monad (unless, when)
 import Control.Monad.State (MonadState(..), modify, gets)
 import Control.Monad.Reader (MonadReader(..))
 import KeyState
@@ -26,8 +26,8 @@ data Vars = Vars
   , vInput :: Input
   } deriving (Show, Eq)
 
-initVars :: Vars
-initVars = Vars Scene'Title Scene'Title initTitleVars (initPlayVars []) initInput
+initVars :: [(Distance, Obstacle)] -> Vars
+initVars mkObstacles = Vars Scene'Title Scene'Title initTitleVars (initPlayVars mkObstacles) initInput
 
 instance HasTitleVars Vars where
   titleVars = lens vTitle (\v s -> v { vTitle = s })
@@ -39,6 +39,11 @@ makeClassy ''Vars
 
 titleTransition :: (HasTitleVars a, MonadState a m) => m ()
 titleTransition = modify $ titleVars .~ initTitleVars
+
+playTransition :: (HasPlayVars a, MonadState a m) => m ()
+playTransition = do
+  PlayVars{pvUpcomingObstacles} <- gets (view playVars)
+  modify $ playVars .~ (initPlayVars pvUpcomingObstacles)
 
 toScene' :: MonadState Vars m => Scene -> m ()
 toScene' scene = modify (\v -> v { vNextScene = scene })
@@ -65,5 +70,12 @@ mainLoop = do
   delayMilliseconds frameDeltaMilliseconds
   nextScene <- gets vNextScene
   let quit = nextScene == Scene'Quit || iQuit input || ksStatus (iEscape input) == KeyStatus'Pressed
-  modify (\v -> v { vScene = nextScene })
+  when (nextScene /= scene) $ do
+    case nextScene of
+      Scene'Title -> titleTransition
+      Scene'Play -> return ()
+      Scene'Pause -> return ()
+      Scene'GameOver -> return ()
+      Scene'Quit -> return ()
+    modify (\v -> v { vScene = nextScene })
   unless quit mainLoop

@@ -40,6 +40,7 @@ library:
     - sdl2-image
     - StateVar
     - text
+    - random
   source-dirs: library
 executables:
   dino-rush:

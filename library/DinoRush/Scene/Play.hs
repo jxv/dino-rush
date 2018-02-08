@@ -18,7 +18,7 @@ data PlayVars = PlayVars
   { pvScore :: Score
   , pvLives :: Lives
   , pvSpeed :: Percent
-  , pvProgress :: Percent
+  , pvProgress :: Distance
   , pvPlayer :: Animate.Position DinoKey Seconds
   , pvJump :: Maybe Percent
   , pvBackgroundPositionFar :: Percent

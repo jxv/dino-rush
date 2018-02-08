@@ -12,6 +12,7 @@ import Control.Monad.Reader (MonadReader, ReaderT, runReaderT)
 import Control.Monad.State (MonadState, StateT, evalStateT)
 import Data.StateVar (($=))
 import SDL.Vect
+import System.Random
 
 import DinoRush.Clock
 import DinoRush.Input
@@ -44,10 +45,10 @@ main = do
   foreground <- SDL.createTextureFromSurface renderer =<< loadSurface "data/foreground.png" Nothing
   nearground <- SDL.createTextureFromSurface renderer =<< loadSurface "data/nearground.png" Nothing
   spriteSheet <- Animate.readSpriteSheetJSON (\path c -> SDL.createTextureFromSurface renderer =<< loadSurface path c) "data/dino.json" :: IO (Animate.SpriteSheet DinoKey SDL.Texture Seconds)
-  runDinoRush (Config window renderer backgroundFar backgroundNear foreground nearground spriteSheet) initVars mainLoop
+  mkObstacles <- streamOfObstacles <$> getStdGen
+  runDinoRush (Config window renderer backgroundFar backgroundNear foreground nearground spriteSheet) (initVars mkObstacles) mainLoop
   SDL.destroyWindow window
   SDL.quit
-
 newtype DinoRush a = DinoRush (ReaderT Config (StateT Vars IO) a)
   deriving (Functor, Applicative, Monad, MonadReader Config, MonadState Vars, MonadIO)
 
