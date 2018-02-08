@@ -11,7 +11,7 @@ data GameOverVars = GameOverVars
   , govBackgroundPositionFar :: Percent
   , govBackgroundPositionClose :: Percent
   , govForegroundPosition :: Percent
-  , govObstacles :: [(Distance, Obstacle)]
+  , govObstacles :: [(Distance, ObstacleTag)]
   } deriving (Show, Eq)
 
 makeClassy ''GameOverVars

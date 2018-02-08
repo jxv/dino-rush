@@ -26,7 +26,7 @@ data Vars = Vars
   , vInput :: Input
   } deriving (Show, Eq)
 
-initVars :: [(Distance, Obstacle)] -> Vars
+initVars :: [(Distance, ObstacleTag)] -> Vars
 initVars mkObstacles = Vars Scene'Title Scene'Title initTitleVars (initPlayVars mkObstacles) initInput
 
 instance HasTitleVars Vars where

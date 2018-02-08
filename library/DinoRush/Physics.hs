@@ -41,10 +41,10 @@ arenaWidth = 1280
 rightEdge :: Float
 rightEdge = arenaWidth - (dinoX + 48)
 
-stepObstacles :: Float -> [(Float, Obstacle)] -> [(Float, Obstacle)]
+stepObstacles :: Float -> [(Float, ObstacleTag)] -> [(Float, ObstacleTag)]
 stepObstacles delta = map (\(loc, obs) -> (loc - delta, obs))
 
-distanceFromLastObstacle :: [(Float, Obstacle)] -> Float
-distanceFromLastObstacle obs = case Safe.lastMay obs of
+distanceFromLastObstacle :: [(Float, ObstacleTag)] -> Float
+distanceFromLastObstacle obstacles = case Safe.lastMay obstacles of
   Nothing -> rightEdge
   Just (dist, _) -> rightEdge - dist

@@ -38,14 +38,14 @@ data Config = Config
   , cDinoSpriteSheet :: Animate.SpriteSheet DinoKey SDL.Texture Seconds
   }
 
-data Obstacle
-  = Obstacle'GroundShort
-  | Obstacle'GroundTall
-  | Obstacle'Air
-  | Obstacle'Bouncy
+data ObstacleTag
+  = ObstacleTag'GroundShort
+  | ObstacleTag'GroundTall
+  | ObstacleTag'Air
+  | ObstacleTag'Bouncy
   deriving (Show, Eq, Ord, Bounded, Enum)
 
-instance Random Obstacle where
+instance Random ObstacleTag where
   randomR = randomRBoundedEnum
   random g = randomR (minBound, maxBound) g
 
@@ -56,8 +56,37 @@ randomRBoundedEnum (aMin, aMax) g = let
   a = [minBound..lastEnum] !! (index `mod` fromEnum lastEnum)
   in (a, g')
 
-streamOfObstacles :: RandomGen g => g -> [(Distance, Obstacle)]
+streamOfObstacles :: RandomGen g => g -> [(Distance, ObstacleTag)]
 streamOfObstacles g = zip (map (\dist -> dist `mod` 20 + 1) $ randoms g) (randoms g)
+
+data GroundShortKey
+  = GroundShortKey'Idle
+  deriving (Show, Eq, Ord, Enum, Bounded)
+
+data GroundTallKey
+  = GroundTallKey'Idle
+  deriving (Show, Eq, Ord, Enum, Bounded)
+
+data AirKey
+  = AirKey'Idle
+  deriving (Show, Eq, Ord, Enum, Bounded)
+
+data BouncyKey
+  = BouncyKey'Idle
+  | BouncyKey'Jump
+  deriving (Show, Eq, Ord, Enum, Bounded)
+
+data ObstacleInfo
+  = ObstacleInfo'GroundShort (Animate.Position GroundShortKey Seconds)
+  | ObstacleInfo'GroundTall (Animate.Position GroundTallKey Seconds)
+  | ObstacleInfo'Air (Animate.Position AirKey Seconds)
+  | ObstacleInfo'Bouncy Percent (Animate.Position BouncyKey Seconds)
+  deriving (Show, Eq)
+
+data ObstacleState = ObstacleState
+  { osInfo :: ObstacleInfo
+  , osDistance :: Distance
+  } deriving (Show, Eq)
 
 newtype Lives = Lives Int
   deriving (Show, Eq, Num, Integral, Real, Ord, Enum)

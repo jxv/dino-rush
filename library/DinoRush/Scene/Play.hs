@@ -25,13 +25,13 @@ data PlayVars = PlayVars
   , pvBackgroundPositionNear :: Percent
   , pvForegroundPosition :: Percent
   , pvNeargroundPosition :: Percent
-  , pvObstacles :: [(Float, Obstacle)]
-  , pvUpcomingObstacles :: [(Distance, Obstacle)]
+  , pvObstacles :: [(Float, ObstacleTag)]
+  , pvUpcomingObstacles :: [(Distance, ObstacleTag)]
   } deriving (Show, Eq)
 
 makeClassy ''PlayVars
 
-initPlayVars :: [(Distance, Obstacle)] -> PlayVars
+initPlayVars :: [(Distance, ObstacleTag)] -> PlayVars
 initPlayVars upcomingObstacles = PlayVars
   { pvScore = 0
   , pvLives = 1
