@@ -36,6 +36,7 @@ library:
     - linear
     - lens
     - mtl
+    - safe
     - sdl2
     - sdl2-image
     - StateVar

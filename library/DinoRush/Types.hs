@@ -28,9 +28,6 @@ dinoKey'keyName = \case
   DinoKey'Hurt -> "Hurt"
   DinoKey'Sneak -> "Sneak"
 
-data OtherKey = OtherKey
-  deriving (Show, Eq, Ord, Bounded, Enum)
-
 data Config = Config
   { cWindow :: SDL.Window
   , cRenderer :: SDL.Renderer
