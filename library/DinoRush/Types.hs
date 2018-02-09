@@ -2,6 +2,7 @@
 module DinoRush.Types where
 
 import qualified SDL
+import qualified SDL.Mixer as Mixer
 import qualified Animate
 
 import Control.Lens
@@ -36,6 +37,7 @@ data Config = Config
   , cForeground :: SDL.Texture
   , cNearground :: SDL.Texture
   , cDinoSpriteSheet :: Animate.SpriteSheet DinoKey SDL.Texture Seconds
+  , cJumpSfx :: Mixer.Chunk
   }
 
 data ObstacleTag

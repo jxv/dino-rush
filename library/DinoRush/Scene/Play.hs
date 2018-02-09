@@ -7,6 +7,7 @@ import Control.Lens
 import Control.Monad.State (MonadState(..), modify, gets)
 import KeyState
 
+import DinoRush.Audio
 import DinoRush.Clock
 import DinoRush.Logger
 import DinoRush.Input
@@ -61,16 +62,22 @@ drawPlay = do
   drawDino loc (200, dinoHeight (pvJump pv))
   drawNearground (truncate $ 1280 * pvNeargroundPosition pv, neargroundY)
 
-playStep' :: (HasPlayVars s, MonadState s m, Logger m, Clock m, Renderer m, HasInput m, SceneManager m) => m ()
+playStep' :: (HasPlayVars s, MonadState s m, Logger m, Clock m, Renderer m, Audio m, HasInput m, SceneManager m) => m ()
 playStep' = do
   input <- getInput
   when (ksStatus (iSpace input) == KeyStatus'Pressed) (toScene Scene'Pause)
   updatePlay
+  sfxPlay
   drawPlay
 
 dinoHeight :: Maybe Percent -> Int
 dinoHeight Nothing = dinoY
 dinoHeight (Just (Percent percent)) = truncate (sin (percent * pi) * (-16 * 2)) + dinoY
+
+sfxPlay :: (HasPlayVars s, MonadState s m, Audio m) => m ()
+sfxPlay = do
+  PlayVars{pvJump} <- gets (view playVars)
+  when (pvJump == Just 0) playJumpSfx
 
 updatePlay :: (HasPlayVars s, MonadState s m, Logger m, Clock m, Renderer m, HasInput m, SceneManager m) => m ()
 updatePlay = do

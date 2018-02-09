@@ -2,7 +2,7 @@ resolver: lts-9.14
 packages:
 - '.'
 extra-deps:
-- 'sdl-mixer-1.1.0'
+- 'sdl2-mixer-1.1.0'
 - 'animate-0.6.0'
 - 'key-state-0.1.0'
 flags: {}

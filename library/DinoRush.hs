@@ -3,6 +3,7 @@ module DinoRush
   ) where
 
 import qualified SDL
+import qualified SDL.Mixer as Mixer
 import qualified SDL.Image as Image
 import qualified Animate
 import qualified Data.Text.IO as T
@@ -14,6 +15,7 @@ import Data.StateVar (($=))
 import SDL.Vect
 import System.Random
 
+import DinoRush.Audio
 import DinoRush.Clock
 import DinoRush.Input
 import DinoRush.Logger
@@ -37,7 +39,11 @@ loadSurface path alpha = do
 
 main :: IO ()
 main = do
-  SDL.initialize [SDL.InitVideo]
+  SDL.initialize [SDL.InitVideo, SDL.InitAudio]
+  Mixer.openAudio Mixer.defaultAudio 4096
+  mus <- Mixer.load "data/v42.mod"
+  jumpSfx <- Mixer.load "data/jump.wav"
+  Mixer.playMusic Mixer.Forever mus
   window <- SDL.createWindow "Dino Rush" SDL.defaultWindow { SDL.windowInitialSize = V2 1280 720, SDL.windowMode = SDL.Fullscreen }
   renderer <- SDL.createRenderer window (-1) SDL.defaultRenderer
   backgroundFar <- SDL.createTextureFromSurface renderer =<< loadSurface "data/background_far.png" Nothing
@@ -46,14 +52,21 @@ main = do
   nearground <- SDL.createTextureFromSurface renderer =<< loadSurface "data/nearground.png" Nothing
   spriteSheet <- Animate.readSpriteSheetJSON (\path c -> SDL.createTextureFromSurface renderer =<< loadSurface path c) "data/dino.json" :: IO (Animate.SpriteSheet DinoKey SDL.Texture Seconds)
   mkObstacles <- streamOfObstacles <$> getStdGen
-  runDinoRush (Config window renderer backgroundFar backgroundNear foreground nearground spriteSheet) (initVars mkObstacles) mainLoop
+  runDinoRush (Config window renderer backgroundFar backgroundNear foreground nearground spriteSheet jumpSfx) (initVars mkObstacles) mainLoop
   SDL.destroyWindow window
+  Mixer.free mus
+  Mixer.free jumpSfx
+  Mixer.closeAudio
+  Mixer.quit
   SDL.quit
 newtype DinoRush a = DinoRush (ReaderT Config (StateT Vars IO) a)
   deriving (Functor, Applicative, Monad, MonadReader Config, MonadState Vars, MonadIO)
 
 runDinoRush :: Config -> Vars -> DinoRush a -> IO a
 runDinoRush config v (DinoRush m) = evalStateT (runReaderT m config) v
+
+instance Audio DinoRush where
+  playJumpSfx = playJumpSfx'
 
 instance Clock DinoRush where
   delayMilliseconds = liftIO . delayMilliseconds'
