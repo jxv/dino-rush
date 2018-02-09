@@ -25,7 +25,7 @@ data PlayVars = PlayVars
   , pvBackgroundPositionNear :: Percent
   , pvForegroundPosition :: Percent
   , pvNeargroundPosition :: Percent
-  , pvObstacles :: [(Float, ObstacleTag)]
+  , pvObstacles :: [ObstacleState]
   , pvUpcomingObstacles :: [(Distance, ObstacleTag)]
   } deriving (Show, Eq)
 
