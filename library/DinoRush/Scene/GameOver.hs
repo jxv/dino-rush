@@ -4,6 +4,7 @@ module DinoRush.Scene.GameOver where
 import qualified Animate
 import Control.Lens
 
+import DinoRush.Dino
 import DinoRush.Types
 
 data GameOverVars = GameOverVars

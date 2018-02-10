@@ -3,7 +3,7 @@ module DinoRush.Audio where
 import qualified SDL.Mixer as Mixer
 import Control.Monad.Reader
 
-import DinoRush.Types
+import DinoRush.Config
 
 class Monad m => Audio m where
   playGameMusic :: m ()

@@ -1,6 +1,5 @@
 module DinoRush.Physics where
 
-import qualified Safe
 import Linear.V2
 
 import DinoRush.Types
@@ -32,19 +31,8 @@ airAabb = Aabb (V2 0 (-20)) (V2 32 12)
 bouncyAabb :: Float -> Aabb
 bouncyAabb height = Aabb (V2 0 (16 + height)) (V2 32 (48 + height))
 
-dinoX :: Float
-dinoX = 200
-
 arenaWidth :: Float
 arenaWidth = 1280
 
-rightEdge :: Float
-rightEdge = arenaWidth - (dinoX + 48)
-
 stepObstacles :: Float -> [(Float, ObstacleTag)] -> [(Float, ObstacleTag)]
 stepObstacles delta = map (\(loc, obs) -> (loc - delta, obs))
-
-distanceFromLastObstacle :: [(Float, ObstacleTag)] -> Float
-distanceFromLastObstacle obstacles = case Safe.lastMay obstacles of
-  Nothing -> rightEdge
-  Just (dist, _) -> rightEdge - dist

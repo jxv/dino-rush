@@ -6,6 +6,7 @@ import Control.Monad (when)
 import Control.Monad.State (MonadState, gets)
 import KeyState
 
+import DinoRush.Config
 import DinoRush.Input
 import DinoRush.Renderer
 import DinoRush.Scene

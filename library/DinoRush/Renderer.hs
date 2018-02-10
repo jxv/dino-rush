@@ -6,11 +6,10 @@ import Foreign.C.Types
 import SDL.Vect
 import Control.Monad.Reader
 
+import DinoRush.Dino
+import DinoRush.Config
 import DinoRush.SDL.Renderer
 import DinoRush.Types
-
-type Animations key = Animate.Animations key (Animate.SpriteClip key) Seconds
-type DrawSprite key m = Animate.SpriteClip key -> (Int, Int) -> m ()
 
 rectFromClip :: Animate.SpriteClip key -> SDL.Rectangle CInt
 rectFromClip Animate.SpriteClip{scX,scY,scW,scH} = SDL.Rectangle (SDL.P (V2 (num scX) (num scY))) (V2 (num scW) (num scH))
@@ -28,7 +27,6 @@ class Monad m => Renderer m where
   drawForeground :: (Int, Int) -> m ()
   drawNearground :: (Int, Int) -> m ()
 
-
 clearScreen' :: (SDLRenderer m, MonadReader Config m) => m ()
 clearScreen' = do
   renderer <- asks cRenderer
@@ -41,11 +39,10 @@ drawScreen' = do
 
 --
 
-mountainY, backgroundNearY, foregroundY, dinoY, neargroundY :: Int
+mountainY, backgroundNearY, foregroundY, neargroundY :: Int
 mountainY = -16
 backgroundNearY = 16 * 16
 foregroundY = 16 * 28
-dinoY = 16 * 26
 neargroundY = 16 * 36
 
 --

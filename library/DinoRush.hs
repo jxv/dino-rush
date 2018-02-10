@@ -16,7 +16,9 @@ import SDL.Vect
 import System.Random
 
 import DinoRush.Audio
+import DinoRush.Dino
 import DinoRush.Clock
+import DinoRush.Config
 import DinoRush.Input
 import DinoRush.Logger
 import DinoRush.Renderer

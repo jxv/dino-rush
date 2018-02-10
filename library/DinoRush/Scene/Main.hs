@@ -8,6 +8,7 @@ import Control.Monad.Reader (MonadReader(..))
 import KeyState
 
 import DinoRush.Audio
+import DinoRush.Config
 import DinoRush.Clock
 import DinoRush.Logger
 import DinoRush.Renderer

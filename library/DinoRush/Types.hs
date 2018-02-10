@@ -10,16 +10,8 @@ import Data.Text (Text)
 import Data.Aeson (FromJSON, ToJSON)
 import System.Random
 
-data MountainKey
-  = MountainKey'Idle
-  deriving (Show, Eq, Ord, Bounded, Enum)
-
-instance Animate.KeyName MountainKey where
-  keyName = mountainKey'keyName
-
-mountainKey'keyName :: MountainKey -> Text
-mountainKey'keyName = \case
-  MountainKey'Idle -> "Idle"
+type Animations key = Animate.Animations key (Animate.SpriteClip key) Seconds
+type DrawSprite key m = Animate.SpriteClip key -> (Int, Int) -> m ()
 
 data Step a
   = Step'Change a a -- | Prev, Next
@@ -30,24 +22,42 @@ smash :: Step a -> a
 smash (Step'Change _ a) = a
 smash (Step'Sustain a) = a
 
-data DinoKey
-  = DinoKey'Idle
-  | DinoKey'Move
-  | DinoKey'Kick
-  | DinoKey'Hurt
-  | DinoKey'Sneak
+newtype Lives = Lives Int
+  deriving (Show, Eq, Num, Integral, Real, Ord, Enum)
+
+newtype Percent = Percent Float
+  deriving (Show, Eq, Num, Fractional, RealFrac, Real, Ord)
+
+newtype Distance = Distance Integer
+  deriving (Show, Eq, Num, Integral, Real, Ord, Enum, Random)
+
+newtype Seconds = Seconds Float
+  deriving (Show, Eq, Num, ToJSON, FromJSON, Fractional, Ord)
+
+newtype Score = Score Int
+  deriving (Show, Eq, Num, Integral, Real, Ord, Enum)
+
+frameDeltaSeconds :: Fractional a => a
+frameDeltaSeconds = 0.016667
+
+frameDeltaMilliseconds :: Int
+frameDeltaMilliseconds = 16
+
+clamp :: Percent -> Percent -> Percent
+clamp cur max' = if cur > max' then max' else cur
+
+--
+
+data MountainKey
+  = MountainKey'Idle
   deriving (Show, Eq, Ord, Bounded, Enum)
 
-instance Animate.KeyName DinoKey where
-  keyName = dinoKey'keyName
+instance Animate.KeyName MountainKey where
+  keyName = mountainKey'keyName
 
-dinoKey'keyName :: DinoKey -> Text
-dinoKey'keyName = \case
-  DinoKey'Idle -> "Idle"
-  DinoKey'Move -> "Move"
-  DinoKey'Kick -> "Kick"
-  DinoKey'Hurt -> "Hurt"
-  DinoKey'Sneak -> "Sneak"
+mountainKey'keyName :: MountainKey -> Text
+mountainKey'keyName = \case
+  MountainKey'Idle -> "Idle"
 
 data BirdKey
   = BirdKey'Idle
@@ -93,22 +103,6 @@ rockKey'keyName :: RockKey -> Text
 rockKey'keyName = \case
   RockKey'Idle -> "Idle"
 
-data Config = Config
-  { cWindow :: SDL.Window
-  , cRenderer :: SDL.Renderer
-  , cMountainSprites :: Animate.SpriteSheet MountainKey SDL.Texture Seconds
-  , cBackgroundNear :: SDL.Texture
-  , cForeground :: SDL.Texture
-  , cNearground :: SDL.Texture
-  , cDinoSpriteSheet :: Animate.SpriteSheet DinoKey SDL.Texture Seconds
-  , cBirdSpriteSheet :: Animate.SpriteSheet BirdKey SDL.Texture Seconds
-  , cBouncerSpriteSheet :: Animate.SpriteSheet BouncerKey SDL.Texture Seconds
-  , cLavaSpriteSheet :: Animate.SpriteSheet LavaKey SDL.Texture Seconds
-  , cRockSpriteSheet :: Animate.SpriteSheet RockKey SDL.Texture Seconds
-  , cJumpSfx :: Mixer.Chunk
-  , cGameMusic :: Mixer.Music
-  }
-
 data ObstacleTag
   = ObstacleTag'GroundShort
   | ObstacleTag'GroundTall
@@ -141,24 +135,3 @@ data ObstacleState = ObstacleState
   { osInfo :: ObstacleInfo
   , osDistance :: Distance
   } deriving (Show, Eq)
-
-newtype Lives = Lives Int
-  deriving (Show, Eq, Num, Integral, Real, Ord, Enum)
-
-newtype Percent = Percent Float
-  deriving (Show, Eq, Num, Fractional, RealFrac, Real, Ord)
-
-newtype Distance = Distance Integer
-  deriving (Show, Eq, Num, Integral, Real, Ord, Enum, Random)
-
-newtype Seconds = Seconds Float
-  deriving (Show, Eq, Num, ToJSON, FromJSON, Fractional, Ord)
-
-newtype Score = Score Int
-  deriving (Show, Eq, Num, Integral, Real, Ord, Enum)
-
-frameDeltaSeconds :: Fractional a => a
-frameDeltaSeconds = 0.016667
-
-frameDeltaMilliseconds :: Int
-frameDeltaMilliseconds = 16

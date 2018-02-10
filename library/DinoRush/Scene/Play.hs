@@ -9,22 +9,13 @@ import Data.Foldable (forM_)
 import KeyState
 
 import DinoRush.Audio
+import DinoRush.Dino
 import DinoRush.Clock
 import DinoRush.Logger
 import DinoRush.Input
 import DinoRush.Renderer
 import DinoRush.Scene
 import DinoRush.Types
-
-data DinoAction
-  = DinoAction'Move
-  | DinoAction'Duck
-  | DinoAction'Jump Percent
-  deriving (Show, Eq)
-
-data DinoSfx
-  = DinoSfx'Jump
-  deriving (Show, Eq)
 
 data PlayVars = PlayVars
   { pvScore :: Score
@@ -66,17 +57,10 @@ initPlayVars upcomingObstacles = PlayVars
 class Monad m => Play m where
   playStep :: m ()
 
-dinoHeight :: DinoAction -> Int
-dinoHeight (DinoAction'Jump (Percent percent)) = truncate (sin (percent * pi) * (-16 * 2)) + dinoY
-dinoHeight _ = dinoY
-
 stepHorizontal :: Percent -> Percent -> Percent
 stepHorizontal percent speed = if percent' <= -1 then percent' + 1 else percent'
   where
     percent' = percent - speed
-
-clamp :: Percent -> Percent -> Percent
-clamp cur max' = if cur > max' then max' else cur
 
 drawPlay :: (HasPlayVars s, MonadState s m, Renderer m) => m ()
 drawPlay = do
@@ -123,30 +107,3 @@ updatePlay = do
     , pvDinoAction = smash dinoAction
     , pvDinoSfx = stepDinoSfx dinoAction
     })
-
-stepDinoAction :: Input -> DinoAction -> Step DinoAction
-stepDinoAction input da = case da of
-  DinoAction'Move -> case ksStatus (iDown input) of
-    KeyStatus'Pressed -> Step'Change da DinoAction'Duck
-    _ -> case ksStatus (iUp input) of
-      KeyStatus'Pressed -> Step'Change da $ DinoAction'Jump 0
-      _ -> Step'Sustain DinoAction'Move
-  DinoAction'Duck -> case ksStatus (iDown input) of
-    KeyStatus'Held -> Step'Sustain DinoAction'Duck
-    _ -> Step'Change da DinoAction'Move
-  DinoAction'Jump percent -> if percent >= 1
-    then Step'Change da DinoAction'Move
-    else Step'Sustain $ DinoAction'Jump (clamp (percent + 0.06) 1)
-
-stepDinoPosition :: Step DinoAction -> Animations DinoKey -> Animate.Position DinoKey Seconds -> Animate.Position DinoKey Seconds
-stepDinoPosition (Step'Sustain _) animations pos = Animate.stepPosition animations pos frameDeltaSeconds
-stepDinoPosition (Step'Change _ da) _ _ = case da of
-  DinoAction'Move -> Animate.initPosition DinoKey'Move
-  DinoAction'Duck -> Animate.initPosition DinoKey'Sneak
-  DinoAction'Jump _ -> Animate.initPositionLoops DinoKey'Kick 0
-
-stepDinoSfx :: Step DinoAction -> [DinoSfx]
-stepDinoSfx (Step'Sustain _) = []
-stepDinoSfx (Step'Change _ da) = case da of
-  DinoAction'Jump _ -> [DinoSfx'Jump]
-  _ -> []

@@ -10,6 +10,8 @@ import Control.Monad.State (MonadState(..), modify, gets)
 import Linear
 import KeyState
 
+import DinoRush.Config
+import DinoRush.Dino
 import DinoRush.Input
 import DinoRush.Renderer
 import DinoRush.Scene

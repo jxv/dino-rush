@@ -2,9 +2,6 @@ module DinoRush.SDL.Input where
 
 import qualified SDL
 import Control.Monad.IO.Class (MonadIO(..))
-import KeyState
-
-import DinoRush.Types
 
 keycodePressed :: SDL.Keycode -> SDL.EventPayload -> Bool
 keycodePressed keycode event = case event of
