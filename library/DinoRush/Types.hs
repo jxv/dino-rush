@@ -86,6 +86,7 @@ data Config = Config
   , cLavaSpriteSheet :: Animate.SpriteSheet LavaKey SDL.Texture Seconds
   , cRockSpriteSheet :: Animate.SpriteSheet RockKey SDL.Texture Seconds
   , cJumpSfx :: Mixer.Chunk
+  , cGameMusic :: Mixer.Music
   }
 
 data ObstacleTag

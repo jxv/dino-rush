@@ -7,6 +7,7 @@ import Control.Monad.State (MonadState(..), modify, gets)
 import Control.Monad.Reader (MonadReader(..))
 import KeyState
 
+import DinoRush.Audio
 import DinoRush.Clock
 import DinoRush.Logger
 import DinoRush.Renderer
@@ -40,10 +41,11 @@ makeClassy ''Vars
 titleTransition :: (HasTitleVars a, MonadState a m) => m ()
 titleTransition = modify $ titleVars .~ initTitleVars
 
-playTransition :: (HasPlayVars a, MonadState a m) => m ()
+playTransition :: (HasPlayVars a, MonadState a m, Audio m) => m ()
 playTransition = do
   PlayVars{pvUpcomingObstacles} <- gets (view playVars)
   modify $ playVars .~ (initPlayVars pvUpcomingObstacles)
+  playGameMusic
 
 toScene' :: MonadState Vars m => Scene -> m ()
 toScene' scene = modify (\v -> v { vNextScene = scene })
@@ -54,7 +56,7 @@ getInput' = gets vInput
 setInput' :: MonadState Vars m => Input -> m ()
 setInput' input = modify (\v -> v { vInput = input })
 
-mainLoop :: (MonadReader Config m, MonadState Vars m, Logger m, Clock m, Renderer m, HasInput m, Title m, Play m, Pause m) => m ()
+mainLoop :: (MonadReader Config m, MonadState Vars m, Audio m, Logger m, Clock m, Renderer m, HasInput m, Title m, Play m, Pause m) => m ()
 mainLoop = do
   updateInput
   input <- getInput
@@ -73,7 +75,7 @@ mainLoop = do
   when (nextScene /= scene) $ do
     case nextScene of
       Scene'Title -> titleTransition
-      Scene'Play -> return ()
+      Scene'Play -> playTransition
       Scene'Pause -> return ()
       Scene'GameOver -> return ()
       Scene'Quit -> return ()

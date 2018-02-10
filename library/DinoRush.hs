@@ -41,9 +41,9 @@ main :: IO ()
 main = do
   SDL.initialize [SDL.InitVideo, SDL.InitAudio]
   Mixer.openAudio Mixer.defaultAudio 256
-  mus <- Mixer.load "data/v42.mod"
+
+  gameMusic <- Mixer.load "data/v42.mod"
   jumpSfx <- Mixer.load "data/jump.wav"
-  Mixer.playMusic Mixer.Forever mus
   window <- SDL.createWindow "Dino Rush" SDL.defaultWindow { SDL.windowInitialSize = V2 1280 720, SDL.windowMode = SDL.Fullscreen }
   renderer <- SDL.createRenderer window (-1) SDL.defaultRenderer
   backgroundFar <- SDL.createTextureFromSurface renderer =<< loadSurface "data/background_far.png" Nothing
@@ -56,9 +56,26 @@ main = do
   lavaSprites <- Animate.readSpriteSheetJSON (\path c -> SDL.createTextureFromSurface renderer =<< loadSurface path c) "data/lava.json" :: IO (Animate.SpriteSheet LavaKey SDL.Texture Seconds)
   rockSprites <- Animate.readSpriteSheetJSON (\path c -> SDL.createTextureFromSurface renderer =<< loadSurface path c) "data/rock.json" :: IO (Animate.SpriteSheet RockKey SDL.Texture Seconds)
   mkObstacles <- streamOfObstacles <$> getStdGen
-  runDinoRush (Config window renderer backgroundFar backgroundNear foreground nearground spriteSheet birdSprites bouncerSprites lavaSprites rockSprites jumpSfx) (initVars mkObstacles) mainLoop
-  SDL.destroyWindow window
 
+  let cfg = Config
+        { cWindow = window
+        , cRenderer = renderer
+        , cBackgroundFar = backgroundFar
+        , cBackgroundNear = backgroundNear
+        , cForeground = foreground
+        , cNearground = nearground
+        , cDinoSpriteSheet = spriteSheet
+        , cBirdSpriteSheet = birdSprites
+        , cBouncerSpriteSheet = bouncerSprites
+        , cLavaSpriteSheet = lavaSprites
+        , cRockSpriteSheet = rockSprites
+        , cJumpSfx = jumpSfx
+        , cGameMusic = gameMusic
+        }
+
+  runDinoRush cfg (initVars mkObstacles) mainLoop
+
+  SDL.destroyWindow window
   SDL.destroyTexture backgroundFar
   SDL.destroyTexture backgroundNear
   SDL.destroyTexture foreground
@@ -68,11 +85,12 @@ main = do
   SDL.destroyTexture $ Animate.ssImage lavaSprites
   SDL.destroyTexture $ Animate.ssImage rockSprites
 
-  Mixer.free mus
+  Mixer.free gameMusic
   Mixer.free jumpSfx
   Mixer.closeAudio
   Mixer.quit
   SDL.quit
+
 newtype DinoRush a = DinoRush (ReaderT Config (StateT Vars IO) a)
   deriving (Functor, Applicative, Monad, MonadReader Config, MonadState Vars, MonadIO)
 
@@ -80,6 +98,7 @@ runDinoRush :: Config -> Vars -> DinoRush a -> IO a
 runDinoRush config v (DinoRush m) = evalStateT (runReaderT m config) v
 
 instance Audio DinoRush where
+  playGameMusic = playGameMusic'
   playJumpSfx = playJumpSfx'
 
 instance Clock DinoRush where
