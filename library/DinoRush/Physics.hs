@@ -21,10 +21,10 @@ characterToAabb = \case
     base = Aabb (V2 0 0) (V2 48 48)
 
 groundShortAabb :: Aabb
-groundShortAabb = Aabb (V2 0 16) (V2 32 48)
+groundShortAabb = Aabb (V2 0 47) (V2 32 79)
 
 groundTallAabb :: Aabb
-groundTallAabb = Aabb (V2 0 (-16)) (V2 32 48)
+groundTallAabb = Aabb (V2 0 (16)) (V2 32 48)
 
 airAabb :: Aabb
 airAabb = Aabb (V2 0 (-20)) (V2 32 12)

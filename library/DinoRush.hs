@@ -40,7 +40,7 @@ loadSurface path alpha = do
 main :: IO ()
 main = do
   SDL.initialize [SDL.InitVideo, SDL.InitAudio]
-  Mixer.openAudio Mixer.defaultAudio 4096
+  Mixer.openAudio Mixer.defaultAudio 256
   mus <- Mixer.load "data/v42.mod"
   jumpSfx <- Mixer.load "data/jump.wav"
   Mixer.playMusic Mixer.Forever mus
@@ -51,9 +51,23 @@ main = do
   foreground <- SDL.createTextureFromSurface renderer =<< loadSurface "data/foreground.png" Nothing
   nearground <- SDL.createTextureFromSurface renderer =<< loadSurface "data/nearground.png" Nothing
   spriteSheet <- Animate.readSpriteSheetJSON (\path c -> SDL.createTextureFromSurface renderer =<< loadSurface path c) "data/dino.json" :: IO (Animate.SpriteSheet DinoKey SDL.Texture Seconds)
+  birdSprites <- Animate.readSpriteSheetJSON (\path c -> SDL.createTextureFromSurface renderer =<< loadSurface path c) "data/bird.json" :: IO (Animate.SpriteSheet BirdKey SDL.Texture Seconds)
+  bouncerSprites <- Animate.readSpriteSheetJSON (\path c -> SDL.createTextureFromSurface renderer =<< loadSurface path c) "data/bouncer.json" :: IO (Animate.SpriteSheet BouncerKey SDL.Texture Seconds)
+  lavaSprites <- Animate.readSpriteSheetJSON (\path c -> SDL.createTextureFromSurface renderer =<< loadSurface path c) "data/lava.json" :: IO (Animate.SpriteSheet LavaKey SDL.Texture Seconds)
+  rockSprites <- Animate.readSpriteSheetJSON (\path c -> SDL.createTextureFromSurface renderer =<< loadSurface path c) "data/rock.json" :: IO (Animate.SpriteSheet RockKey SDL.Texture Seconds)
   mkObstacles <- streamOfObstacles <$> getStdGen
-  runDinoRush (Config window renderer backgroundFar backgroundNear foreground nearground spriteSheet jumpSfx) (initVars mkObstacles) mainLoop
+  runDinoRush (Config window renderer backgroundFar backgroundNear foreground nearground spriteSheet birdSprites bouncerSprites lavaSprites rockSprites jumpSfx) (initVars mkObstacles) mainLoop
   SDL.destroyWindow window
+
+  SDL.destroyTexture backgroundFar
+  SDL.destroyTexture backgroundNear
+  SDL.destroyTexture foreground
+  SDL.destroyTexture nearground
+  SDL.destroyTexture $ Animate.ssImage spriteSheet
+  SDL.destroyTexture $ Animate.ssImage birdSprites
+  SDL.destroyTexture $ Animate.ssImage lavaSprites
+  SDL.destroyTexture $ Animate.ssImage rockSprites
+
   Mixer.free mus
   Mixer.free jumpSfx
   Mixer.closeAudio

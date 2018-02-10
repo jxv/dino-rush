@@ -29,6 +29,50 @@ dinoKey'keyName = \case
   DinoKey'Hurt -> "Hurt"
   DinoKey'Sneak -> "Sneak"
 
+data BirdKey
+  = BirdKey'Idle
+  deriving (Show, Eq, Ord, Bounded, Enum)
+
+instance Animate.KeyName BirdKey where
+  keyName = birdKey'keyName
+
+birdKey'keyName :: BirdKey -> Text
+birdKey'keyName = \case
+  BirdKey'Idle -> "Idle"
+
+data BouncerKey
+  = BouncerKey'Idle
+  deriving (Show, Eq, Ord, Bounded, Enum)
+
+instance Animate.KeyName BouncerKey where
+  keyName = bouncerKey'keyName
+
+bouncerKey'keyName :: BouncerKey -> Text
+bouncerKey'keyName = \case
+  BouncerKey'Idle -> "Idle"
+
+data LavaKey
+  = LavaKey'Idle
+  deriving (Show, Eq, Ord, Bounded, Enum)
+
+instance Animate.KeyName LavaKey where
+  keyName = lavaKey'keyName
+
+lavaKey'keyName :: LavaKey -> Text
+lavaKey'keyName = \case
+  LavaKey'Idle -> "Idle"
+
+data RockKey
+  = RockKey'Idle
+  deriving (Show, Eq, Ord, Bounded, Enum)
+
+instance Animate.KeyName RockKey where
+  keyName = rockKey'keyName
+
+rockKey'keyName :: RockKey -> Text
+rockKey'keyName = \case
+  RockKey'Idle -> "Idle"
+
 data Config = Config
   { cWindow :: SDL.Window
   , cRenderer :: SDL.Renderer
@@ -37,6 +81,10 @@ data Config = Config
   , cForeground :: SDL.Texture
   , cNearground :: SDL.Texture
   , cDinoSpriteSheet :: Animate.SpriteSheet DinoKey SDL.Texture Seconds
+  , cBirdSpriteSheet :: Animate.SpriteSheet BirdKey SDL.Texture Seconds
+  , cBouncerSpriteSheet :: Animate.SpriteSheet BouncerKey SDL.Texture Seconds
+  , cLavaSpriteSheet :: Animate.SpriteSheet LavaKey SDL.Texture Seconds
+  , cRockSpriteSheet :: Animate.SpriteSheet RockKey SDL.Texture Seconds
   , cJumpSfx :: Mixer.Chunk
   }
 
@@ -61,28 +109,11 @@ randomRBoundedEnum (aMin, aMax) g = let
 streamOfObstacles :: RandomGen g => g -> [(Distance, ObstacleTag)]
 streamOfObstacles g = zip (map (\dist -> dist `mod` 20 + 1) $ randoms g) (randoms g)
 
-data GroundShortKey
-  = GroundShortKey'Idle
-  deriving (Show, Eq, Ord, Enum, Bounded)
-
-data GroundTallKey
-  = GroundTallKey'Idle
-  deriving (Show, Eq, Ord, Enum, Bounded)
-
-data AirKey
-  = AirKey'Idle
-  deriving (Show, Eq, Ord, Enum, Bounded)
-
-data BouncyKey
-  = BouncyKey'Idle
-  | BouncyKey'Jump
-  deriving (Show, Eq, Ord, Enum, Bounded)
-
 data ObstacleInfo
-  = ObstacleInfo'GroundShort (Animate.Position GroundShortKey Seconds)
-  | ObstacleInfo'GroundTall (Animate.Position GroundTallKey Seconds)
-  | ObstacleInfo'Air (Animate.Position AirKey Seconds)
-  | ObstacleInfo'Bouncy Percent (Animate.Position BouncyKey Seconds)
+  = ObstacleInfo'Lava (Animate.Position LavaKey Seconds)
+  | ObstacleInfo'Rock (Animate.Position RockKey Seconds)
+  | ObstacleInfo'Bird (Animate.Position BirdKey Seconds)
+  | ObstacleInfo'Bouncer Percent (Animate.Position BouncerKey Seconds)
   deriving (Show, Eq)
 
 data ObstacleState = ObstacleState
