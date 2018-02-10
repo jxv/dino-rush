@@ -8,14 +8,14 @@ import Control.Monad.State (MonadState(..), modify, gets)
 import Data.Foldable (forM_)
 import KeyState
 
-import DinoRush.Audio
-import DinoRush.Dino
-import DinoRush.Clock
-import DinoRush.Logger
-import DinoRush.Input
-import DinoRush.Renderer
-import DinoRush.Scene
-import DinoRush.Types
+import DinoRush.Effect.Audio
+import DinoRush.Effect.Clock
+import DinoRush.Effect.Logger
+import DinoRush.Effect.Renderer
+import DinoRush.Engine.Input
+import DinoRush.Engine.Types
+import DinoRush.Entity.Dino
+import DinoRush.Manager.Scene
 
 data PlayVars = PlayVars
   { pvScore :: Score

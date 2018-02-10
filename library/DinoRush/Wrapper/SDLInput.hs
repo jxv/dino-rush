@@ -1,4 +1,4 @@
-module DinoRush.SDL.Input where
+module DinoRush.Wrapper.SDLInput where
 
 import qualified SDL
 import Control.Monad.IO.Class (MonadIO(..))

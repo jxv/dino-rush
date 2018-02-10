@@ -1,11 +1,11 @@
-module DinoRush.Input where
+module DinoRush.Engine.Input where
 
 import qualified SDL
 import Control.Monad.IO.Class (MonadIO(..))
 import KeyState
 
-import DinoRush.SDL.Input
-import DinoRush.Types
+import DinoRush.Wrapper.SDLInput
+import DinoRush.Engine.Types
 
 data Input = Input
   { iSpace :: KeyState Int

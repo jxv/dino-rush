@@ -7,10 +7,10 @@ import Control.Monad.State (MonadState, gets)
 import KeyState
 
 import DinoRush.Config
-import DinoRush.Input
-import DinoRush.Renderer
-import DinoRush.Scene
+import DinoRush.Effect.Renderer
+import DinoRush.Engine.Input
 import DinoRush.Scene.Play
+import DinoRush.Manager.Scene
 
 class Monad m => Pause m where
   pauseStep :: m ()

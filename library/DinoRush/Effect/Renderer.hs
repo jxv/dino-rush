@@ -1,4 +1,4 @@
-module DinoRush.Renderer where
+module DinoRush.Effect.Renderer where
 
 import qualified Animate
 import qualified SDL
@@ -6,10 +6,10 @@ import Foreign.C.Types
 import SDL.Vect
 import Control.Monad.Reader
 
-import DinoRush.Dino
 import DinoRush.Config
-import DinoRush.SDL.Renderer
-import DinoRush.Types
+import DinoRush.Engine.Types
+import DinoRush.Entity.Dino
+import DinoRush.Wrapper.SDLRenderer
 
 rectFromClip :: Animate.SpriteClip key -> SDL.Rectangle CInt
 rectFromClip Animate.SpriteClip{scX,scY,scW,scH} = SDL.Rectangle (SDL.P (V2 (num scX) (num scY))) (V2 (num scW) (num scH))

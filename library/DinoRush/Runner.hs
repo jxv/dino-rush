@@ -1,5 +1,5 @@
 {-# LANGUAGE TemplateHaskell #-}
-module DinoRush.Scene.Main where
+module DinoRush.Runner where
 
 import Control.Lens
 import Control.Monad (unless, when)
@@ -7,18 +7,18 @@ import Control.Monad.State (MonadState(..), modify, gets)
 import Control.Monad.Reader (MonadReader(..))
 import KeyState
 
-import DinoRush.Audio
 import DinoRush.Config
-import DinoRush.Clock
-import DinoRush.Logger
-import DinoRush.Renderer
-import DinoRush.Input
-import DinoRush.Scene
+import DinoRush.Effect.Audio
+import DinoRush.Effect.Clock
+import DinoRush.Effect.Logger
+import DinoRush.Effect.Renderer
+import DinoRush.Engine.Input
+import DinoRush.Engine.Types
+import DinoRush.Manager.Scene
 import DinoRush.Scene.GameOver
 import DinoRush.Scene.Play
 import DinoRush.Scene.Pause
 import DinoRush.Scene.Title
-import DinoRush.Types
 
 data Vars = Vars
   { vScene :: Scene

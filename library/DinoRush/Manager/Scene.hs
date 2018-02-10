@@ -1,5 +1,5 @@
 {-# LANGUAGE TemplateHaskell #-}
-module DinoRush.Scene where
+module DinoRush.Manager.Scene where
 
 data Scene
   = Scene'Title

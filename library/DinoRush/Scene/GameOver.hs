@@ -4,8 +4,8 @@ module DinoRush.Scene.GameOver where
 import qualified Animate
 import Control.Lens
 
-import DinoRush.Dino
-import DinoRush.Types
+import DinoRush.Entity.Dino
+import DinoRush.Engine.Types
 
 data GameOverVars = GameOverVars
   { govPlayer :: Animate.Position DinoKey Seconds

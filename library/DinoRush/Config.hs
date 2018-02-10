@@ -4,8 +4,8 @@ import qualified SDL
 import qualified SDL.Mixer as Mixer
 import qualified Animate
 
-import DinoRush.Dino
-import DinoRush.Types
+import DinoRush.Entity.Dino
+import DinoRush.Engine.Types
 
 data Config = Config
   { cWindow :: SDL.Window

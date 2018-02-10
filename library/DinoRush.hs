@@ -15,21 +15,21 @@ import Data.StateVar (($=))
 import SDL.Vect
 import System.Random
 
-import DinoRush.Audio
-import DinoRush.Dino
-import DinoRush.Clock
 import DinoRush.Config
-import DinoRush.Input
-import DinoRush.Logger
-import DinoRush.Renderer
-import DinoRush.SDL.Input
-import DinoRush.SDL.Renderer
-import DinoRush.Scene
-import DinoRush.Scene.Main
+import DinoRush.Engine.Input
+import DinoRush.Engine.Types
+import DinoRush.Effect.Audio
+import DinoRush.Effect.Clock
+import DinoRush.Effect.Logger
+import DinoRush.Effect.Renderer
+import DinoRush.Entity.Dino
+import DinoRush.Wrapper.SDLInput
+import DinoRush.Wrapper.SDLRenderer
+import DinoRush.Manager.Scene
+import DinoRush.Runner
 import DinoRush.Scene.Title
 import DinoRush.Scene.Pause
 import DinoRush.Scene.Play
-import DinoRush.Types
 
 loadSurface :: FilePath -> Maybe Animate.Color -> IO SDL.Surface
 loadSurface path alpha = do

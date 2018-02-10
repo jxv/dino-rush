@@ -1,4 +1,4 @@
-module DinoRush.Audio where
+module DinoRush.Effect.Audio where
 
 import qualified SDL.Mixer as Mixer
 import Control.Monad.Reader

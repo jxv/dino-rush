@@ -1,5 +1,5 @@
 {-# LANGUAGE TemplateHaskell #-}
-module DinoRush.Types where
+module DinoRush.Engine.Types where
 
 import qualified SDL
 import qualified SDL.Mixer as Mixer

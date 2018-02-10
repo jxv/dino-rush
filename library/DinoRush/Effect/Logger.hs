@@ -1,4 +1,4 @@
-module DinoRush.Logger where
+module DinoRush.Effect.Logger where
 
 import Data.Text (Text)
 

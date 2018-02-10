@@ -1,8 +1,8 @@
-module DinoRush.Physics where
+module DinoRush.Engine.Physics where
 
 import Linear.V2
 
-import DinoRush.Types
+import DinoRush.Engine.Types
 
 data Aabb = Aabb
   { aMin :: V2 Float

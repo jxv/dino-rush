@@ -1,4 +1,4 @@
-module DinoRush.Dino where
+module DinoRush.Entity.Dino where
 
 import qualified Safe
 import qualified SDL
@@ -11,9 +11,9 @@ import Data.Aeson (FromJSON, ToJSON)
 import System.Random
 import KeyState
 
-import DinoRush.Types
-import DinoRush.Input
-import DinoRush.Physics
+import DinoRush.Engine.Types
+import DinoRush.Engine.Input
+import DinoRush.Engine.Physics
 
 data DinoAction
   = DinoAction'Move

@@ -1,4 +1,4 @@
-module DinoRush.Clock where
+module DinoRush.Effect.Clock where
 
 import Control.Concurrent (threadDelay)
 

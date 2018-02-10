@@ -11,13 +11,11 @@ import Linear
 import KeyState
 
 import DinoRush.Config
-import DinoRush.Dino
-import DinoRush.Input
-import DinoRush.Renderer
-import DinoRush.Scene
-import DinoRush.Types
-
-import DinoRush.SDL.Renderer
+import DinoRush.Effect.Renderer
+import DinoRush.Engine.Input
+import DinoRush.Engine.Types
+import DinoRush.Entity.Dino
+import DinoRush.Manager.Scene
 
 data TitleVars = TitleVars
   { tvPlayer :: Animate.Position DinoKey Seconds
