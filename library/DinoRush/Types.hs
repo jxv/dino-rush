@@ -10,6 +10,17 @@ import Data.Text (Text)
 import Data.Aeson (FromJSON, ToJSON)
 import System.Random
 
+data BackgroundFarKey
+  = BackgroundFarKey'Idle
+  deriving (Show, Eq, Ord, Bounded, Enum)
+
+instance Animate.KeyName BackgroundFarKey where
+  keyName = backgroundFarKey'keyName
+
+backgroundFarKey'keyName :: BackgroundFarKey -> Text
+backgroundFarKey'keyName = \case
+  BackgroundFarKey'Idle -> "Idle"
+
 data DinoKey
   = DinoKey'Idle
   | DinoKey'Move
@@ -76,7 +87,7 @@ rockKey'keyName = \case
 data Config = Config
   { cWindow :: SDL.Window
   , cRenderer :: SDL.Renderer
-  , cBackgroundFar :: SDL.Texture
+  , cBackgroundFarSprites :: Animate.SpriteSheet BackgroundFarKey SDL.Texture Seconds
   , cBackgroundNear :: SDL.Texture
   , cForeground :: SDL.Texture
   , cNearground :: SDL.Texture

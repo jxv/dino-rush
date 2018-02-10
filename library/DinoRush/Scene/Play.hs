@@ -21,6 +21,7 @@ data PlayVars = PlayVars
   , pvSpeed :: Percent
   , pvProgress :: Distance
   , pvPlayer :: Animate.Position DinoKey Seconds
+  , pvBackgroundFarPos :: Animate.Position BackgroundFarKey Seconds
   , pvJump :: Maybe Percent
   , pvBackgroundPositionFar :: Percent
   , pvBackgroundPositionNear :: Percent
@@ -40,6 +41,7 @@ initPlayVars upcomingObstacles = PlayVars
   , pvProgress = 0
   , pvJump = Nothing
   , pvPlayer = Animate.initPosition DinoKey'Move
+  , pvBackgroundFarPos = Animate.initPosition BackgroundFarKey'Idle
   , pvBackgroundPositionFar = 0
   , pvBackgroundPositionNear = 0
   , pvForegroundPosition = 0
@@ -54,9 +56,13 @@ class Monad m => Play m where
 drawPlay :: (HasPlayVars s, MonadState s m, Renderer m) => m ()
 drawPlay = do
   animations <- getDinoAnimations
+  backgroundFarAnimations <- getBackgroundFarAnimations
   pv <- gets (view playVars)
+  let backgroundFarPos = pvBackgroundFarPos pv
   let loc = Animate.currentLocation animations (pvPlayer pv)
-  drawBackgroundFar (truncate $ 1280 * pvBackgroundPositionFar pv, backgroundFarY)
+  let backgroundFarPos' = Animate.stepPosition backgroundFarAnimations backgroundFarPos frameDeltaSeconds
+  let backgroundFarLoc = Animate.currentLocation backgroundFarAnimations backgroundFarPos'
+  drawBackgroundFar backgroundFarLoc (truncate $ 1280 * pvBackgroundPositionFar pv, backgroundFarY)
   drawBackgroundNear (truncate $ 1280 * pvBackgroundPositionNear pv, backgroundNearY)
   drawForeground (truncate $ 1280 * pvForegroundPosition pv, foregroundY)
   drawDino loc (200, dinoHeight (pvJump pv))
@@ -83,18 +89,20 @@ updatePlay :: (HasPlayVars s, MonadState s m, Logger m, Clock m, Renderer m, Has
 updatePlay = do
   input <- getInput
   animations <- getDinoAnimations
+  backgroundFarAnimations <- getBackgroundFarAnimations
   PlayVars{pvJump} <- gets (view playVars)
   let jump' = case pvJump of
         Just jump -> if jump >= 1 then Nothing else Just (clamp (jump + 0.06) 1)
         Nothing -> if ksStatus (iUp input) == KeyStatus'Pressed then Just 0 else Nothing
   modify $ playVars %~ (\pv -> pv
     { pvPlayer = nextFrame jump' animations (pvPlayer pv) input
+    , pvBackgroundFarPos = Animate.stepPosition backgroundFarAnimations (pvBackgroundFarPos pv) frameDeltaSeconds
     , pvJump = jump'
     , pvBackgroundPositionFar = stepHorizontal (pvBackgroundPositionFar pv) (pvSpeed pv * 0.003)
     , pvBackgroundPositionNear = stepHorizontal (pvBackgroundPositionNear pv) (pvSpeed pv * 0.006)
     , pvForegroundPosition = stepHorizontal (pvForegroundPosition pv) (pvSpeed pv * 0.009)
     , pvNeargroundPosition = stepHorizontal (pvNeargroundPosition pv) (pvSpeed pv * 0.012)
-    , pvSpeed = clamp (pvSpeed pv + 0.01) 10
+    , pvSpeed = clamp (pvSpeed pv + 0.01) 5
     })
 
 stepHorizontal :: Percent -> Percent -> Percent
@@ -106,7 +114,7 @@ clamp :: Percent -> Percent -> Percent
 clamp cur max' = if cur > max' then max' else cur
 
 nextFrame :: Maybe Percent -> Animations DinoKey -> Animate.Position DinoKey Seconds -> Input -> Animate.Position DinoKey Seconds
-nextFrame (Just 0) animations _ _ = Animate.initPositionLoops DinoKey'Kick 0
+nextFrame (Just 0) _ _ _ = Animate.initPositionLoops DinoKey'Kick 0
 nextFrame (Just _) animations pos _ = Animate.stepPosition animations pos frameDeltaSeconds
 nextFrame _ animations pos input = case ksStatus (iDown input) of
   KeyStatus'Pressed -> if Animate.pKey pos == DinoKey'Sneak then stepped else Animate.initPosition DinoKey'Sneak

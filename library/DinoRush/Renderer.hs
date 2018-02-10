@@ -21,8 +21,9 @@ class Monad m => Renderer m where
   clearScreen :: m ()
   drawScreen :: m ()
   getDinoAnimations :: m (Animations DinoKey)
+  getBackgroundFarAnimations :: m (Animations BackgroundFarKey)
   drawDino :: DrawSprite DinoKey m
-  drawBackgroundFar :: (Int, Int) -> m ()
+  drawBackgroundFar :: DrawSprite BackgroundFarKey m
   drawBackgroundNear :: (Int, Int) -> m ()
   drawForeground :: (Int, Int) -> m ()
   drawNearground :: (Int, Int) -> m ()
@@ -59,6 +60,15 @@ drawSprite ss clip (x,y) = do
     sheet
     (Just clip')
     (Just $ SDL.Rectangle (SDL.P $ SDL.V2 (fromIntegral x) (fromIntegral y)) dim)
+
+drawHorizontalScrollSprite :: (MonadReader Config m, SDLRenderer m) => (Config ->  Animate.SpriteSheet key SDL.Texture Seconds) -> Int -> Animate.SpriteClip key -> (Int, Int) -> m ()
+drawHorizontalScrollSprite ss scale clip (x,y) = do
+  renderer <- asks cRenderer
+  sheet <- asks (Animate.ssImage . ss)
+  let clip'@(SDL.Rectangle _ dim) = rectFromClip clip
+  let dim' = fromIntegral scale *^ dim
+  drawTexture renderer sheet (Just clip') (Just $ SDL.Rectangle (SDL.P $ SDL.V2 (fromIntegral x) (fromIntegral y)) dim')
+  drawTexture renderer sheet (Just clip') (Just $ SDL.Rectangle (SDL.P $ SDL.V2 (fromIntegral x + 1280) (fromIntegral y)) dim')
 
 getSpriteAnimations :: (MonadReader Config m) => (Config -> Animate.SpriteSheet key SDL.Texture Seconds) -> m (Animations key)
 getSpriteAnimations ss = asks (Animate.ssAnimations . ss)

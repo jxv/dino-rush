@@ -46,7 +46,7 @@ main = do
   jumpSfx <- Mixer.load "data/jump.wav"
   window <- SDL.createWindow "Dino Rush" SDL.defaultWindow { SDL.windowInitialSize = V2 1280 720, SDL.windowMode = SDL.Fullscreen }
   renderer <- SDL.createRenderer window (-1) SDL.defaultRenderer
-  backgroundFar <- SDL.createTextureFromSurface renderer =<< loadSurface "data/background_far.png" Nothing
+  backgroundFarSprites <- Animate.readSpriteSheetJSON (\path c -> SDL.createTextureFromSurface renderer =<< loadSurface path c) "data/background_far.json" :: IO (Animate.SpriteSheet BackgroundFarKey SDL.Texture Seconds)
   backgroundNear <- SDL.createTextureFromSurface renderer =<< loadSurface "data/background_near.png" Nothing
   foreground <- SDL.createTextureFromSurface renderer =<< loadSurface "data/foreground.png" Nothing
   nearground <- SDL.createTextureFromSurface renderer =<< loadSurface "data/nearground.png" Nothing
@@ -60,7 +60,7 @@ main = do
   let cfg = Config
         { cWindow = window
         , cRenderer = renderer
-        , cBackgroundFar = backgroundFar
+        , cBackgroundFarSprites = backgroundFarSprites
         , cBackgroundNear = backgroundNear
         , cForeground = foreground
         , cNearground = nearground
@@ -76,7 +76,7 @@ main = do
   runDinoRush cfg (initVars mkObstacles) mainLoop
 
   SDL.destroyWindow window
-  SDL.destroyTexture backgroundFar
+  SDL.destroyTexture $ Animate.ssImage backgroundFarSprites
   SDL.destroyTexture backgroundNear
   SDL.destroyTexture foreground
   SDL.destroyTexture nearground
@@ -128,8 +128,9 @@ instance Renderer DinoRush where
   clearScreen = clearScreen'
   drawScreen = drawScreen'
   getDinoAnimations = getSpriteAnimations cDinoSpriteSheet
+  getBackgroundFarAnimations = getSpriteAnimations cBackgroundFarSprites
   drawDino = drawSprite cDinoSpriteSheet
-  drawBackgroundFar = drawHorizontalScrollImage cBackgroundFar
+  drawBackgroundFar = drawHorizontalScrollSprite cBackgroundFarSprites 16
   drawBackgroundNear = drawHorizontalScrollImage cBackgroundNear
   drawForeground = drawHorizontalScrollImage cForeground
   drawNearground = drawHorizontalScrollImage cNearground
