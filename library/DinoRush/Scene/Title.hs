@@ -19,13 +19,13 @@ import DinoRush.SDL.Renderer
 
 data TitleVars = TitleVars
   { tvPlayer :: Animate.Position DinoKey Seconds
-  , tvBackgroundFarPos :: Animate.Position BackgroundFarKey Seconds
+  , tvMountainPos :: Animate.Position MountainKey Seconds
   } deriving (Show, Eq)
 
 makeClassy ''TitleVars
 
 initTitleVars :: TitleVars
-initTitleVars = TitleVars (Animate.initPosition DinoKey'Idle) (Animate.initPosition BackgroundFarKey'Idle)
+initTitleVars = TitleVars (Animate.initPosition DinoKey'Idle) (Animate.initPosition MountainKey'Idle)
 
 class Monad m => Title m where
   titleStep :: m ()
@@ -34,17 +34,17 @@ titleStep' :: (HasTitleVars s, MonadReader Config m, MonadState s m, Renderer m,
 titleStep' = do
   input <- getInput
   animations <- getDinoAnimations
-  backgroundFarAnimations <- getBackgroundFarAnimations
+  mountainAnimations <- getMountainAnimations
   pos <- gets (tvPlayer . view titleVars)
-  backgroundFarPos <- gets (tvBackgroundFarPos . view titleVars)
+  mountainPos <- gets (tvMountainPos . view titleVars)
   let pos' = Animate.stepPosition animations pos frameDeltaSeconds
   let loc = Animate.currentLocation animations pos'
-  let backgroundFarPos' = Animate.stepPosition backgroundFarAnimations backgroundFarPos frameDeltaSeconds
-  let backgroundFarLoc = Animate.currentLocation backgroundFarAnimations backgroundFarPos'
-  drawBackgroundFar backgroundFarLoc (0, backgroundFarY)
+  let mountainPos' = Animate.stepPosition mountainAnimations mountainPos frameDeltaSeconds
+  let mountainLoc = Animate.currentLocation mountainAnimations mountainPos'
+  drawMountain mountainLoc (0, mountainY)
   drawBackgroundNear (0, backgroundNearY)
   drawForeground (0, foregroundY)
   drawDino loc (200, dinoY)
   drawNearground (0, neargroundY)
-  modify $ titleVars %~ (\tv -> tv { tvPlayer = pos', tvBackgroundFarPos = backgroundFarPos' })
+  modify $ titleVars %~ (\tv -> tv { tvPlayer = pos', tvMountainPos = mountainPos' })
   when (ksStatus (iSpace input) == KeyStatus'Pressed) (toScene Scene'Play)

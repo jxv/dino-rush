@@ -8,7 +8,7 @@ import DinoRush.Types
 
 data GameOverVars = GameOverVars
   { govPlayer :: Animate.Position DinoKey Seconds
-  , govBackgroundPositionFar :: Percent
+  , govMountainScroll :: Percent
   , govBackgroundPositionClose :: Percent
   , govForegroundPosition :: Percent
   , govObstacles :: [(Distance, ObstacleTag)]

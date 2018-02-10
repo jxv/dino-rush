@@ -21,9 +21,9 @@ class Monad m => Renderer m where
   clearScreen :: m ()
   drawScreen :: m ()
   getDinoAnimations :: m (Animations DinoKey)
-  getBackgroundFarAnimations :: m (Animations BackgroundFarKey)
+  getMountainAnimations :: m (Animations MountainKey)
   drawDino :: DrawSprite DinoKey m
-  drawBackgroundFar :: DrawSprite BackgroundFarKey m
+  drawMountain :: DrawSprite MountainKey m
   drawBackgroundNear :: (Int, Int) -> m ()
   drawForeground :: (Int, Int) -> m ()
   drawNearground :: (Int, Int) -> m ()
@@ -41,8 +41,8 @@ drawScreen' = do
 
 --
 
-backgroundFarY, backgroundNearY, foregroundY, dinoY, neargroundY :: Int
-backgroundFarY = -16
+mountainY, backgroundNearY, foregroundY, dinoY, neargroundY :: Int
+mountainY = -16
 backgroundNearY = 16 * 16
 foregroundY = 16 * 28
 dinoY = 16 * 26

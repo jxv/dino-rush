@@ -21,9 +21,9 @@ data PlayVars = PlayVars
   , pvSpeed :: Percent
   , pvProgress :: Distance
   , pvPlayer :: Animate.Position DinoKey Seconds
-  , pvBackgroundFarPos :: Animate.Position BackgroundFarKey Seconds
+  , pvMountainPos :: Animate.Position MountainKey Seconds
   , pvJump :: Maybe Percent
-  , pvBackgroundPositionFar :: Percent
+  , pvMountainScroll :: Percent
   , pvBackgroundPositionNear :: Percent
   , pvForegroundPosition :: Percent
   , pvNeargroundPosition :: Percent
@@ -41,8 +41,8 @@ initPlayVars upcomingObstacles = PlayVars
   , pvProgress = 0
   , pvJump = Nothing
   , pvPlayer = Animate.initPosition DinoKey'Move
-  , pvBackgroundFarPos = Animate.initPosition BackgroundFarKey'Idle
-  , pvBackgroundPositionFar = 0
+  , pvMountainPos = Animate.initPosition MountainKey'Idle
+  , pvMountainScroll = 0
   , pvBackgroundPositionNear = 0
   , pvForegroundPosition = 0
   , pvNeargroundPosition = 0
@@ -56,13 +56,13 @@ class Monad m => Play m where
 drawPlay :: (HasPlayVars s, MonadState s m, Renderer m) => m ()
 drawPlay = do
   animations <- getDinoAnimations
-  backgroundFarAnimations <- getBackgroundFarAnimations
+  mountainAnimations <- getMountainAnimations
   pv <- gets (view playVars)
-  let backgroundFarPos = pvBackgroundFarPos pv
+  let mountainPos = pvMountainPos pv
   let loc = Animate.currentLocation animations (pvPlayer pv)
-  let backgroundFarPos' = Animate.stepPosition backgroundFarAnimations backgroundFarPos frameDeltaSeconds
-  let backgroundFarLoc = Animate.currentLocation backgroundFarAnimations backgroundFarPos'
-  drawBackgroundFar backgroundFarLoc (truncate $ 1280 * pvBackgroundPositionFar pv, backgroundFarY)
+  let mountainPos' = Animate.stepPosition mountainAnimations mountainPos frameDeltaSeconds
+  let mountainLoc = Animate.currentLocation mountainAnimations mountainPos'
+  drawMountain mountainLoc (truncate $ 1280 * pvMountainScroll pv, mountainY)
   drawBackgroundNear (truncate $ 1280 * pvBackgroundPositionNear pv, backgroundNearY)
   drawForeground (truncate $ 1280 * pvForegroundPosition pv, foregroundY)
   drawDino loc (200, dinoHeight (pvJump pv))
@@ -89,16 +89,16 @@ updatePlay :: (HasPlayVars s, MonadState s m, Logger m, Clock m, Renderer m, Has
 updatePlay = do
   input <- getInput
   animations <- getDinoAnimations
-  backgroundFarAnimations <- getBackgroundFarAnimations
+  mountainAnimations <- getMountainAnimations
   PlayVars{pvJump} <- gets (view playVars)
   let jump' = case pvJump of
         Just jump -> if jump >= 1 then Nothing else Just (clamp (jump + 0.06) 1)
         Nothing -> if ksStatus (iUp input) == KeyStatus'Pressed then Just 0 else Nothing
   modify $ playVars %~ (\pv -> pv
     { pvPlayer = nextFrame jump' animations (pvPlayer pv) input
-    , pvBackgroundFarPos = Animate.stepPosition backgroundFarAnimations (pvBackgroundFarPos pv) frameDeltaSeconds
+    , pvMountainPos = Animate.stepPosition mountainAnimations (pvMountainPos pv) frameDeltaSeconds
     , pvJump = jump'
-    , pvBackgroundPositionFar = stepHorizontal (pvBackgroundPositionFar pv) (pvSpeed pv * 0.003)
+    , pvMountainScroll = stepHorizontal (pvMountainScroll pv) (pvSpeed pv * 0.003)
     , pvBackgroundPositionNear = stepHorizontal (pvBackgroundPositionNear pv) (pvSpeed pv * 0.006)
     , pvForegroundPosition = stepHorizontal (pvForegroundPosition pv) (pvSpeed pv * 0.009)
     , pvNeargroundPosition = stepHorizontal (pvNeargroundPosition pv) (pvSpeed pv * 0.012)
