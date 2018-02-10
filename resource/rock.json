@@ -1,5 +1,5 @@
 {
-  "image": "data/rock.png",
+  "image": "resource/rock.png",
   "alpha": [255,0,255],
   "clips": [
     [ 0, 0, 32, 32 ]

@@ -1,5 +1,5 @@
 {
-  "image": "data/bouncer.png",
+  "image": "resource/lava.png",
   "alpha": [255,0,255],
   "clips": [
     [ 0, 0, 32, 32 ]

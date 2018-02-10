@@ -1,5 +1,5 @@
 {
-  "image": "data/mountain.png",
+  "image": "resource/mountain.png",
   "alpha": [255,0,255],
   "clips": [
     [0,  0, 80, 31],

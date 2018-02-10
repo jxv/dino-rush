@@ -44,19 +44,19 @@ main = do
   SDL.initialize [SDL.InitVideo, SDL.InitAudio]
   Mixer.openAudio Mixer.defaultAudio 256
 
-  gameMusic <- Mixer.load "data/v42.mod"
-  jumpSfx <- Mixer.load "data/jump.wav"
+  gameMusic <- Mixer.load "resource/v42.mod"
+  jumpSfx <- Mixer.load "resource/dino_jump.wav"
   window <- SDL.createWindow "Dino Rush" SDL.defaultWindow { SDL.windowInitialSize = V2 1280 720, SDL.windowMode = SDL.Fullscreen }
   renderer <- SDL.createRenderer window (-1) SDL.defaultRenderer
   mountainSprites <- Animate.readSpriteSheetJSON (\path c -> SDL.createTextureFromSurface renderer =<< loadSurface path c) "data/mountain.json" :: IO (Animate.SpriteSheet MountainKey SDL.Texture Seconds)
-  backgroundNear <- SDL.createTextureFromSurface renderer =<< loadSurface "data/background_near.png" Nothing
-  foreground <- SDL.createTextureFromSurface renderer =<< loadSurface "data/foreground.png" Nothing
-  nearground <- SDL.createTextureFromSurface renderer =<< loadSurface "data/nearground.png" Nothing
-  spriteSheet <- Animate.readSpriteSheetJSON (\path c -> SDL.createTextureFromSurface renderer =<< loadSurface path c) "data/dino.json" :: IO (Animate.SpriteSheet DinoKey SDL.Texture Seconds)
-  birdSprites <- Animate.readSpriteSheetJSON (\path c -> SDL.createTextureFromSurface renderer =<< loadSurface path c) "data/bird.json" :: IO (Animate.SpriteSheet BirdKey SDL.Texture Seconds)
-  bouncerSprites <- Animate.readSpriteSheetJSON (\path c -> SDL.createTextureFromSurface renderer =<< loadSurface path c) "data/bouncer.json" :: IO (Animate.SpriteSheet BouncerKey SDL.Texture Seconds)
-  lavaSprites <- Animate.readSpriteSheetJSON (\path c -> SDL.createTextureFromSurface renderer =<< loadSurface path c) "data/lava.json" :: IO (Animate.SpriteSheet LavaKey SDL.Texture Seconds)
-  rockSprites <- Animate.readSpriteSheetJSON (\path c -> SDL.createTextureFromSurface renderer =<< loadSurface path c) "data/rock.json" :: IO (Animate.SpriteSheet RockKey SDL.Texture Seconds)
+  backgroundNear <- SDL.createTextureFromSurface renderer =<< loadSurface "resource/jungle.png" Nothing
+  foreground <- SDL.createTextureFromSurface renderer =<< loadSurface "resource/ground.png" Nothing
+  nearground <- SDL.createTextureFromSurface renderer =<< loadSurface "resource/river.png" Nothing
+  spriteSheet <- Animate.readSpriteSheetJSON (\path c -> SDL.createTextureFromSurface renderer =<< loadSurface path c) "resource/dino.json" :: IO (Animate.SpriteSheet DinoKey SDL.Texture Seconds)
+  birdSprites <- Animate.readSpriteSheetJSON (\path c -> SDL.createTextureFromSurface renderer =<< loadSurface path c) "resource/bird.json" :: IO (Animate.SpriteSheet BirdKey SDL.Texture Seconds)
+  bouncerSprites <- Animate.readSpriteSheetJSON (\path c -> SDL.createTextureFromSurface renderer =<< loadSurface path c) "resource/bouncer.json" :: IO (Animate.SpriteSheet BouncerKey SDL.Texture Seconds)
+  lavaSprites <- Animate.readSpriteSheetJSON (\path c -> SDL.createTextureFromSurface renderer =<< loadSurface path c) "resource/lava.json" :: IO (Animate.SpriteSheet LavaKey SDL.Texture Seconds)
+  rockSprites <- Animate.readSpriteSheetJSON (\path c -> SDL.createTextureFromSurface renderer =<< loadSurface path c) "resource/rock.json" :: IO (Animate.SpriteSheet RockKey SDL.Texture Seconds)
   mkObstacles <- streamOfObstacles <$> getStdGen
 
   let cfg = Config

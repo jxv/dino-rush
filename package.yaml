@@ -4,10 +4,10 @@ github: jxv/dino-rush
 license: BSD3
 category: Game
 synopsis: Simple Dinosaur theme running game
-description: Simple Dinsource theme running game
+description: Simple Dinosaur theme running game
 maintainer: Joe Vargas
 copyright: 2018 Joe Vargas
-data-dir: data
+data-dir: resource
 data-files:
 - dino.json
 - dino.png
