@@ -20,8 +20,8 @@ data Config = Config
 
 data Resources = Resources
   { rMountainSprites :: Animate.SpriteSheet MountainKey SDL.Texture Seconds
-  , rBackgroundNear :: SDL.Texture
-  , rForeground :: SDL.Texture
+  , rJungle :: SDL.Texture
+  , rGround :: SDL.Texture
   , rNearground :: SDL.Texture
   , rDinoSprites :: Animate.SpriteSheet DinoKey SDL.Texture Seconds
   , rBirdSprites :: Animate.SpriteSheet BirdKey SDL.Texture Seconds

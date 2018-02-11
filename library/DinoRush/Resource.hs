@@ -29,9 +29,9 @@ loadResources renderer = do
   gameMusic <- Mixer.load "resource/v42.mod"
   jumpSfx <- Mixer.load "resource/dino_jump.wav"
   mountainSprites <- Animate.readSpriteSheetJSON loadTexture "resource/mountain.json" :: IO (Animate.SpriteSheet MountainKey SDL.Texture Seconds)
-  backgroundNear <- loadTexture "resource/jungle.png" Nothing
-  foreground <- loadTexture "resource/ground.png" Nothing
-  nearground <- loadTexture "resource/river.png" Nothing
+  jungle <- loadTexture "resource/jungle.png" Nothing
+  ground <- loadTexture "resource/ground.png" Nothing
+  river <- loadTexture "resource/river.png" Nothing
   dinoSprites <- Animate.readSpriteSheetJSON loadTexture "resource/dino.json" :: IO (Animate.SpriteSheet DinoKey SDL.Texture Seconds)
   birdSprites <- Animate.readSpriteSheetJSON loadTexture "resource/bird.json" :: IO (Animate.SpriteSheet BirdKey SDL.Texture Seconds)
   bouncerSprites <- Animate.readSpriteSheetJSON loadTexture "resource/bouncer.json" :: IO (Animate.SpriteSheet BouncerKey SDL.Texture Seconds)
@@ -39,9 +39,9 @@ loadResources renderer = do
   rockSprites <- Animate.readSpriteSheetJSON loadTexture "resource/rock.json" :: IO (Animate.SpriteSheet RockKey SDL.Texture Seconds)
   return Resources
     { rMountainSprites = mountainSprites
-    , rBackgroundNear = backgroundNear
-    , rForeground = foreground
-    , rNearground = nearground
+    , rJungle = jungle
+    , rGround = ground
+    , rNearground = river
     , rDinoSprites = dinoSprites
     , rBirdSprites = birdSprites
     , rBouncerSprites = bouncerSprites
@@ -56,8 +56,8 @@ loadResources renderer = do
 freeResources :: Resources -> IO ()
 freeResources r = do
   SDL.destroyTexture $ Animate.ssImage (rMountainSprites r)
-  SDL.destroyTexture (rBackgroundNear r)
-  SDL.destroyTexture (rForeground r)
+  SDL.destroyTexture (rJungle r)
+  SDL.destroyTexture (rGround r)
   SDL.destroyTexture (rNearground r)
   SDL.destroyTexture $ Animate.ssImage (rDinoSprites r)
   SDL.destroyTexture $ Animate.ssImage (rBirdSprites r)

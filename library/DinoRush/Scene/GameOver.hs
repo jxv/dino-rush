@@ -12,7 +12,7 @@ data GameOverVars = GameOverVars
   { govPlayer :: Animate.Position DinoKey Seconds
   , govMountainScroll :: Percent
   , govBackgroundPositionClose :: Percent
-  , govForegroundPosition :: Percent
+  , govGroundPosition :: Percent
   , govObstacles :: [(Distance, ObstacleTag)]
   } deriving (Show, Eq)
 

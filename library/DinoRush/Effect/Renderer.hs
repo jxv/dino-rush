@@ -24,9 +24,9 @@ class Monad m => Renderer m where
   getMountainAnimations :: m (Animations MountainKey)
   drawDino :: DrawSprite DinoKey m
   drawMountain :: DrawSprite MountainKey m
-  drawBackgroundNear :: (Int, Int) -> m ()
-  drawForeground :: (Int, Int) -> m ()
-  drawNearground :: (Int, Int) -> m ()
+  drawJungle :: (Int, Int) -> m ()
+  drawGround :: (Int, Int) -> m ()
+  drawRiver :: (Int, Int) -> m ()
 
 clearScreen' :: (SDLRenderer m, MonadReader Config m) => m ()
 clearScreen' = do
@@ -40,11 +40,11 @@ drawScreen' = do
 
 --
 
-mountainY, backgroundNearY, foregroundY, neargroundY :: Int
+mountainY, jungleY, groundY, riverY :: Int
 mountainY = -16
-backgroundNearY = 16 * 16
-foregroundY = 16 * 28
-neargroundY = 16 * 36
+jungleY = 16 * 16
+groundY = 16 * 28
+riverY = 16 * 36
 
 --
 
@@ -72,10 +72,10 @@ getSpriteAnimations :: (MonadReader Config m) => (Config -> Animate.SpriteSheet 
 getSpriteAnimations ss = asks (Animate.ssAnimations . ss)
 
 drawHorizontalScrollImage :: (MonadReader Config m, SDLRenderer m) => (Config -> SDL.Texture) -> (Int, Int) -> m ()
-drawHorizontalScrollImage tex (x,y) = do
+drawHorizontalScrollImage getTex (x,y) = do
   renderer <- asks cRenderer
-  background <- asks tex
-  SDL.TextureInfo{textureWidth,textureHeight} <- queryTexture background
+  tex <- asks getTex
+  SDL.TextureInfo{textureWidth,textureHeight} <- queryTexture tex
   let dim = SDL.V2 textureWidth textureHeight
-  drawTexture renderer background Nothing (Just $ SDL.Rectangle (SDL.P $ SDL.V2 (fromIntegral x) (fromIntegral y)) dim)
-  drawTexture renderer background Nothing (Just $ SDL.Rectangle (SDL.P $ SDL.V2 (fromIntegral x + 1280) (fromIntegral y)) dim)
+  drawTexture renderer tex Nothing (Just $ SDL.Rectangle (SDL.P $ SDL.V2 (fromIntegral x) (fromIntegral y)) dim)
+  drawTexture renderer tex Nothing (Just $ SDL.Rectangle (SDL.P $ SDL.V2 (fromIntegral x + 1280) (fromIntegral y)) dim)

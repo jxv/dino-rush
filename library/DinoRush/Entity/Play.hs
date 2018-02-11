@@ -2,16 +2,9 @@
 module DinoRush.Entity.Play where
 
 import qualified Animate
-import Control.Monad (when)
 import Control.Lens
-import Control.Monad.State (MonadState(..), modify, gets)
-import Data.Foldable (forM_)
-import KeyState
 
-import DinoRush.Engine.Input
-import DinoRush.Engine.Frame
 import DinoRush.Engine.Types
-import DinoRush.Engine.Step
 import DinoRush.Entity.Dino
 import DinoRush.Entity.Mountain
 import DinoRush.Entity.Obstacle
@@ -27,7 +20,7 @@ data PlayVars = PlayVars
   , pvDinoAction :: DinoAction
   , pvMountainScroll :: Percent
   , pvBackgroundPositionNear :: Percent
-  , pvForegroundPosition :: Percent
+  , pvGroundPosition :: Percent
   , pvNeargroundPosition :: Percent
   , pvObstacles :: [ObstacleState]
   , pvUpcomingObstacles :: [(Distance, ObstacleTag)]
@@ -47,7 +40,7 @@ initPlayVars upcomingObstacles = PlayVars
   , pvMountainPos = Animate.initPosition MountainKey'Idle
   , pvMountainScroll = 0
   , pvBackgroundPositionNear = 0
-  , pvForegroundPosition = 0
+  , pvGroundPosition = 0
   , pvNeargroundPosition = 0
   , pvObstacles = []
   , pvUpcomingObstacles = upcomingObstacles

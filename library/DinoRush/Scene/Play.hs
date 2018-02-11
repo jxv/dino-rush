@@ -39,10 +39,10 @@ drawPlay = do
   let dinoLoc = Animate.currentLocation dinoAnimations (pvDinoPos pv)
   let mountainLoc = Animate.currentLocation mountainAnimations (pvMountainPos pv)
   drawMountain mountainLoc (truncate $ 1280 * pvMountainScroll pv, mountainY)
-  drawBackgroundNear (truncate $ 1280 * pvBackgroundPositionNear pv, backgroundNearY)
-  drawForeground (truncate $ 1280 * pvForegroundPosition pv, foregroundY)
+  drawJungle (truncate $ 1280 * pvBackgroundPositionNear pv, jungleY)
+  drawGround (truncate $ 1280 * pvGroundPosition pv, groundY)
   drawDino dinoLoc (200, dinoHeight (pvDinoAction pv))
-  drawNearground (truncate $ 1280 * pvNeargroundPosition pv, neargroundY)
+  drawRiver (truncate $ 1280 * pvNeargroundPosition pv, riverY)
 
 playStep' :: (HasPlayVars s, MonadState s m, Logger m, Clock m, Renderer m, Audio m, HasInput m, SceneManager m) => m ()
 playStep' = do
@@ -70,7 +70,7 @@ updatePlay = do
     , pvMountainPos = Animate.stepPosition mountainAnimations (pvMountainPos pv) frameDeltaSeconds
     , pvMountainScroll = stepHorizontal (pvMountainScroll pv) (pvSpeed pv * 0.003)
     , pvBackgroundPositionNear = stepHorizontal (pvBackgroundPositionNear pv) (pvSpeed pv * 0.006)
-    , pvForegroundPosition = stepHorizontal (pvForegroundPosition pv) (pvSpeed pv * 0.009)
+    , pvGroundPosition = stepHorizontal (pvGroundPosition pv) (pvSpeed pv * 0.009)
     , pvNeargroundPosition = stepHorizontal (pvNeargroundPosition pv) (pvSpeed pv * 0.012)
     , pvSpeed = clamp (pvSpeed pv + 0.01) 5
     , pvDinoAction = smash dinoAction

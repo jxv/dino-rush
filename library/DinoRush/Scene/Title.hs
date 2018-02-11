@@ -35,9 +35,9 @@ titleStep' = do
   let mountainPos' = Animate.stepPosition mountainAnimations mountainPos frameDeltaSeconds
   let mountainLoc = Animate.currentLocation mountainAnimations mountainPos'
   drawMountain mountainLoc (0, mountainY)
-  drawBackgroundNear (0, backgroundNearY)
-  drawForeground (0, foregroundY)
+  drawJungle (0, jungleY)
+  drawGround (0, groundY)
   drawDino loc (200, dinoY)
-  drawNearground (0, neargroundY)
+  drawRiver (0, riverY)
   modify $ titleVars %~ (\tv -> tv { tvPlayer = pos', tvMountainPos = mountainPos' })
   when (ksStatus (iSpace input) == KeyStatus'Pressed) (toScene Scene'Play)
