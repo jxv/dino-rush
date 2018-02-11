@@ -1,7 +1,6 @@
 module DinoRush.Entity.Obstacle where
 
 import qualified Animate
-
 import System.Random
 
 import DinoRush.Engine.Types

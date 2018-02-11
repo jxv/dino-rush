@@ -17,7 +17,6 @@ import DinoRush.Engine.Frame
 import DinoRush.Engine.Types
 import DinoRush.Engine.Step
 import DinoRush.Entity.Dino
-import DinoRush.Entity.Mountain
 import DinoRush.Entity.Obstacle
 import DinoRush.Entity.Play
 import DinoRush.Manager.Scene
@@ -34,6 +33,10 @@ stepHorizontal percent speed = if percent' <= -1 then percent' + 1 else percent'
 drawPlay :: (HasPlayVars s, MonadState s m, Renderer m) => m ()
 drawPlay = do
   dinoAnimations <- getDinoAnimations
+  lavaAnimations <- getLavaAnimations
+  rockAnimations <- getRockAnimations
+  birdAnimations <- getBirdAnimations
+  bouncerAnimations <- getBouncerAnimations
   mountainAnimations <- getMountainAnimations
   pv <- gets (view playVars)
   let dinoLoc = Animate.currentLocation dinoAnimations (pvDinoPos pv)
@@ -41,6 +44,13 @@ drawPlay = do
   drawMountain mountainLoc (truncate $ 1280 * pvMountainScroll pv, mountainY)
   drawJungle (truncate $ 1280 * pvBackgroundPositionNear pv, jungleY)
   drawGround (truncate $ 1280 * pvGroundPosition pv, groundY)
+  forM_ (pvObstacles pv) $ \ObstacleState{osInfo,osDistance} -> let
+    x = fromIntegral osDistance * 16
+    in case osInfo of
+      ObstacleInfo'Lava pos -> drawLava (Animate.currentLocation lavaAnimations pos) (x, 0)
+      ObstacleInfo'Rock pos -> drawRock (Animate.currentLocation rockAnimations pos) (x, 0)
+      ObstacleInfo'Bird pos -> drawBird (Animate.currentLocation birdAnimations pos) (x, 0)
+      ObstacleInfo'Bouncer percentY pos -> drawBouncer (Animate.currentLocation bouncerAnimations pos) (x, truncate percentY + 0)
   drawDino dinoLoc (200, dinoHeight (pvDinoAction pv))
   drawRiver (truncate $ 1280 * pvNeargroundPosition pv, riverY)
 

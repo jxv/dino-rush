@@ -9,6 +9,10 @@ import Control.Monad.Reader
 import DinoRush.Config
 import DinoRush.Engine.Types
 import DinoRush.Entity.Dino
+import DinoRush.Entity.Lava
+import DinoRush.Entity.Rock
+import DinoRush.Entity.Bird
+import DinoRush.Entity.Bouncer
 import DinoRush.Entity.Mountain
 import DinoRush.Wrapper.SDLRenderer
 
@@ -21,8 +25,16 @@ class Monad m => Renderer m where
   clearScreen :: m ()
   drawScreen :: m ()
   getDinoAnimations :: m (Animations DinoKey)
+  getLavaAnimations :: m (Animations LavaKey)
+  getRockAnimations :: m (Animations RockKey)
+  getBirdAnimations :: m (Animations BirdKey)
+  getBouncerAnimations :: m (Animations BouncerKey)
   getMountainAnimations :: m (Animations MountainKey)
   drawDino :: DrawSprite DinoKey m
+  drawLava :: DrawSprite LavaKey m
+  drawRock :: DrawSprite RockKey m
+  drawBird :: DrawSprite BirdKey m
+  drawBouncer :: DrawSprite BouncerKey m
   drawMountain :: DrawSprite MountainKey m
   drawJungle :: (Int, Int) -> m ()
   drawGround :: (Int, Int) -> m ()

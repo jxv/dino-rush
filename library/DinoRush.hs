@@ -86,8 +86,16 @@ instance Renderer DinoRush where
   clearScreen = clearScreen'
   drawScreen = drawScreen'
   getDinoAnimations = getSpriteAnimations (rDinoSprites . cResources)
+  getLavaAnimations = getSpriteAnimations (rLavaSprites . cResources)
+  getRockAnimations = getSpriteAnimations (rRockSprites . cResources)
+  getBirdAnimations = getSpriteAnimations (rBirdSprites . cResources)
+  getBouncerAnimations = getSpriteAnimations (rBouncerSprites . cResources)
   getMountainAnimations = getSpriteAnimations (rMountainSprites . cResources)
   drawDino = drawSprite (rDinoSprites . cResources)
+  drawLava = drawSprite (rLavaSprites . cResources)
+  drawRock = drawSprite (rRockSprites . cResources)
+  drawBird = drawSprite (rBirdSprites . cResources)
+  drawBouncer = drawSprite (rBouncerSprites . cResources)
   drawMountain = drawHorizontalScrollSprite (rMountainSprites . cResources) 16
   drawJungle = drawHorizontalScrollImage (rJungle . cResources)
   drawGround = drawHorizontalScrollImage (rGround . cResources)
