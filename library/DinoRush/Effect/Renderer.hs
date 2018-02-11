@@ -9,6 +9,7 @@ import Control.Monad.Reader
 import DinoRush.Config
 import DinoRush.Engine.Types
 import DinoRush.Entity.Dino
+import DinoRush.Entity.Mountain
 import DinoRush.Wrapper.SDLRenderer
 
 rectFromClip :: Animate.SpriteClip key -> SDL.Rectangle CInt

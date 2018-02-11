@@ -1,0 +1,1 @@
+module DinoRush.Resource where

@@ -14,30 +14,17 @@ import DinoRush.Effect.Logger
 import DinoRush.Effect.Renderer
 import DinoRush.Engine.Input
 import DinoRush.Engine.Types
+import DinoRush.Engine.Frame
+import DinoRush.Entity.Play
+import DinoRush.Entity.Title
+import DinoRush.Manager.Input
 import DinoRush.Manager.Scene
 import DinoRush.Scene.GameOver
 import DinoRush.Scene.Play
 import DinoRush.Scene.Pause
 import DinoRush.Scene.Title
 
-data Vars = Vars
-  { vScene :: Scene
-  , vNextScene :: Scene
-  , vTitle :: TitleVars
-  , vPlay :: PlayVars
-  , vInput :: Input
-  } deriving (Show, Eq)
-
-initVars :: [(Distance, ObstacleTag)] -> Vars
-initVars mkObstacles = Vars Scene'Title Scene'Title initTitleVars (initPlayVars mkObstacles) initInput
-
-instance HasTitleVars Vars where
-  titleVars = lens vTitle (\v s -> v { vTitle = s })
-
-instance HasPlayVars Vars where
-  playVars = lens vPlay (\v s -> v { vPlay = s })
-
-makeClassy ''Vars
+import DinoRush.State
 
 titleTransition :: (HasTitleVars a, MonadState a m) => m ()
 titleTransition = modify $ titleVars .~ initTitleVars
@@ -50,12 +37,6 @@ playTransition = do
 
 toScene' :: MonadState Vars m => Scene -> m ()
 toScene' scene = modify (\v -> v { vNextScene = scene })
-
-getInput' :: MonadState Vars m => m Input
-getInput' = gets vInput
-
-setInput' :: MonadState Vars m => Input -> m ()
-setInput' input = modify (\v -> v { vInput = input })
 
 mainLoop :: (MonadReader Config m, MonadState Vars m, Audio m, Logger m, Clock m, Renderer m, HasInput m, Title m, Play m, Pause m) => m ()
 mainLoop = do

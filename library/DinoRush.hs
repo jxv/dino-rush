@@ -16,20 +16,27 @@ import SDL.Vect
 import System.Random
 
 import DinoRush.Config
-import DinoRush.Engine.Input
 import DinoRush.Engine.Types
 import DinoRush.Effect.Audio
 import DinoRush.Effect.Clock
 import DinoRush.Effect.Logger
 import DinoRush.Effect.Renderer
 import DinoRush.Entity.Dino
+import DinoRush.Entity.Bird
+import DinoRush.Entity.Bouncer
+import DinoRush.Entity.Lava
+import DinoRush.Entity.Mountain
+import DinoRush.Entity.Rock
+import DinoRush.Entity.Obstacle
 import DinoRush.Wrapper.SDLInput
 import DinoRush.Wrapper.SDLRenderer
+import DinoRush.Manager.Input
 import DinoRush.Manager.Scene
 import DinoRush.Runner
 import DinoRush.Scene.Title
 import DinoRush.Scene.Pause
 import DinoRush.Scene.Play
+import DinoRush.State
 
 loadSurface :: FilePath -> Maybe Animate.Color -> IO SDL.Surface
 loadSurface path alpha = do
@@ -48,7 +55,7 @@ main = do
   jumpSfx <- Mixer.load "resource/dino_jump.wav"
   window <- SDL.createWindow "Dino Rush" SDL.defaultWindow { SDL.windowInitialSize = V2 1280 720, SDL.windowMode = SDL.Fullscreen }
   renderer <- SDL.createRenderer window (-1) SDL.defaultRenderer
-  mountainSprites <- Animate.readSpriteSheetJSON (\path c -> SDL.createTextureFromSurface renderer =<< loadSurface path c) "data/mountain.json" :: IO (Animate.SpriteSheet MountainKey SDL.Texture Seconds)
+  mountainSprites <- Animate.readSpriteSheetJSON (\path c -> SDL.createTextureFromSurface renderer =<< loadSurface path c) "resource/mountain.json" :: IO (Animate.SpriteSheet MountainKey SDL.Texture Seconds)
   backgroundNear <- SDL.createTextureFromSurface renderer =<< loadSurface "resource/jungle.png" Nothing
   foreground <- SDL.createTextureFromSurface renderer =<< loadSurface "resource/ground.png" Nothing
   nearground <- SDL.createTextureFromSurface renderer =<< loadSurface "resource/river.png" Nothing

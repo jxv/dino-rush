@@ -5,6 +5,7 @@ import qualified Animate
 import Control.Lens
 
 import DinoRush.Entity.Dino
+import DinoRush.Entity.Obstacle
 import DinoRush.Engine.Types
 
 data GameOverVars = GameOverVars

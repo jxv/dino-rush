@@ -33,6 +33,3 @@ bouncyAabb height = Aabb (V2 0 (16 + height)) (V2 32 (48 + height))
 
 arenaWidth :: Float
 arenaWidth = 1280
-
-stepObstacles :: Float -> [(Float, ObstacleTag)] -> [(Float, ObstacleTag)]
-stepObstacles delta = map (\(loc, obs) -> (loc - delta, obs))

@@ -11,8 +11,11 @@ import Data.Aeson (FromJSON, ToJSON)
 import System.Random
 import KeyState
 
+import DinoRush.Engine.Frame
 import DinoRush.Engine.Types
+import DinoRush.Entity.Obstacle
 import DinoRush.Engine.Input
+import DinoRush.Engine.Step
 import DinoRush.Engine.Physics
 
 data DinoAction

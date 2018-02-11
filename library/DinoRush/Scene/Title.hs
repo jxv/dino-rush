@@ -1,31 +1,24 @@
 {-# LANGUAGE TemplateHaskell #-}
 module DinoRush.Scene.Title where
 
-import qualified SDL
 import qualified Animate
 import Control.Lens
 import Control.Monad (when)
-import Control.Monad.Reader (MonadReader(..), asks)
+import Control.Monad.Reader (MonadReader(..))
 import Control.Monad.State (MonadState(..), modify, gets)
-import Linear
 import KeyState
 
 import DinoRush.Config
 import DinoRush.Effect.Renderer
 import DinoRush.Engine.Input
+import DinoRush.Engine.Frame
 import DinoRush.Engine.Types
 import DinoRush.Entity.Dino
+import DinoRush.Entity.Mountain
+import DinoRush.Entity.Obstacle
+import DinoRush.Entity.Title
+import DinoRush.Manager.Input
 import DinoRush.Manager.Scene
-
-data TitleVars = TitleVars
-  { tvPlayer :: Animate.Position DinoKey Seconds
-  , tvMountainPos :: Animate.Position MountainKey Seconds
-  } deriving (Show, Eq)
-
-makeClassy ''TitleVars
-
-initTitleVars :: TitleVars
-initTitleVars = TitleVars (Animate.initPosition DinoKey'Idle) (Animate.initPosition MountainKey'Idle)
 
 class Monad m => Title m where
   titleStep :: m ()

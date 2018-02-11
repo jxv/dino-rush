@@ -1,13 +1,9 @@
-{-# LANGUAGE TemplateHaskell #-}
-module DinoRush.Manager.Scene where
+module DinoRush.Manager.Scene
+  ( SceneManager(..)
+  , Scene(..)
+  ) where
 
-data Scene
-  = Scene'Title
-  | Scene'Play
-  | Scene'Pause
-  | Scene'GameOver
-  | Scene'Quit
-  deriving (Show, Eq)
+import DinoRush.Entity.Scene
 
 class Monad m => SceneManager m where
   toScene :: Scene -> m ()

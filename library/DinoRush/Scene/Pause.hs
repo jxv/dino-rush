@@ -1,15 +1,14 @@
 module DinoRush.Scene.Pause where
 
-import qualified Animate
-import Control.Lens (view)
 import Control.Monad (when)
-import Control.Monad.State (MonadState, gets)
+import Control.Monad.State (MonadState)
 import KeyState
 
-import DinoRush.Config
 import DinoRush.Effect.Renderer
 import DinoRush.Engine.Input
 import DinoRush.Scene.Play
+import DinoRush.Entity.Play
+import DinoRush.Manager.Input
 import DinoRush.Manager.Scene
 
 class Monad m => Pause m where
