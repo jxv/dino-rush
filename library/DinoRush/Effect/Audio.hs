@@ -10,7 +10,7 @@ class Monad m => Audio m where
   playJumpSfx :: m ()
 
 playGameMusic' :: (MonadReader Config m, MonadIO m) => m ()
-playGameMusic' = asks cGameMusic >>= Mixer.playMusic Mixer.Forever
+playGameMusic' = asks (rGameMusic . cResources) >>= Mixer.playMusic Mixer.Forever
 
 playJumpSfx' :: (MonadReader Config m, MonadIO m) => m ()
-playJumpSfx' = asks cJumpSfx >>= Mixer.play
+playJumpSfx' = asks (rJumpSfx . cResources) >>= Mixer.play

@@ -15,15 +15,19 @@ import DinoRush.Engine.Types
 data Config = Config
   { cWindow :: SDL.Window
   , cRenderer :: SDL.Renderer
-  , cMountainSprites :: Animate.SpriteSheet MountainKey SDL.Texture Seconds
-  , cBackgroundNear :: SDL.Texture
-  , cForeground :: SDL.Texture
-  , cNearground :: SDL.Texture
-  , cDinoSpriteSheet :: Animate.SpriteSheet DinoKey SDL.Texture Seconds
-  , cBirdSpriteSheet :: Animate.SpriteSheet BirdKey SDL.Texture Seconds
-  , cBouncerSpriteSheet :: Animate.SpriteSheet BouncerKey SDL.Texture Seconds
-  , cLavaSpriteSheet :: Animate.SpriteSheet LavaKey SDL.Texture Seconds
-  , cRockSpriteSheet :: Animate.SpriteSheet RockKey SDL.Texture Seconds
-  , cJumpSfx :: Mixer.Chunk
-  , cGameMusic :: Mixer.Music
+  , cResources :: Resources
+  }
+
+data Resources = Resources
+  { rMountainSprites :: Animate.SpriteSheet MountainKey SDL.Texture Seconds
+  , rBackgroundNear :: SDL.Texture
+  , rForeground :: SDL.Texture
+  , rNearground :: SDL.Texture
+  , rDinoSprites :: Animate.SpriteSheet DinoKey SDL.Texture Seconds
+  , rBirdSprites :: Animate.SpriteSheet BirdKey SDL.Texture Seconds
+  , rBouncerSprites :: Animate.SpriteSheet BouncerKey SDL.Texture Seconds
+  , rLavaSprites :: Animate.SpriteSheet LavaKey SDL.Texture Seconds
+  , rRockSprites :: Animate.SpriteSheet RockKey SDL.Texture Seconds
+  , rGameMusic :: Mixer.Music
+  , rJumpSfx :: Mixer.Chunk
   }
