@@ -12,11 +12,8 @@ import DinoRush.Config
 import DinoRush.Effect.Renderer
 import DinoRush.Engine.Input
 import DinoRush.Engine.Frame
-import DinoRush.Engine.Types
-import DinoRush.Entity.Dino
-import DinoRush.Entity.Mountain
-import DinoRush.Entity.Obstacle
-import DinoRush.Entity.Title
+import DinoRush.Engine.Dino
+import DinoRush.Engine.Title
 import DinoRush.Manager.Input
 import DinoRush.Manager.Scene
 

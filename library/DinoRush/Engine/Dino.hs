@@ -1,19 +1,14 @@
-module DinoRush.Entity.Dino where
+module DinoRush.Engine.Dino where
 
 import qualified Safe
-import qualified SDL
-import qualified SDL.Mixer as Mixer
 import qualified Animate
 
-import Control.Lens
 import Data.Text (Text)
-import Data.Aeson (FromJSON, ToJSON)
-import System.Random
 import KeyState
 
 import DinoRush.Engine.Frame
 import DinoRush.Engine.Types
-import DinoRush.Entity.Obstacle
+import DinoRush.Engine.Obstacle
 import DinoRush.Engine.Input
 import DinoRush.Engine.Step
 import DinoRush.Engine.Physics

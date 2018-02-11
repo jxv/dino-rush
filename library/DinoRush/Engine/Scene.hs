@@ -1,4 +1,4 @@
-module DinoRush.Entity.Scene where
+module DinoRush.Engine.Scene where
 
 data Scene
   = Scene'Title

@@ -1,4 +1,4 @@
-module DinoRush.Entity.Bouncer where
+module DinoRush.Engine.Bouncer where
 
 import Data.Text (Text)
 import qualified Animate

@@ -4,12 +4,12 @@ import qualified SDL
 import qualified SDL.Mixer as Mixer
 import qualified Animate
 
-import DinoRush.Entity.Bird
-import DinoRush.Entity.Bouncer
-import DinoRush.Entity.Dino
-import DinoRush.Entity.Mountain
-import DinoRush.Entity.Lava
-import DinoRush.Entity.Rock
+import DinoRush.Engine.Bird
+import DinoRush.Engine.Bouncer
+import DinoRush.Engine.Dino
+import DinoRush.Engine.Mountain
+import DinoRush.Engine.Lava
+import DinoRush.Engine.Rock
 import DinoRush.Engine.Types
 
 data Config = Config

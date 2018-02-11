@@ -8,12 +8,12 @@ import Control.Monad.Reader
 
 import DinoRush.Config
 import DinoRush.Engine.Types
-import DinoRush.Entity.Dino
-import DinoRush.Entity.Lava
-import DinoRush.Entity.Rock
-import DinoRush.Entity.Bird
-import DinoRush.Entity.Bouncer
-import DinoRush.Entity.Mountain
+import DinoRush.Engine.Dino
+import DinoRush.Engine.Lava
+import DinoRush.Engine.Rock
+import DinoRush.Engine.Bird
+import DinoRush.Engine.Bouncer
+import DinoRush.Engine.Mountain
 import DinoRush.Wrapper.SDLRenderer
 
 rectFromClip :: Animate.SpriteClip key -> SDL.Rectangle CInt

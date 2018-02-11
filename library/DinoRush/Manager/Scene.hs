@@ -3,7 +3,7 @@ module DinoRush.Manager.Scene
   , Scene(..)
   ) where
 
-import DinoRush.Entity.Scene
+import DinoRush.Engine.Scene
 
 class Monad m => SceneManager m where
   toScene :: Scene -> m ()

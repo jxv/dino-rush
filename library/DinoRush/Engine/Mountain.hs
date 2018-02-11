@@ -1,4 +1,4 @@
-module DinoRush.Entity.Mountain where
+module DinoRush.Engine.Mountain where
 
 import Data.Text (Text)
 import qualified Animate

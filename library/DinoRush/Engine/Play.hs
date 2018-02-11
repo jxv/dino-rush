@@ -1,13 +1,13 @@
 {-# LANGUAGE TemplateHaskell #-}
-module DinoRush.Entity.Play where
+module DinoRush.Engine.Play where
 
 import qualified Animate
 import Control.Lens
 
 import DinoRush.Engine.Types
-import DinoRush.Entity.Dino
-import DinoRush.Entity.Mountain
-import DinoRush.Entity.Obstacle
+import DinoRush.Engine.Dino
+import DinoRush.Engine.Mountain
+import DinoRush.Engine.Obstacle
 
 data PlayVars = PlayVars
   { pvScore :: Score
@@ -23,12 +23,12 @@ data PlayVars = PlayVars
   , pvGroundPosition :: Percent
   , pvNeargroundPosition :: Percent
   , pvObstacles :: [ObstacleState]
-  , pvUpcomingObstacles :: [(Distance, ObstacleTag)]
+  , pvUpcomingObstacles :: [(Int, ObstacleTag)]
   } deriving (Show, Eq)
 
 makeClassy ''PlayVars
 
-initPlayVars :: [(Distance, ObstacleTag)] -> PlayVars
+initPlayVars :: [(Int, ObstacleTag)] -> PlayVars
 initPlayVars upcomingObstacles = PlayVars
   { pvScore = 0
   , pvLives = 1

@@ -18,8 +18,8 @@ newtype Lives = Lives Int
 newtype Percent = Percent Float
   deriving (Show, Eq, Num, Fractional, RealFrac, Real, Ord)
 
-newtype Distance = Distance Integer
-  deriving (Show, Eq, Num, Integral, Real, Ord, Enum, Random)
+newtype Distance = Distance Float
+  deriving (Show, Eq, Num, Fractional, RealFrac, Real, Ord)
 
 newtype Seconds = Seconds Float
   deriving (Show, Eq, Num, ToJSON, FromJSON, Fractional, Ord)

@@ -1,17 +1,17 @@
-module DinoRush.Entity.Obstacle where
+module DinoRush.Engine.Obstacle where
 
 import qualified Animate
 import System.Random
 
 import DinoRush.Engine.Types
-import DinoRush.Entity.Bird
-import DinoRush.Entity.Bouncer
-import DinoRush.Entity.Ground
-import DinoRush.Entity.Jungle
-import DinoRush.Entity.Lava
-import DinoRush.Entity.Mountain
-import DinoRush.Entity.River
-import DinoRush.Entity.Rock
+import DinoRush.Engine.Bird
+import DinoRush.Engine.Bouncer
+import DinoRush.Engine.Ground
+import DinoRush.Engine.Jungle
+import DinoRush.Engine.Lava
+import DinoRush.Engine.Mountain
+import DinoRush.Engine.River
+import DinoRush.Engine.Rock
 
 data ObstacleTag
   = ObstacleTag'GroundShort
@@ -31,7 +31,7 @@ randomRBoundedEnum (aMin, aMax) g = let
   a = [minBound..lastEnum] !! (index `mod` fromEnum lastEnum)
   in (a, g')
 
-streamOfObstacles :: RandomGen g => g -> [(Distance, ObstacleTag)]
+streamOfObstacles :: RandomGen g => g -> [(Int, ObstacleTag)]
 streamOfObstacles g = zip (map (\dist -> dist `mod` 20 + 1) $ randoms g) (randoms g)
 
 data ObstacleInfo
@@ -46,5 +46,16 @@ data ObstacleState = ObstacleState
   , osDistance :: Distance
   } deriving (Show, Eq)
 
-stepObstacles :: Float -> [(Float, ObstacleTag)] -> [(Float, ObstacleTag)]
-stepObstacles delta = map (\(loc, obs) -> (loc - delta, obs))
+stepObstacles :: Distance -> [ObstacleState] -> [ObstacleState]
+stepObstacles delta = map (\o@ObstacleState{osDistance} -> ObstacleState{osDistance = osDistance - delta })
+
+removeOutOfBoundObstacles :: [ObstacleState] -> ([ObstacleState], [ObstacleState])
+removeOutOfBoundObstacles os = foldr
+  (\o@ObstacleState{osDistance} (removed, remained) ->
+    if inBounds osDistance
+      then (o : removed, remained)
+      else (removed, o : remained))
+  ([], [])
+  os
+  where
+    inBounds x = x - 32 < 0

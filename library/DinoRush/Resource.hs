@@ -9,12 +9,12 @@ import SDL.Vect
 
 import DinoRush.Config
 import DinoRush.Engine.Types
-import DinoRush.Entity.Dino
-import DinoRush.Entity.Bird
-import DinoRush.Entity.Bouncer
-import DinoRush.Entity.Lava
-import DinoRush.Entity.Mountain
-import DinoRush.Entity.Rock
+import DinoRush.Engine.Dino
+import DinoRush.Engine.Bird
+import DinoRush.Engine.Bouncer
+import DinoRush.Engine.Lava
+import DinoRush.Engine.Mountain
+import DinoRush.Engine.Rock
 
 loadSurface :: FilePath -> Maybe Animate.Color -> IO SDL.Surface
 loadSurface path alpha = do

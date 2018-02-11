@@ -1,4 +1,4 @@
-module DinoRush.Entity.Bird where
+module DinoRush.Engine.Bird where
 
 import Data.Text (Text)
 import qualified Animate

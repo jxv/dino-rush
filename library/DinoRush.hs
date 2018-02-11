@@ -17,7 +17,7 @@ import DinoRush.Effect.Audio
 import DinoRush.Effect.Clock
 import DinoRush.Effect.Logger
 import DinoRush.Effect.Renderer
-import DinoRush.Entity.Obstacle
+import DinoRush.Engine.Obstacle
 import DinoRush.Wrapper.SDLInput
 import DinoRush.Wrapper.SDLRenderer
 import DinoRush.Manager.Input

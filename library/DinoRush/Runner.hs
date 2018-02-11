@@ -13,10 +13,9 @@ import DinoRush.Effect.Clock
 import DinoRush.Effect.Logger
 import DinoRush.Effect.Renderer
 import DinoRush.Engine.Input
-import DinoRush.Engine.Types
 import DinoRush.Engine.Frame
-import DinoRush.Entity.Play
-import DinoRush.Entity.Title
+import DinoRush.Engine.Play
+import DinoRush.Engine.Title
 import DinoRush.Manager.Input
 import DinoRush.Manager.Scene
 import DinoRush.Scene.GameOver

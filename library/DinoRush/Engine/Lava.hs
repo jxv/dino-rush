@@ -1,4 +1,4 @@
-module DinoRush.Entity.Lava where
+module DinoRush.Engine.Lava where
 
 import qualified Animate
 import Data.Text (Text)

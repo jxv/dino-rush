@@ -7,7 +7,7 @@ import KeyState
 import DinoRush.Effect.Renderer
 import DinoRush.Engine.Input
 import DinoRush.Scene.Play
-import DinoRush.Entity.Play
+import DinoRush.Engine.Play
 import DinoRush.Manager.Input
 import DinoRush.Manager.Scene
 

@@ -1,4 +1,4 @@
-module DinoRush.Entity.Rock where
+module DinoRush.Engine.Rock where
 
 import qualified Animate
 import Data.Text (Text)
