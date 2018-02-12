@@ -73,9 +73,10 @@ playStep' = do
 
 sfxPlay :: (Audio m, HasPlayVars s, MonadState s m) => m ()
 sfxPlay = do
-  PlayVars{pvDinoSfx} <- gets (view playVars)
-  forM_ pvDinoSfx $ \sfx -> case sfx of
-    DinoSfx'Jump -> playJumpSfx
+  PlayVars{pvSfx} <- gets (view playVars)
+  forM_ pvSfx $ \sfx -> case sfx of
+    Sfx'Jump -> playJumpSfx
+    Sfx'Point -> playPointSfx
 
 updatePlay :: (HasPlayVars s, MonadState s m, Logger m, Clock m, Renderer m, HasInput m, SceneManager m) => m ()
 updatePlay = do
@@ -98,7 +99,7 @@ updatePlay = do
     , pvRiverScroll = stepHorizontalDistance (realToFrac $ pvRiverScroll pv) (realToFrac (-speed) * 1.5)
     , pvSpeed = speed
     , pvDinoAction = smash dinoAction
-    , pvDinoSfx = stepDinoSfx dinoAction
+    , pvSfx = stepSfx dinoAction (not $ null removed)
     , pvObstacles = obstacles
     , pvScore = pvScore pv + fromIntegral (length removed)
     , pvUpcomingObstacles = upcomingObstacles

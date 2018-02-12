@@ -19,8 +19,9 @@ data DinoAction
   | DinoAction'Jump Percent
   deriving (Show, Eq)
 
-data DinoSfx
-  = DinoSfx'Jump
+data Sfx
+  = Sfx'Jump
+  | Sfx'Point
   deriving (Show, Eq)
 
 data DinoKey
@@ -52,7 +53,7 @@ rightEdge :: Float
 rightEdge = arenaWidth - (dinoX + 48)
 
 dinoHeight :: DinoAction -> Int
-dinoHeight (DinoAction'Jump (Percent percent)) = truncate $ (sin (percent * pi) * (-32 * 4)) + dinoY
+dinoHeight (DinoAction'Jump (Percent percent)) = truncate (sin (percent * pi) * (-32 * 4)) + dinoY
 dinoHeight _ = dinoY
 
 distanceFromLastObstacle :: [(Float, ObstacleTag)] -> Float
@@ -83,11 +84,11 @@ stepDinoPosition (Step'Change _ da) _ _ = case da of
   DinoAction'Duck -> Animate.initPosition DinoKey'Sneak
   DinoAction'Jump _ -> Animate.initPositionLoops DinoKey'Kick 0
 
-stepDinoSfx :: Step DinoAction -> [DinoSfx]
-stepDinoSfx (Step'Sustain _) = []
-stepDinoSfx (Step'Change _ da) = case da of
-  DinoAction'Jump _ -> [DinoSfx'Jump]
-  _ -> []
+stepSfx :: Step DinoAction -> Bool -> [Sfx]
+stepSfx (Step'Sustain _) point = if point then [Sfx'Point] else []
+stepSfx (Step'Change _ da) point = case da of
+  DinoAction'Jump _ -> (if point then [Sfx'Point] else []) ++ [Sfx'Jump]
+  _ -> if point then [Sfx'Point] else []
 
 stepSpeed :: Step DinoAction -> Percent -> Percent
 stepSpeed dinoAction speed = clamp speed' 1 20

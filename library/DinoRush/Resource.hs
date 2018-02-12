@@ -27,7 +27,8 @@ loadSurface path alpha = do
 loadResources :: SDL.Renderer -> IO Resources
 loadResources renderer = do
   gameMusic <- Mixer.load "resource/v42.mod"
-  jumpSfx <- Mixer.load "resource/dino_jump.wav"
+  jumpSfx <- Mixer.load "resource/jump.wav"
+  pointSfx <- Mixer.load "resource/point.wav"
   mountainSprites <- Animate.readSpriteSheetJSON loadTexture "resource/mountain.json" :: IO (Animate.SpriteSheet MountainKey SDL.Texture Seconds)
   jungle <- loadTexture "resource/jungle.png" Nothing
   ground <- loadTexture "resource/ground.png" Nothing
@@ -48,6 +49,7 @@ loadResources renderer = do
     , rLavaSprites = lavaSprites
     , rRockSprites = rockSprites
     , rJumpSfx = jumpSfx
+    , rPointSfx = pointSfx
     , rGameMusic = gameMusic
     }
   where
@@ -66,3 +68,4 @@ freeResources r = do
 
   Mixer.free (rGameMusic r)
   Mixer.free (rJumpSfx r)
+  Mixer.free (rPointSfx r)

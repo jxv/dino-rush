@@ -58,6 +58,7 @@ runDinoRush config v (DinoRush m) = evalStateT (runReaderT m config) v
 instance Audio DinoRush where
   playGameMusic = playGameMusic'
   playJumpSfx = playJumpSfx'
+  playPointSfx = playPointSfx'
 
 instance Clock DinoRush where
   delayMilliseconds = liftIO . delayMilliseconds'

@@ -15,7 +15,7 @@ data PlayVars = PlayVars
   , pvSpeed :: Percent
   , pvProgress :: Distance
   , pvDinoPos :: Animate.Position DinoKey Seconds
-  , pvDinoSfx :: [DinoSfx]
+  , pvSfx :: [Sfx]
   , pvMountainPos :: Animate.Position MountainKey Seconds
   , pvDinoAction :: DinoAction
   , pvMountainScroll :: Distance
@@ -36,7 +36,7 @@ initPlayVars upcomingObstacles = PlayVars
   , pvProgress = 0
   , pvDinoAction = DinoAction'Move
   , pvDinoPos = Animate.initPosition DinoKey'Move
-  , pvDinoSfx = []
+  , pvSfx = []
   , pvMountainPos = Animate.initPosition MountainKey'Idle
   , pvMountainScroll = 0
   , pvJungleScroll = 0

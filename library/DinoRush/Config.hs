@@ -30,4 +30,5 @@ data Resources = Resources
   , rRockSprites :: Animate.SpriteSheet RockKey SDL.Texture Seconds
   , rGameMusic :: Mixer.Music
   , rJumpSfx :: Mixer.Chunk
+  , rPointSfx :: Mixer.Chunk
   }
