@@ -9,6 +9,7 @@ import qualified Data.Text.IO as T
 import Control.Monad.IO.Class (MonadIO(..))
 import Control.Monad.Reader (MonadReader, ReaderT, runReaderT)
 import Control.Monad.State (MonadState, StateT, evalStateT)
+import Control.Exception.Safe (MonadThrow, MonadCatch)
 import SDL.Vect
 import System.Random
 
@@ -50,7 +51,7 @@ main = do
   SDL.quit
 
 newtype DinoRush a = DinoRush (ReaderT Config (StateT Vars IO) a)
-  deriving (Functor, Applicative, Monad, MonadReader Config, MonadState Vars, MonadIO)
+  deriving (Functor, Applicative, Monad, MonadReader Config, MonadState Vars, MonadIO, MonadThrow, MonadCatch)
 
 runDinoRush :: Config -> Vars -> DinoRush a -> IO a
 runDinoRush config v (DinoRush m) = evalStateT (runReaderT m config) v
@@ -58,7 +59,14 @@ runDinoRush config v (DinoRush m) = evalStateT (runReaderT m config) v
 instance Audio DinoRush where
   playGameMusic = playGameMusic'
   playJumpSfx = playJumpSfx'
+  playDuckSfx = playDuckSfx'
   playPointSfx = playPointSfx'
+  playBirdSfx = playBirdSfx'
+  playBouncerSfx = playBouncerSfx'
+  playHurtSfx = playHurtSfx'
+  playLavaSfx = playLavaSfx'
+  playQuakeSfx = playQuakeSfx'
+  playRockSfx = playRockSfx'
 
 instance Clock DinoRush where
   delayMilliseconds = liftIO . delayMilliseconds'

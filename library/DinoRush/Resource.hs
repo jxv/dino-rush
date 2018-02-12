@@ -29,6 +29,13 @@ loadResources renderer = do
   gameMusic <- Mixer.load "resource/v42.mod"
   jumpSfx <- Mixer.load "resource/jump.wav"
   pointSfx <- Mixer.load "resource/point.wav"
+  birdSfx <- Mixer.load "resource/bird.wav"
+  duckSfx <- Mixer.load "resource/duck.wav"
+  bouncerSfx <- Mixer.load "resource/bouncer.wav"
+  hurtSfx <- Mixer.load "resource/hurt.wav"
+  quakeSfx <- Mixer.load "resource/quake.wav"
+  rockSfx <- Mixer.load "resource/rock.wav"
+  lavaSfx <- Mixer.load "resource/lava.wav"
   mountainSprites <- Animate.readSpriteSheetJSON loadTexture "resource/mountain.json" :: IO (Animate.SpriteSheet MountainKey SDL.Texture Seconds)
   jungle <- loadTexture "resource/jungle.png" Nothing
   ground <- loadTexture "resource/ground.png" Nothing
@@ -49,7 +56,14 @@ loadResources renderer = do
     , rLavaSprites = lavaSprites
     , rRockSprites = rockSprites
     , rJumpSfx = jumpSfx
+    , rDuckSfx = duckSfx
     , rPointSfx = pointSfx
+    , rBirdSfx = birdSfx
+    , rBouncerSfx = bouncerSfx
+    , rHurtSfx = hurtSfx
+    , rLavaSfx = lavaSfx
+    , rQuakeSfx = quakeSfx
+    , rRockSfx = rockSfx
     , rGameMusic = gameMusic
     }
   where
@@ -68,4 +82,11 @@ freeResources r = do
 
   Mixer.free (rGameMusic r)
   Mixer.free (rJumpSfx r)
+  Mixer.free (rDuckSfx r)
   Mixer.free (rPointSfx r)
+  Mixer.free (rBirdSfx r)
+  Mixer.free (rBouncerSfx r)
+  Mixer.free (rHurtSfx r)
+  Mixer.free (rLavaSfx r)
+  Mixer.free (rQuakeSfx r)
+  Mixer.free (rRockSfx r)

@@ -3,8 +3,8 @@ version: '0.0.0'
 github: jxv/dino-rush
 license: BSD3
 category: Game
-synopsis: Simple Dinosaur theme running game
-description: Simple Dinosaur theme running game
+synopsis: A Skinner box, running platformer with a dinosaur
+description: A Skinner box, running platformer with a dinosaur
 maintainer: Joe Vargas
 copyright: 2018 Joe Vargas
 data-files:
@@ -36,6 +36,7 @@ library:
     - lens
     - mtl
     - safe
+    - safe-exceptions
     - sdl2
     - sdl2-image
     - sdl2-mixer

@@ -22,6 +22,13 @@ data DinoAction
 data Sfx
   = Sfx'Jump
   | Sfx'Point
+  | Sfx'Duck
+  | Sfx'Bird
+  | Sfx'Bouncer
+  | Sfx'Hurt
+  | Sfx'Lava
+  | Sfx'Quake
+  | Sfx'Rock
   deriving (Show, Eq)
 
 data DinoKey
@@ -83,12 +90,6 @@ stepDinoPosition (Step'Change _ da) _ _ = case da of
   DinoAction'Move -> Animate.initPosition DinoKey'Move
   DinoAction'Duck -> Animate.initPosition DinoKey'Sneak
   DinoAction'Jump _ -> Animate.initPositionLoops DinoKey'Kick 0
-
-stepSfx :: Step DinoAction -> Bool -> [Sfx]
-stepSfx (Step'Sustain _) point = if point then [Sfx'Point] else []
-stepSfx (Step'Change _ da) point = case da of
-  DinoAction'Jump _ -> (if point then [Sfx'Point] else []) ++ [Sfx'Jump]
-  _ -> if point then [Sfx'Point] else []
 
 stepSpeed :: Step DinoAction -> Percent -> Percent
 stepSpeed dinoAction speed = clamp speed' 1 20
