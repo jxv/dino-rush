@@ -27,16 +27,16 @@ setInput' input = modify (\v -> v { vInput = input })
 
 stepControl :: [SDL.EventPayload] -> Input -> Input
 stepControl events Input{iSpace,iUp,iDown,iEscape} = Input
-  { iSpace = next 1 SDL.KeycodeSpace iSpace
-  , iUp = next 1 SDL.KeycodeUp iUp
-  , iDown = next 1 SDL.KeycodeDown iDown
-  , iEscape = next 1 SDL.KeycodeEscape iEscape
+  { iSpace = next 1 [SDL.KeycodeSpace] iSpace
+  , iUp = next 1 [SDL.KeycodeUp, SDL.KeycodeW] iUp
+  , iDown = next 1 [SDL.KeycodeDown, SDL.KeycodeS] iDown
+  , iEscape = next 1 [SDL.KeycodeEscape] iEscape
   , iQuit = elem SDL.QuitEvent events
   }
   where
-    next count keycode keystate
-      | pressed keycode = pressedKeyState
-      | released keycode = releasedKeyState
+    next count keycodes keystate
+      | or $ map pressed keycodes = pressedKeyState
+      | or $ map released keycodes = releasedKeyState
       | otherwise = maintainKeyState count keystate
     released keycode = or $ map (keycodeReleased keycode) events
     pressed keycode = or $ map (keycodePressed keycode) events

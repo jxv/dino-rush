@@ -97,9 +97,9 @@ instance Renderer DinoRush where
   drawBird = drawSprite (rBirdSprites . cResources)
   drawBouncer = drawSprite (rBouncerSprites . cResources)
   drawMountain = drawHorizontalScrollSprite (rMountainSprites . cResources) 16
-  drawJungle = drawHorizontalScrollImage (rJungle . cResources)
-  drawGround = drawHorizontalScrollImage (rGround . cResources)
-  drawRiver = drawHorizontalScrollImage (rNearground . cResources)
+  drawJungle = drawHorizontalScrollImage (rJungleSprites . cResources)
+  drawGround = drawHorizontalScrollImage (rGroundSprites . cResources)
+  drawRiver = drawHorizontalScrollImage (rRiverSprites . cResources)
 
 instance Title DinoRush where
   titleStep = titleStep'

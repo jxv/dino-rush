@@ -6,33 +6,20 @@ import System.Random
 import DinoRush.Engine.Types
 import DinoRush.Engine.Bird
 import DinoRush.Engine.Bouncer
-import DinoRush.Engine.Ground
-import DinoRush.Engine.Jungle
 import DinoRush.Engine.Lava
-import DinoRush.Engine.Mountain
-import DinoRush.Engine.River
 import DinoRush.Engine.Rock
+import DinoRush.Engine.Physics
 
 data ObstacleTag
-  = ObstacleTag'GroundShort
-  | ObstacleTag'GroundTall
-  | ObstacleTag'Air
-  | ObstacleTag'Bouncy
+  = ObstacleTag'Lava
+  | ObstacleTag'Rock
+  | ObstacleTag'Bird
+  | ObstacleTag'Bouncer
   deriving (Show, Eq, Ord, Bounded, Enum)
 
 instance Random ObstacleTag where
   randomR = randomRBoundedEnum
   random g = randomR (minBound, maxBound) g
-
-randomRBoundedEnum :: (Bounded a, Enum a, RandomGen g) => (a, a) -> g -> (a, g)
-randomRBoundedEnum (aMin, aMax) g = let
-  (index, g') = randomR (fromEnum aMin, fromEnum aMax) g
-  lastEnum = maxBound
-  a = [minBound..lastEnum] !! (index `mod` fromEnum lastEnum)
-  in (a, g')
-
-streamOfObstacles :: RandomGen g => g -> [(Int, ObstacleTag)]
-streamOfObstacles g = zip (map (\dist -> dist `mod` 20 + 1) $ randoms g) (randoms g)
 
 data ObstacleInfo
   = ObstacleInfo'Lava (Animate.Position LavaKey Seconds)
@@ -46,8 +33,18 @@ data ObstacleState = ObstacleState
   , osDistance :: Distance
   } deriving (Show, Eq)
 
+randomRBoundedEnum :: (Bounded a, Enum a, RandomGen g) => (a, a) -> g -> (a, g)
+randomRBoundedEnum (aMin, aMax) g = let
+  (index, g') = randomR (fromEnum aMin, fromEnum aMax) g
+  lastEnum = maxBound
+  a = [minBound..lastEnum] !! (index `mod` fromEnum lastEnum)
+  in (a, g')
+
+streamOfObstacles :: RandomGen g => g -> [(Int, ObstacleTag)]
+streamOfObstacles g = zip (map (\dist -> dist `mod` 18 + 3) $ randoms g) (randoms g)
+
 stepObstacles :: Distance -> [ObstacleState] -> [ObstacleState]
-stepObstacles delta = map (\o@ObstacleState{osDistance} -> ObstacleState{osDistance = osDistance - delta })
+stepObstacles delta = map (\o@ObstacleState{osDistance} -> o {osDistance = osDistance - delta })
 
 removeOutOfBoundObstacles :: [ObstacleState] -> ([ObstacleState], [ObstacleState])
 removeOutOfBoundObstacles os = foldr
@@ -58,4 +55,20 @@ removeOutOfBoundObstacles os = foldr
   ([], [])
   os
   where
-    inBounds x = x - 32 < 0
+    inBounds x = x + 32 < 0
+
+placeObstacle  :: (Int, ObstacleTag) -> ObstacleState
+placeObstacle (idxDist, obsTag) = ObstacleState
+  { osInfo = case obsTag of
+      ObstacleTag'Lava -> ObstacleInfo'Lava (Animate.initPosition LavaKey'Idle)
+      ObstacleTag'Rock -> ObstacleInfo'Rock (Animate.initPosition RockKey'Idle)
+      ObstacleTag'Bird -> ObstacleInfo'Bird (Animate.initPosition BirdKey'Idle)
+      ObstacleTag'Bouncer -> ObstacleInfo'Bouncer 0 (Animate.initPosition BouncerKey'Idle)
+  , osDistance = realToFrac (idxDist * 32) + realToFrac arenaWidth
+  }
+
+lastObstacleDistance :: [ObstacleState] -> Distance
+lastObstacleDistance os = maximum $ (realToFrac arenaWidth - 1) : map osDistance os
+
+canAddObstacle :: Distance -> Bool
+canAddObstacle dist = dist < realToFrac arenaWidth

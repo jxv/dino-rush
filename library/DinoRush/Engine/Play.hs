@@ -18,10 +18,10 @@ data PlayVars = PlayVars
   , pvDinoSfx :: [DinoSfx]
   , pvMountainPos :: Animate.Position MountainKey Seconds
   , pvDinoAction :: DinoAction
-  , pvMountainScroll :: Percent
-  , pvBackgroundPositionNear :: Percent
-  , pvGroundPosition :: Percent
-  , pvNeargroundPosition :: Percent
+  , pvMountainScroll :: Distance
+  , pvJungleScroll :: Distance
+  , pvGroundScroll :: Distance
+  , pvRiverScroll :: Distance
   , pvObstacles :: [ObstacleState]
   , pvUpcomingObstacles :: [(Int, ObstacleTag)]
   } deriving (Show, Eq)
@@ -39,9 +39,9 @@ initPlayVars upcomingObstacles = PlayVars
   , pvDinoSfx = []
   , pvMountainPos = Animate.initPosition MountainKey'Idle
   , pvMountainScroll = 0
-  , pvBackgroundPositionNear = 0
-  , pvGroundPosition = 0
-  , pvNeargroundPosition = 0
+  , pvJungleScroll = 0
+  , pvGroundScroll = 0
+  , pvRiverScroll = 0
   , pvObstacles = []
   , pvUpcomingObstacles = upcomingObstacles
   }

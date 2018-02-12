@@ -27,5 +27,5 @@ newtype Seconds = Seconds Float
 newtype Score = Score Int
   deriving (Show, Eq, Num, Integral, Real, Ord, Enum)
 
-clamp :: Percent -> Percent -> Percent
-clamp cur max' = if cur > max' then max' else cur
+clamp :: Percent -> Percent -> Percent -> Percent
+clamp cur min' max' = if cur > max' then max' else (if cur < min' then min' else cur)

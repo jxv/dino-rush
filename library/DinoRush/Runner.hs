@@ -56,7 +56,9 @@ mainLoop = do
   when (nextScene /= scene) $ do
     case nextScene of
       Scene'Title -> titleTransition
-      Scene'Play -> playTransition
+      Scene'Play -> case scene of
+        Scene'Title -> playTransition
+        _ -> return ()
       Scene'Pause -> return ()
       Scene'GameOver -> return ()
       Scene'Quit -> return ()

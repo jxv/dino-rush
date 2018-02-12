@@ -30,29 +30,38 @@ stepHorizontal percent speed = if percent' <= -1 then percent' + 1 else percent'
   where
     percent' = percent - speed
 
+stepHorizontalDistance :: Distance -> Distance -> Distance
+stepHorizontalDistance dist speed = if dist' <= -1280 then dist' + 1280 else dist'
+  where
+    dist' = dist + speed
+
 drawPlay :: (HasPlayVars s, MonadState s m, Renderer m) => m ()
 drawPlay = do
   dinoAnimations <- getDinoAnimations
-  lavaAnimations <- getLavaAnimations
-  rockAnimations <- getRockAnimations
-  birdAnimations <- getBirdAnimations
-  bouncerAnimations <- getBouncerAnimations
   mountainAnimations <- getMountainAnimations
   pv <- gets (view playVars)
   let dinoLoc = Animate.currentLocation dinoAnimations (pvDinoPos pv)
   let mountainLoc = Animate.currentLocation mountainAnimations (pvMountainPos pv)
-  drawMountain mountainLoc (truncate $ 1280 * pvMountainScroll pv, mountainY)
-  drawJungle (truncate $ 1280 * pvBackgroundPositionNear pv, jungleY)
-  drawGround (truncate $ 1280 * pvGroundPosition pv, groundY)
-  forM_ (pvObstacles pv) $ \ObstacleState{osInfo,osDistance} -> let
-    x = truncate $ osDistance * 16
-    in case osInfo of
-      ObstacleInfo'Lava pos -> drawLava (Animate.currentLocation lavaAnimations pos) (x, 0)
-      ObstacleInfo'Rock pos -> drawRock (Animate.currentLocation rockAnimations pos) (x, 0)
-      ObstacleInfo'Bird pos -> drawBird (Animate.currentLocation birdAnimations pos) (x, 0)
-      ObstacleInfo'Bouncer percentY pos -> drawBouncer (Animate.currentLocation bouncerAnimations pos) (x, truncate percentY + 0)
+  drawMountain mountainLoc (truncate $ pvMountainScroll pv, mountainY)
+  drawJungle (truncate $ pvJungleScroll pv, jungleY)
+  drawGround (truncate $ pvGroundScroll pv, groundY)
   drawDino dinoLoc (200, dinoHeight (pvDinoAction pv))
-  drawRiver (truncate $ 1280 * pvNeargroundPosition pv, riverY)
+  drawObstacles (pvObstacles pv)
+  drawRiver (truncate $ pvRiverScroll pv, riverY)
+
+drawObstacles :: Renderer m => [ObstacleState] -> m ()
+drawObstacles obstacles = do
+  lavaAnimations <- getLavaAnimations
+  rockAnimations <- getRockAnimations
+  birdAnimations <- getBirdAnimations
+  bouncerAnimations <- getBouncerAnimations
+  forM_ obstacles $ \ObstacleState{osInfo,osDistance} -> let
+    x = truncate osDistance
+    in case osInfo of
+      ObstacleInfo'Lava pos -> drawLava (Animate.currentLocation lavaAnimations pos) (x, 16 * 28)
+      ObstacleInfo'Rock pos -> drawRock (Animate.currentLocation rockAnimations pos) (x, 16 * 26)
+      ObstacleInfo'Bird pos -> drawBird (Animate.currentLocation birdAnimations pos) (x, 16 * 22)
+      ObstacleInfo'Bouncer percentY pos -> drawBouncer (Animate.currentLocation bouncerAnimations pos) (x, truncate percentY + 16 * 26)
 
 playStep' :: (HasPlayVars s, MonadState s m, Logger m, Clock m, Renderer m, Audio m, HasInput m, SceneManager m) => m ()
 playStep' = do
@@ -76,16 +85,21 @@ updatePlay = do
   pv' <- gets (view playVars)
   let dinoAction = stepDinoAction input (pvDinoAction pv')
   let (removed, remained) = removeOutOfBoundObstacles $ stepObstacles (realToFrac (pvSpeed pv')) (pvObstacles pv')
+  let (upcomingObstacles, obstacles) = if canAddObstacle (lastObstacleDistance remained)
+        then (tail $ pvUpcomingObstacles pv', (placeObstacle $ head $ pvUpcomingObstacles pv') : remained)
+        else (pvUpcomingObstacles pv', remained)
+  let speed = stepSpeed dinoAction (pvSpeed pv')
   modify $ playVars %~ (\pv -> pv
     { pvDinoPos = stepDinoPosition dinoAction dinoAnimations (pvDinoPos pv)
     , pvMountainPos = Animate.stepPosition mountainAnimations (pvMountainPos pv) frameDeltaSeconds
-    , pvMountainScroll = stepHorizontal (pvMountainScroll pv) (pvSpeed pv * 0.003)
-    , pvBackgroundPositionNear = stepHorizontal (pvBackgroundPositionNear pv) (pvSpeed pv * 0.006)
-    , pvGroundPosition = stepHorizontal (pvGroundPosition pv) (pvSpeed pv * 0.009)
-    , pvNeargroundPosition = stepHorizontal (pvNeargroundPosition pv) (pvSpeed pv * 0.012)
-    , pvSpeed = clamp (pvSpeed pv + 0.01) 5
+    , pvMountainScroll = stepHorizontalDistance (realToFrac $ pvMountainScroll pv) (realToFrac (-speed) / 3)
+    , pvJungleScroll = stepHorizontalDistance (realToFrac $ pvJungleScroll pv) (realToFrac (-speed) / 2)
+    , pvGroundScroll = stepHorizontalDistance (realToFrac $ pvGroundScroll pv) (realToFrac (-speed))
+    , pvRiverScroll = stepHorizontalDistance (realToFrac $ pvRiverScroll pv) (realToFrac (-speed) * 1.5)
+    , pvSpeed = speed
     , pvDinoAction = smash dinoAction
     , pvDinoSfx = stepDinoSfx dinoAction
-    , pvObstacles = remained
+    , pvObstacles = obstacles
     , pvScore = pvScore pv + fromIntegral (length removed)
+    , pvUpcomingObstacles = upcomingObstacles
     })

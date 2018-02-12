@@ -39,9 +39,9 @@ loadResources renderer = do
   rockSprites <- Animate.readSpriteSheetJSON loadTexture "resource/rock.json" :: IO (Animate.SpriteSheet RockKey SDL.Texture Seconds)
   return Resources
     { rMountainSprites = mountainSprites
-    , rJungle = jungle
-    , rGround = ground
-    , rNearground = river
+    , rJungleSprites = jungle
+    , rGroundSprites = ground
+    , rRiverSprites = river
     , rDinoSprites = dinoSprites
     , rBirdSprites = birdSprites
     , rBouncerSprites = bouncerSprites
@@ -56,9 +56,9 @@ loadResources renderer = do
 freeResources :: Resources -> IO ()
 freeResources r = do
   SDL.destroyTexture $ Animate.ssImage (rMountainSprites r)
-  SDL.destroyTexture (rJungle r)
-  SDL.destroyTexture (rGround r)
-  SDL.destroyTexture (rNearground r)
+  SDL.destroyTexture (rJungleSprites r)
+  SDL.destroyTexture (rGroundSprites r)
+  SDL.destroyTexture (rRiverSprites r)
   SDL.destroyTexture $ Animate.ssImage (rDinoSprites r)
   SDL.destroyTexture $ Animate.ssImage (rBirdSprites r)
   SDL.destroyTexture $ Animate.ssImage (rLavaSprites r)
