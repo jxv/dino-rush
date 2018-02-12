@@ -2,10 +2,11 @@ module DinoRush.Engine.Dino where
 
 import qualified Safe
 import qualified Animate
-
 import Data.Text (Text)
+import Linear (V2(..))
 import KeyState
 
+import DinoRush.Engine.Camera
 import DinoRush.Engine.Frame
 import DinoRush.Engine.Types
 import DinoRush.Engine.Obstacle
@@ -53,8 +54,11 @@ dinoKey'keyName = \case
 dinoX :: Float
 dinoX = 200
 
-dinoY :: Int
+dinoY :: Num a => a
 dinoY = 16 * 26 - 8
+
+duckCamera :: Camera
+duckCamera = Camera (V2 ((dinoX + screenWidth) / 2) ((screenHeight + dinoY) / 2)) (V2 2 2)
 
 rightEdge :: Float
 rightEdge = arenaWidth - (dinoX + 48)

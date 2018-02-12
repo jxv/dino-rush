@@ -10,9 +10,11 @@ import KeyState
 
 import DinoRush.Effect.Audio
 import DinoRush.Effect.Clock
+import DinoRush.Effect.Camera
 import DinoRush.Effect.Logger
 import DinoRush.Effect.Renderer
 import DinoRush.Engine.Input
+import DinoRush.Engine.Camera
 import DinoRush.Engine.Frame
 import DinoRush.Engine.Types
 import DinoRush.Engine.Step
@@ -76,7 +78,7 @@ drawObstacles obstacles = do
       ObstacleInfo'Bird pos -> drawBird (Animate.currentLocation birdAnimations pos) (x, 16 * 22)
       ObstacleInfo'Bouncer percentY pos -> drawBouncer (Animate.currentLocation bouncerAnimations pos) (x, truncate percentY + 16 * 26)
 
-playStep' :: (HasPlayVars s, MonadState s m, Logger m, Clock m, Renderer m, Audio m, HasInput m, SceneManager m) => m ()
+playStep' :: (HasPlayVars s, MonadState s m, Logger m, CameraControl m, Clock m, Renderer m, Audio m, HasInput m, SceneManager m) => m ()
 playStep' = do
   input <- getInput
   when (ksStatus (iSpace input) == KeyStatus'Pressed) (toScene Scene'Pause)
@@ -98,7 +100,7 @@ sfxPlay = do
     Sfx'Quake -> playQuakeSfx
     Sfx'Rock -> playRockSfx
 
-updatePlay :: (HasPlayVars s, MonadState s m, Logger m, Clock m, Renderer m, HasInput m, SceneManager m) => m ()
+updatePlay :: (HasPlayVars s, MonadState s m, Logger m, Clock m, CameraControl m, Renderer m, HasInput m, SceneManager m) => m ()
 updatePlay = do
   input <- getInput
   dinoAnimations <- getDinoAnimations
@@ -115,6 +117,10 @@ updatePlay = do
         Nothing -> (pvUpcomingObstacles pv', remained)
         Just obstacle -> (tail $ pvUpcomingObstacles pv', obstacle : remained)
   let speed = stepSpeed dinoAction (pvSpeed pv')
+  let zoom' = case dinoAction of
+        Step'Sustain DinoAction'Duck -> clamp (pvZoom pv' - 0.01) 0 1
+        _ -> clamp (pvZoom pv' + 0.01) 0 1
+  adjustCamera $ lerpCamera ((1 - zoom') ^ (2 :: Int)) duckCamera initCamera
   modify $ playVars %~ (\pv -> pv
     { pvDinoPos = stepDinoPosition dinoAction dinoAnimations (pvDinoPos pv)
     , pvMountainPos = Animate.stepPosition mountainAnimations (pvMountainPos pv) frameDeltaSeconds
@@ -123,6 +129,7 @@ updatePlay = do
     , pvGroundScroll = stepHorizontalDistance (realToFrac $ pvGroundScroll pv) (realToFrac (-speed))
     , pvRiverScroll = stepHorizontalDistance (realToFrac $ pvRiverScroll pv) (realToFrac (-speed) * 1.5)
     , pvSpeed = speed
+    , pvZoom = zoom'
     , pvDinoAction = smash dinoAction
     , pvSfx = stepSfx dinoAction (not $ null removed) (fmap fst newObstacle)
     , pvObstacles = obstacles

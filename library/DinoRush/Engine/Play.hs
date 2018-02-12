@@ -13,6 +13,7 @@ data PlayVars = PlayVars
   { pvScore :: Score
   , pvLives :: Lives
   , pvSpeed :: Percent
+  , pvZoom :: Float
   , pvProgress :: Distance
   , pvDinoPos :: Animate.Position DinoKey Seconds
   , pvSfx :: [Sfx]
@@ -34,6 +35,7 @@ initPlayVars upcomingObstacles = PlayVars
   , pvLives = 1
   , pvSpeed = 1
   , pvProgress = 0
+  , pvZoom = 1
   , pvDinoAction = DinoAction'Move
   , pvDinoPos = Animate.initPosition DinoKey'Move
   , pvSfx = []

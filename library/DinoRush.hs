@@ -15,6 +15,7 @@ import System.Random
 
 import DinoRush.Config
 import DinoRush.Effect.Audio
+import DinoRush.Effect.Camera
 import DinoRush.Effect.Clock
 import DinoRush.Effect.Logger
 import DinoRush.Effect.Renderer
@@ -118,3 +119,6 @@ instance Play DinoRush where
 
 instance Pause DinoRush where
   pauseStep = pauseStep'
+
+instance CameraControl DinoRush where
+  adjustCamera = adjustCamera'

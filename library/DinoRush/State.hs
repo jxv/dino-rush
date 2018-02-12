@@ -5,6 +5,7 @@ import Control.Lens
 
 import DinoRush.Manager.Scene
 import DinoRush.Engine.Input
+import DinoRush.Engine.Camera
 import DinoRush.Engine.Obstacle
 import DinoRush.Engine.Play
 import DinoRush.Engine.Title
@@ -15,10 +16,11 @@ data Vars = Vars
   , vTitle :: TitleVars
   , vPlay :: PlayVars
   , vInput :: Input
+  , vCamera :: Camera
   } deriving (Show, Eq)
 
 initVars :: [(Int, ObstacleTag)] -> Vars
-initVars mkObstacles = Vars Scene'Title Scene'Title initTitleVars (initPlayVars mkObstacles) initInput
+initVars mkObstacles = Vars Scene'Title Scene'Title initTitleVars (initPlayVars mkObstacles) initInput initCamera
 
 instance HasTitleVars Vars where
   titleVars = lens vTitle (\v s -> v { vTitle = s })

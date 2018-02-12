@@ -9,9 +9,11 @@ import KeyState
 
 import DinoRush.Config
 import DinoRush.Effect.Audio
+import DinoRush.Effect.Camera
 import DinoRush.Effect.Clock
 import DinoRush.Effect.Logger
 import DinoRush.Effect.Renderer
+import DinoRush.Engine.Camera
 import DinoRush.Engine.Input
 import DinoRush.Engine.Frame
 import DinoRush.Engine.Play
@@ -25,8 +27,10 @@ import DinoRush.Scene.Title
 
 import DinoRush.State
 
-titleTransition :: (HasTitleVars a, MonadState a m) => m ()
-titleTransition = modify $ titleVars .~ initTitleVars
+titleTransition :: (HasTitleVars a, MonadState a m, CameraControl m) => m ()
+titleTransition = do
+  adjustCamera initCamera
+  modify $ titleVars .~ initTitleVars
 
 playTransition :: (HasPlayVars a, MonadState a m, Audio m) => m ()
 playTransition = do
@@ -37,7 +41,7 @@ playTransition = do
 toScene' :: MonadState Vars m => Scene -> m ()
 toScene' scene = modify (\v -> v { vNextScene = scene })
 
-mainLoop :: (MonadReader Config m, MonadState Vars m, Audio m, Logger m, Clock m, Renderer m, HasInput m, Title m, Play m, Pause m) => m ()
+mainLoop :: (MonadReader Config m, MonadState Vars m, Audio m, Logger m, Clock m, CameraControl m, Renderer m, HasInput m, Title m, Play m, Pause m) => m ()
 mainLoop = do
   updateInput
   input <- getInput
