@@ -44,7 +44,8 @@ streamOfObstacles :: RandomGen g => g -> [(Int, ObstacleTag)]
 streamOfObstacles g = zip (map (\dist -> dist `mod` 18 + 3) $ randoms g) (randoms g)
 
 stepObstacles :: Distance -> [ObstacleState] -> [ObstacleState]
-stepObstacles delta = map (\o@ObstacleState{osDistance} -> o {osDistance = osDistance - delta })
+stepObstacles delta = map
+  (\o@ObstacleState{osInfo, osDistance} -> o { osDistance = osDistance - (case osInfo of ObstacleInfo'Bird _ -> delta * 2; _ -> delta) })
 
 removeOutOfBoundObstacles :: [ObstacleState] -> ([ObstacleState], [ObstacleState])
 removeOutOfBoundObstacles os = foldr

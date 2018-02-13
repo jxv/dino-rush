@@ -4,10 +4,11 @@ module DinoRush.Engine.Play where
 import qualified Animate
 import Control.Lens
 
-import DinoRush.Engine.Types
 import DinoRush.Engine.Dino
 import DinoRush.Engine.Mountain
 import DinoRush.Engine.Obstacle
+import DinoRush.Engine.Sfx
+import DinoRush.Engine.Types
 
 data PlayVars = PlayVars
   { pvScore :: Score

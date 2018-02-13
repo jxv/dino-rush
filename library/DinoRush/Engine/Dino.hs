@@ -20,18 +20,6 @@ data DinoAction
   | DinoAction'Jump Percent
   deriving (Show, Eq)
 
-data Sfx
-  = Sfx'Jump
-  | Sfx'Point
-  | Sfx'Duck
-  | Sfx'Bird
-  | Sfx'Bouncer
-  | Sfx'Hurt
-  | Sfx'Lava
-  | Sfx'Quake
-  | Sfx'Rock
-  deriving (Show, Eq)
-
 data DinoKey
   = DinoKey'Idle
   | DinoKey'Move
@@ -99,5 +87,5 @@ stepSpeed :: Step DinoAction -> Percent -> Percent
 stepSpeed dinoAction speed = clamp speed' 1 20
   where
     speed'
-      | Step'Sustain DinoAction'Duck == dinoAction = speed - 0.06
+      | Step'Sustain DinoAction'Duck == dinoAction = speed - 0.1
       | otherwise = speed + 0.03
