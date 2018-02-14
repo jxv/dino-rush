@@ -59,8 +59,16 @@ rightEdge :: Float
 rightEdge = arenaWidth - (dinoX + 48)
 
 dinoHeight :: Maybe Percent -> Int
-dinoHeight (Just (Percent percent)) = truncate (sin (percent * pi) * (-32 * 4)) + dinoY
-dinoHeight _ = dinoY
+dinoHeight p = truncate (dinoHeight' p)
+
+dinoHeight' :: Maybe Percent -> Float
+dinoHeight' (Just (Percent percent)) = sin (percent * pi) * (-32 * 4) + dinoY
+dinoHeight' _ = dinoY
+
+dinoAabb :: Maybe Percent -> Aabb
+dinoAabb maybeHeight = Aabb (V2 dinoX y) (V2 (dinoX + 32) (y + 48))
+  where
+    y = dinoHeight' maybeHeight
 
 distanceFromLastObstacle :: [(Float, ObstacleTag)] -> Float
 distanceFromLastObstacle obstacles = case Safe.lastMay obstacles of

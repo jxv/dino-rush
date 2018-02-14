@@ -2,6 +2,7 @@ module DinoRush.Engine.Obstacle where
 
 import qualified Animate
 import System.Random
+import Linear (V2(..))
 
 import DinoRush.Engine.Types
 import DinoRush.Engine.Bird
@@ -32,6 +33,15 @@ data ObstacleState = ObstacleState
   { osInfo :: ObstacleInfo
   , osDistance :: Distance
   } deriving (Show, Eq)
+
+obstacleAabb :: ObstacleState -> Aabb
+obstacleAabb ObstacleState{osInfo,osDistance} = case osInfo of
+  ObstacleInfo'Lava _ -> Aabb (V2 (0 + dist) 0) (V2 (32 + dist) 32)
+  ObstacleInfo'Rock _ -> Aabb (V2 (0 + dist) 0) (V2 (32 + dist) 32)
+  ObstacleInfo'Bird _ -> Aabb (V2 (0 + dist) 0) (V2 (32 + dist) 32)
+  ObstacleInfo'Bouncer _ _ -> Aabb (V2 (0 + dist) 0) (V2 (32 + dist) 32)
+  where
+    dist = realToFrac osDistance
 
 randomRBoundedEnum :: (Bounded a, Enum a, RandomGen g) => (a, a) -> g -> (a, g)
 randomRBoundedEnum (aMin, aMax) g = let

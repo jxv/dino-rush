@@ -22,6 +22,7 @@ import DinoRush.Engine.Dino
 import DinoRush.Engine.Obstacle
 import DinoRush.Engine.Play
 import DinoRush.Engine.Sfx
+import DinoRush.Engine.Physics
 import DinoRush.Manager.Scene
 import DinoRush.Manager.Input
 
@@ -120,15 +121,28 @@ iterateObstacles upcomingObstacles speed obstacles = let
     Just obstacle -> (tail $ upcomingObstacles, obstacle : remained)
   in (obstacles', length removed, upcomingObstacles', fmap fst newObstacle)
 
+applyHurt :: Bool -> Step DinoAction -> Step DinoAction
+applyHurt collision stepDa
+  | collision = case stepDa of
+      Step'Sustain DinoAction'Hurt -> stepDa
+      Step'Sustain da -> Step'Change da DinoAction'Hurt
+      Step'Change da _ -> Step'Change da DinoAction'Hurt
+  | otherwise = stepDa
+
+detectCollision :: [ObstacleState] -> DinoState -> Bool
+detectCollision obstacles dinoState = or $ flip map obstacles $ \obs -> collisionIntersect (dinoAabb (dsHeight dinoState)) (obstacleAabb obs)
+
 updatePlay :: (HasPlayVars s, MonadState s m, Logger m, Clock m, CameraControl m, Renderer m, HasInput m, SceneManager m) => m ()
 updatePlay = do
   input <- getInput
   dinoAnimations <- getDinoAnimations
   mountainAnimations <- getMountainAnimations
   pv' <- gets (view playVars)
-  let dinoAction = stepDinoAction input (pvDinoState pv')
-  let speed = stepSpeed dinoAction (pvSpeed pv')
+  let dinoAction' = stepDinoAction input (pvDinoState pv')
+  let speed = stepSpeed dinoAction' (pvSpeed pv')
   let (obstacles, removedCount, upcomingObstacles, newObstacleTag) = iterateObstacles (pvUpcomingObstacles pv') speed (pvObstacles pv')
+  let collision = detectCollision obstacles (pvDinoState pv')
+  let dinoAction = applyHurt collision dinoAction'
   let zoom' = stepZoom (pvZoom pv') (smash dinoAction)
   let dinoState = stepDinoState dinoAction (pvDinoState pv')
   adjustCamera $ lerpCamera ((1 - zoom') ** (1.8 :: Float)) duckCamera initCamera
