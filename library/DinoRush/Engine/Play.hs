@@ -19,7 +19,7 @@ data PlayVars = PlayVars
   , pvDinoPos :: Animate.Position DinoKey Seconds
   , pvSfx :: [Sfx]
   , pvMountainPos :: Animate.Position MountainKey Seconds
-  , pvDinoAction :: DinoAction
+  , pvDinoState :: DinoState
   , pvMountainScroll :: Distance
   , pvJungleScroll :: Distance
   , pvGroundScroll :: Distance
@@ -37,7 +37,7 @@ initPlayVars upcomingObstacles = PlayVars
   , pvSpeed = 1
   , pvProgress = 0
   , pvZoom = 1
-  , pvDinoAction = DinoAction'Move
+  , pvDinoState = DinoState DinoAction'Move Nothing Nothing
   , pvDinoPos = Animate.initPosition DinoKey'Move
   , pvSfx = []
   , pvMountainPos = Animate.initPosition MountainKey'Idle

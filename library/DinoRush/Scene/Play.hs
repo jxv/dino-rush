@@ -40,8 +40,9 @@ stepSfx dinoAction point obstacle = dinoSfx ++ pointSfx ++ obstacleSfx
     dinoSfx = case dinoAction of
       Step'Sustain _ -> []
       Step'Change _ da -> case da of
-        DinoAction'Jump _ -> [Sfx'Jump]
+        DinoAction'Jump -> [Sfx'Jump]
         DinoAction'Duck -> [Sfx'Duck]
+        DinoAction'Hurt -> [Sfx'Hurt]
         _ -> []
     obstacleSfx = case obstacle of
       Nothing -> []
@@ -61,7 +62,7 @@ drawPlay = do
   drawMountain mountainLoc (truncate $ pvMountainScroll pv, mountainY)
   drawJungle (truncate $ pvJungleScroll pv, jungleY)
   drawGround (truncate $ pvGroundScroll pv, groundY)
-  drawDino dinoLoc (truncate dinoX, dinoHeight (pvDinoAction pv))
+  drawDino dinoLoc (truncate dinoX, dinoHeight (dsHeight $ pvDinoState pv))
   drawObstacles (pvObstacles pv)
   drawRiver (truncate $ pvRiverScroll pv, riverY)
 
@@ -101,9 +102,9 @@ sfxPlay = do
     Sfx'Quake -> playQuakeSfx
     Sfx'Rock -> playRockSfx
 
-stepZoom :: Float -> Step DinoAction -> Float
+stepZoom :: Float -> DinoAction -> Float
 stepZoom zoom dinoAction = case dinoAction of
-  Step'Sustain DinoAction'Duck -> clamp (zoom - 0.01) 0 1
+  DinoAction'Duck -> clamp (zoom - 0.01) 0 1
   _ -> clamp (zoom + 0.05) 0 1
 
 iterateObstacles :: [(Int, ObstacleTag)] -> Percent -> [ObstacleState] -> ([ObstacleState], Int, [(Int, ObstacleTag)], Maybe ObstacleTag)
@@ -125,10 +126,11 @@ updatePlay = do
   dinoAnimations <- getDinoAnimations
   mountainAnimations <- getMountainAnimations
   pv' <- gets (view playVars)
-  let dinoAction = stepDinoAction input (pvDinoAction pv')
+  let dinoAction = stepDinoAction input (pvDinoState pv')
   let speed = stepSpeed dinoAction (pvSpeed pv')
   let (obstacles, removedCount, upcomingObstacles, newObstacleTag) = iterateObstacles (pvUpcomingObstacles pv') speed (pvObstacles pv')
-  let zoom' = stepZoom (pvZoom pv') dinoAction
+  let zoom' = stepZoom (pvZoom pv') (smash dinoAction)
+  let dinoState = stepDinoState dinoAction (pvDinoState pv')
   adjustCamera $ lerpCamera ((1 - zoom') ** (1.8 :: Float)) duckCamera initCamera
   modify $ playVars %~ (\pv -> pv
     { pvDinoPos = stepDinoPosition dinoAction dinoAnimations (pvDinoPos pv)
@@ -139,7 +141,7 @@ updatePlay = do
     , pvRiverScroll = stepHorizontalDistance (realToFrac $ pvRiverScroll pv) (realToFrac (-speed) * 1.5)
     , pvSpeed = speed
     , pvZoom = zoom'
-    , pvDinoAction = smash dinoAction
+    , pvDinoState = dinoState
     , pvSfx = stepSfx dinoAction (removedCount > 0) newObstacleTag
     , pvObstacles = obstacles
     , pvScore = pvScore pv + fromIntegral removedCount

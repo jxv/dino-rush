@@ -17,8 +17,15 @@ import DinoRush.Engine.Physics
 data DinoAction
   = DinoAction'Move
   | DinoAction'Duck
-  | DinoAction'Jump Percent
+  | DinoAction'Jump
+  | DinoAction'Hurt
   deriving (Show, Eq)
+
+data DinoState = DinoState
+  { dsAction :: DinoAction
+  , dsHeight :: Maybe Percent
+  , dsRecover :: Maybe Percent
+  } deriving (Show, Eq)
 
 data DinoKey
   = DinoKey'Idle
@@ -51,8 +58,8 @@ duckCamera = Camera (V2 ((dinoX + screenWidth) / 2) ((screenHeight + dinoY) / 2)
 rightEdge :: Float
 rightEdge = arenaWidth - (dinoX + 48)
 
-dinoHeight :: DinoAction -> Int
-dinoHeight (DinoAction'Jump (Percent percent)) = truncate (sin (percent * pi) * (-32 * 4)) + dinoY
+dinoHeight :: Maybe Percent -> Int
+dinoHeight (Just (Percent percent)) = truncate (sin (percent * pi) * (-32 * 4)) + dinoY
 dinoHeight _ = dinoY
 
 distanceFromLastObstacle :: [(Float, ObstacleTag)] -> Float
@@ -60,28 +67,57 @@ distanceFromLastObstacle obstacles = case Safe.lastMay obstacles of
   Nothing -> rightEdge
   Just (dist, _) -> rightEdge - dist
 
-stepDinoAction :: Input -> DinoAction -> Step DinoAction
-stepDinoAction input da = case da of
-  DinoAction'Move -> case ksStatus (iDown input) of
-    KeyStatus'Pressed -> Step'Change da DinoAction'Duck
-    KeyStatus'Held -> Step'Change da DinoAction'Duck
-    _ -> case ksStatus (iUp input) of
-      KeyStatus'Pressed -> Step'Change da $ DinoAction'Jump 0
-      KeyStatus'Held -> Step'Change da $ DinoAction'Jump 0
+stepDinoAction :: Input -> DinoState -> Step DinoAction
+stepDinoAction input ds = case da of
+  DinoAction'Move -> case ksStatus (iUp input) of
+    KeyStatus'Pressed -> Step'Change da DinoAction'Jump
+    KeyStatus'Held -> Step'Change da DinoAction'Jump
+    _ -> case ksStatus (iDown input) of
+      KeyStatus'Pressed -> Step'Change da DinoAction'Duck
+      KeyStatus'Held -> Step'Change da DinoAction'Duck
       _ -> Step'Sustain DinoAction'Move
-  DinoAction'Duck -> case ksStatus (iDown input) of
-    KeyStatus'Held -> Step'Sustain DinoAction'Duck
-    _ -> Step'Change da DinoAction'Move
-  DinoAction'Jump percent -> if percent >= 1
-    then Step'Change da DinoAction'Move
-    else Step'Sustain $ DinoAction'Jump (clamp (percent + 0.04) 0 1)
+  DinoAction'Duck -> case ksStatus (iUp input) of
+    KeyStatus'Pressed -> Step'Change da DinoAction'Jump
+    KeyStatus'Held -> Step'Change da DinoAction'Jump
+    _ -> case ksStatus (iDown input) of
+      KeyStatus'Pressed -> Step'Sustain DinoAction'Duck
+      KeyStatus'Held -> Step'Sustain DinoAction'Duck
+      _ -> Step'Change da DinoAction'Move
+  DinoAction'Jump -> case dsHeight ds of
+    Nothing -> Step'Change da DinoAction'Move
+    Just p -> if p < 1 then Step'Sustain da else Step'Change da DinoAction'Move
+  DinoAction'Hurt -> case dsRecover ds of
+    Nothing -> Step'Change da DinoAction'Move
+    Just p -> if p < 1 then Step'Sustain da else Step'Change da DinoAction'Move
+  where
+    da = dsAction ds
+
+stepDinoState :: Step DinoAction -> DinoState -> DinoState
+stepDinoState stepDa ds = case stepDa of
+    Step'Change _ da -> case da of
+      DinoAction'Jump -> DinoState da (Just 0) recover
+      DinoAction'Hurt -> DinoState da height (Just 0)
+      _ -> DinoState nextAction height recover
+    Step'Sustain _ -> DinoState nextAction height recover
+  where
+    nextAction
+      | recover /= Nothing = DinoAction'Hurt
+      | height /= Nothing = DinoAction'Jump
+      | otherwise = smash stepDa
+    height = case dsHeight ds of
+      Just p -> if p < 1 then Just (clamp (p + 0.04) 0 1) else Nothing
+      Nothing -> Nothing
+    recover = case dsRecover ds of
+      Just p -> if p < 1 then Just (clamp (p + 0.02) 0 1) else Nothing
+      Nothing -> Nothing
 
 stepDinoPosition :: Step DinoAction -> Animations DinoKey -> Animate.Position DinoKey Seconds -> Animate.Position DinoKey Seconds
 stepDinoPosition (Step'Sustain _) animations pos = Animate.stepPosition animations pos frameDeltaSeconds
 stepDinoPosition (Step'Change _ da) _ _ = case da of
   DinoAction'Move -> Animate.initPosition DinoKey'Move
   DinoAction'Duck -> Animate.initPosition DinoKey'Sneak
-  DinoAction'Jump _ -> Animate.initPositionLoops DinoKey'Kick 0
+  DinoAction'Jump -> Animate.initPositionLoops DinoKey'Kick 0
+  DinoAction'Hurt -> Animate.initPosition DinoKey'Hurt
 
 stepSpeed :: Step DinoAction -> Percent -> Percent
 stepSpeed dinoAction speed = clamp speed' 1 20
