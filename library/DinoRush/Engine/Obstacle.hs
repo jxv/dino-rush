@@ -34,12 +34,18 @@ data ObstacleState = ObstacleState
   , osDistance :: Distance
   } deriving (Show, Eq)
 
+lavaY, rockY, birdY, bouncerY :: Num a => a
+lavaY = 16 * 28
+rockY = 16 * 26
+birdY = 16 * 22
+bouncerY = 16 * 26
+
 obstacleAabb :: ObstacleState -> Aabb
 obstacleAabb ObstacleState{osInfo,osDistance} = case osInfo of
-  ObstacleInfo'Lava _ -> Aabb (V2 (0 + dist) 0) (V2 (32 + dist) 32)
-  ObstacleInfo'Rock _ -> Aabb (V2 (0 + dist) 0) (V2 (32 + dist) 32)
-  ObstacleInfo'Bird _ -> Aabb (V2 (0 + dist) 0) (V2 (32 + dist) 32)
-  ObstacleInfo'Bouncer _ _ -> Aabb (V2 (0 + dist) 0) (V2 (32 + dist) 32)
+  ObstacleInfo'Lava _ -> Aabb (V2 (0 + dist) lavaY) (V2 (32 + dist) (lavaY + 32))
+  ObstacleInfo'Rock _ -> Aabb (V2 (0 + dist) rockY) (V2 (32 + dist) (rockY + 32))
+  ObstacleInfo'Bird _ -> Aabb (V2 (0 + dist) birdY) (V2 (32 + dist) (birdY + 32))
+  ObstacleInfo'Bouncer _ _ -> Aabb (V2 (0 + dist) bouncerY) (V2 (32 + dist) (bouncerY + 32))
   where
     dist = realToFrac osDistance
 

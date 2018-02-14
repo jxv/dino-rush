@@ -76,10 +76,10 @@ drawObstacles obstacles = do
   forM_ obstacles $ \ObstacleState{osInfo,osDistance} -> let
     x = truncate osDistance
     in case osInfo of
-      ObstacleInfo'Lava pos -> drawLava (Animate.currentLocation lavaAnimations pos) (x, 16 * 28)
-      ObstacleInfo'Rock pos -> drawRock (Animate.currentLocation rockAnimations pos) (x, 16 * 26)
-      ObstacleInfo'Bird pos -> drawBird (Animate.currentLocation birdAnimations pos) (x, 16 * 22)
-      ObstacleInfo'Bouncer percentY pos -> drawBouncer (Animate.currentLocation bouncerAnimations pos) (x, truncate percentY + 16 * 26)
+      ObstacleInfo'Lava pos -> drawLava (Animate.currentLocation lavaAnimations pos) (x, lavaY)
+      ObstacleInfo'Rock pos -> drawRock (Animate.currentLocation rockAnimations pos) (x, rockY)
+      ObstacleInfo'Bird pos -> drawBird (Animate.currentLocation birdAnimations pos) (x, birdY)
+      ObstacleInfo'Bouncer percentY pos -> drawBouncer (Animate.currentLocation bouncerAnimations pos) (x, truncate percentY + bouncerY)
 
 playStep' :: (HasPlayVars s, MonadState s m, Logger m, CameraControl m, Clock m, Renderer m, Audio m, HasInput m, SceneManager m) => m ()
 playStep' = do
@@ -130,7 +130,8 @@ applyHurt collision stepDa
   | otherwise = stepDa
 
 detectCollision :: [ObstacleState] -> DinoState -> Bool
-detectCollision obstacles dinoState = or $ flip map obstacles $ \obs -> collisionIntersect (dinoAabb (dsHeight dinoState)) (obstacleAabb obs)
+detectCollision obstacles dinoState = or $ flip map obstacles $ \obs ->
+  collisionIntersect (dinoAabb (dsHeight dinoState)) (obstacleAabb obs)
 
 updatePlay :: (HasPlayVars s, MonadState s m, Logger m, Clock m, CameraControl m, Renderer m, HasInput m, SceneManager m) => m ()
 updatePlay = do
