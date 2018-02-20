@@ -29,6 +29,7 @@ import DinoRush.Runner
 import DinoRush.Scene.Title
 import DinoRush.Scene.Pause
 import DinoRush.Scene.Play
+import DinoRush.Scene.Death
 import DinoRush.State
 
 main :: IO ()
@@ -119,6 +120,9 @@ instance Play DinoRush where
 
 instance Pause DinoRush where
   pauseStep = pauseStep'
+
+instance Death DinoRush where
+  deathStep = deathStep'
 
 instance CameraControl DinoRush where
   adjustCamera = adjustCamera'

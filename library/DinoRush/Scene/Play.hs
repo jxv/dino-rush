@@ -121,9 +121,9 @@ iterateObstacles upcomingObstacles speed obstacles = let
     Just obstacle -> (tail $ upcomingObstacles, obstacle : remained)
   in (obstacles', length removed, upcomingObstacles', fmap fst newObstacle)
 
-applyHurt :: Bool -> Step DinoAction -> Step DinoAction
-applyHurt collision stepDa
-  | collision = case stepDa of
+applyHurt :: Bool -> Step DinoAction -> Maybe Percent -> Step DinoAction
+applyHurt collision stepDa recover
+  | collision && recover == Nothing = case stepDa of
       Step'Sustain DinoAction'Hurt -> stepDa
       Step'Sustain da -> Step'Change da DinoAction'Hurt
       Step'Change da _ -> Step'Change da DinoAction'Hurt
@@ -142,8 +142,8 @@ updatePlay = do
   let dinoAction' = stepDinoAction input (pvDinoState pv')
   let speed = stepSpeed dinoAction' (pvSpeed pv')
   let (obstacles, removedCount, upcomingObstacles, newObstacleTag) = iterateObstacles (pvUpcomingObstacles pv') speed (pvObstacles pv')
-  let collision = detectCollision obstacles (pvDinoState pv')
-  let dinoAction = applyHurt collision dinoAction'
+  let collision = detectCollision obstacles (pvDinoState pv') && dsRecover (pvDinoState pv') == Nothing
+  let dinoAction = applyHurt collision dinoAction' (dsRecover (pvDinoState pv'))
   let zoom' = stepZoom (pvZoom pv') (smash dinoAction)
   let dinoState = stepDinoState dinoAction (pvDinoState pv')
   adjustCamera $ lerpCamera ((1 - zoom') ** (1.8 :: Float)) duckCamera initCamera
@@ -161,4 +161,7 @@ updatePlay = do
     , pvObstacles = obstacles
     , pvScore = pvScore pv + fromIntegral removedCount
     , pvUpcomingObstacles = upcomingObstacles
+    , pvLives = pvLives pv - (if collision then 1 else 0)
     })
+  isDead <- (<= 0) <$> gets (pvLives . view playVars)
+  when isDead (toScene Scene'Death)

@@ -22,6 +22,7 @@ import DinoRush.Manager.Input
 import DinoRush.Manager.Scene
 import DinoRush.Scene.GameOver
 import DinoRush.Scene.Play
+import DinoRush.Scene.Death
 import DinoRush.Scene.Pause
 import DinoRush.Scene.Title
 
@@ -41,7 +42,7 @@ playTransition = do
 toScene' :: MonadState Vars m => Scene -> m ()
 toScene' scene = modify (\v -> v { vNextScene = scene })
 
-mainLoop :: (MonadReader Config m, MonadState Vars m, Audio m, Logger m, Clock m, CameraControl m, Renderer m, HasInput m, Title m, Play m, Pause m) => m ()
+mainLoop :: (MonadReader Config m, MonadState Vars m, Audio m, Logger m, Clock m, CameraControl m, Renderer m, HasInput m, Title m, Play m, Pause m, Death m) => m ()
 mainLoop = do
   updateInput
   input <- getInput
@@ -51,6 +52,7 @@ mainLoop = do
     Scene'Title -> titleStep
     Scene'Play -> playStep
     Scene'Pause -> pauseStep
+    Scene'Death -> deathStep
     Scene'GameOver -> gameOverStep
     Scene'Quit -> return ()
   drawScreen
@@ -63,6 +65,7 @@ mainLoop = do
       Scene'Play -> case scene of
         Scene'Title -> playTransition
         _ -> return ()
+      Scene'Death -> return ()
       Scene'Pause -> return ()
       Scene'GameOver -> return ()
       Scene'Quit -> return ()

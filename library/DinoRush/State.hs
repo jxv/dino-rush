@@ -3,7 +3,7 @@ module DinoRush.State where
 
 import Control.Lens
 
-import DinoRush.Manager.Scene
+import DinoRush.Engine.Scene
 import DinoRush.Engine.Input
 import DinoRush.Engine.Camera
 import DinoRush.Engine.Obstacle

@@ -33,11 +33,11 @@ makeClassy ''PlayVars
 initPlayVars :: [(Int, ObstacleTag)] -> PlayVars
 initPlayVars upcomingObstacles = PlayVars
   { pvScore = 0
-  , pvLives = 1
+  , pvLives = 3
   , pvSpeed = 1
   , pvProgress = 0
   , pvZoom = 1
-  , pvDinoState = DinoState DinoAction'Move Nothing Nothing
+  , pvDinoState = DinoState DinoAction'Move Nothing Nothing Nothing
   , pvDinoPos = Animate.initPosition DinoKey'Move
   , pvSfx = []
   , pvMountainPos = Animate.initPosition MountainKey'Idle

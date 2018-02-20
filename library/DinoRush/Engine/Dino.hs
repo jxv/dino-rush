@@ -24,6 +24,7 @@ data DinoAction
 data DinoState = DinoState
   { dsAction :: DinoAction
   , dsHeight :: Maybe Percent
+  , dsHurt :: Maybe Percent
   , dsRecover :: Maybe Percent
   } deriving (Show, Eq)
 
@@ -94,7 +95,7 @@ stepDinoAction input ds = case da of
   DinoAction'Jump -> case dsHeight ds of
     Nothing -> Step'Change da DinoAction'Move
     Just p -> if p < 1 then Step'Sustain da else Step'Change da DinoAction'Move
-  DinoAction'Hurt -> case dsRecover ds of
+  DinoAction'Hurt -> case dsHurt ds of
     Nothing -> Step'Change da DinoAction'Move
     Just p -> if p < 1 then Step'Sustain da else Step'Change da DinoAction'Move
   where
@@ -103,20 +104,23 @@ stepDinoAction input ds = case da of
 stepDinoState :: Step DinoAction -> DinoState -> DinoState
 stepDinoState stepDa ds = case stepDa of
     Step'Change _ da -> case da of
-      DinoAction'Jump -> DinoState da (Just 0) recover
-      DinoAction'Hurt -> DinoState da height (Just 0)
-      _ -> DinoState nextAction height recover
-    Step'Sustain _ -> DinoState nextAction height recover
+      DinoAction'Jump -> DinoState da (Just 0) hurt recover
+      DinoAction'Hurt -> DinoState da height (Just 0) (Just 0)
+      _ -> DinoState nextAction height hurt recover
+    Step'Sustain _ -> DinoState nextAction height hurt recover
   where
     nextAction
-      | recover /= Nothing = DinoAction'Hurt
+      | hurt /= Nothing = DinoAction'Hurt
       | height /= Nothing = DinoAction'Jump
       | otherwise = smash stepDa
     height = case dsHeight ds of
       Just p -> if p < 1 then Just (clamp (p + 0.04) 0 1) else Nothing
       Nothing -> Nothing
+    hurt = case dsHurt ds of
+      Just p -> if p < 1 then Just (clamp (p + 0.04) 0 1) else Nothing
+      Nothing -> Nothing
     recover = case dsRecover ds of
-      Just p -> if p < 1 then Just (clamp (p + 0.02) 0 1) else Nothing
+      Just p -> if p < 1 then Just (clamp (p + 0.01) 0 1) else Nothing
       Nothing -> Nothing
 
 stepDinoPosition :: Step DinoAction -> Animations DinoKey -> Animate.Position DinoKey Seconds -> Animate.Position DinoKey Seconds
