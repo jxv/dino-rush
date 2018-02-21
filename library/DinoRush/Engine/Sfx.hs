@@ -9,4 +9,5 @@ data Sfx
   | Sfx'Lava
   | Sfx'Quake
   | Sfx'Rock
+  | Sfx'Recover
   deriving (Show, Eq)

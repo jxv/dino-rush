@@ -34,24 +34,6 @@ stepHorizontalDistance dist speed = if dist' <= -1280 then dist' + 1280 else dis
   where
     dist' = dist + speed
 
-stepSfx :: Step DinoAction -> Bool -> Maybe ObstacleTag -> [Sfx]
-stepSfx dinoAction point obstacle = dinoSfx ++ pointSfx ++ obstacleSfx
-  where
-    pointSfx = if point then [Sfx'Point] else []
-    dinoSfx = case dinoAction of
-      Step'Sustain _ -> []
-      Step'Change _ da -> case da of
-        DinoAction'Jump -> [Sfx'Jump]
-        DinoAction'Duck -> [Sfx'Duck]
-        DinoAction'Hurt -> [Sfx'Hurt]
-        _ -> []
-    obstacleSfx = case obstacle of
-      Nothing -> []
-      Just o -> case o of
-        ObstacleTag'Lava -> [Sfx'Lava]
-        ObstacleTag'Rock -> [Sfx'Rock]
-        ObstacleTag'Bird -> [Sfx'Bird]
-
 drawPlay :: (HasPlayVars s, MonadState s m, Renderer m) => m ()
 drawPlay = do
   dinoAnimations <- getDinoAnimations
@@ -98,6 +80,7 @@ sfxPlay = do
     Sfx'Lava -> playLavaSfx
     Sfx'Quake -> playQuakeSfx
     Sfx'Rock -> playRockSfx
+    Sfx'Recover -> playRecoverSfx
 
 stepZoom :: Float -> DinoAction -> Float
 stepZoom zoom dinoAction = case dinoAction of
@@ -139,19 +122,21 @@ updateSpeed :: (MonadState s m, HasPlayVars s) => Step DinoAction -> m ()
 updateSpeed da = modifyPlayVars $ \pv -> pv { pvSpeed = stepSpeed da (pvSpeed pv) }
 
 updateDino :: (MonadState s m, HasPlayVars s, Renderer m) => Step DinoAction -> m ()
-updateDino da = do
+updateDino sda = do
   dinoAnimations <- getDinoAnimations
-  let sfx = case da of
+  let sfx = case sda of
         Step'Sustain _ -> []
-        Step'Change _ da' -> case da' of
+        Step'Change da da' -> case da' of
           DinoAction'Jump -> [Sfx'Jump]
           DinoAction'Duck -> [Sfx'Duck]
           DinoAction'Hurt -> [Sfx'Hurt]
-          _ -> []
+          DinoAction'Move -> case da of
+            DinoAction'Hurt -> [Sfx'Recover]
+            _ -> []
   modifyPlayVars $ \pv -> pv
-    { pvDinoState = stepDinoState da (pvDinoState pv)
+    { pvDinoState = stepDinoState sda (pvDinoState pv)
     , pvSfx = pvSfx pv ++ sfx
-    , pvDinoPos = stepDinoPosition da dinoAnimations (pvDinoPos pv)
+    , pvDinoPos = stepDinoPosition sda dinoAnimations (pvDinoPos pv)
     }
 
 updateZoom :: (MonadState s m, HasPlayVars s) => Step DinoAction -> m ()
