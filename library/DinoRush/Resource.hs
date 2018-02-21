@@ -40,6 +40,7 @@ data Resources = Resources
   , rEscapeSprite :: SDL.Texture
   , rGameOverSprite :: SDL.Texture
   , rHiscoreSprite :: SDL.Texture
+  , rTitleSprite :: SDL.Texture
   }
 
 loadSurface :: FilePath -> Maybe Animate.Color -> IO SDL.Surface
@@ -54,6 +55,7 @@ loadResources :: SDL.Renderer -> IO Resources
 loadResources renderer = do
   smallFont <- Font.load "resource/Computer Speak v0.3.ttf" 24
   bigFont <- Font.load "resource/Computer Speak v0.3.ttf" 64
+  titleFont <- Font.load "resource/Computer Speak v0.3.ttf" 100
   gameMusic <- Mixer.load "resource/v42.mod"
   jumpSfx <- Mixer.load "resource/jump.wav"
   pointSfx <- Mixer.load "resource/point.wav"
@@ -74,12 +76,14 @@ loadResources renderer = do
   escapeSprite <- toTexture =<< Font.solid smallFont (V4 255 255 255 255) "PRESS ESCAPE TO QUIT"
   gameOverSprite <- toTexture =<< Font.solid bigFont (V4 255 255 255 255) "GAME OVER"
   hiscoreSprite <- toTexture =<< Font.solid smallFont (V4 255 255 255 255) "HISCORE"
+  titleSprite <- toTexture =<< Font.shaded titleFont (V4 0xff 0xff 0xff 0xff) (V4 0x11 0x08 0x1e 0x2a) " DINO RUSH "
   dinoSprites <- Animate.readSpriteSheetJSON loadTexture "resource/dino.json" :: IO (Animate.SpriteSheet DinoKey SDL.Texture Seconds)
   birdSprites <- Animate.readSpriteSheetJSON loadTexture "resource/bird.json" :: IO (Animate.SpriteSheet BirdKey SDL.Texture Seconds)
   lavaSprites <- Animate.readSpriteSheetJSON loadTexture "resource/lava.json" :: IO (Animate.SpriteSheet LavaKey SDL.Texture Seconds)
   rockSprites <- Animate.readSpriteSheetJSON loadTexture "resource/rock.json" :: IO (Animate.SpriteSheet RockKey SDL.Texture Seconds)
   Font.free smallFont
   Font.free bigFont
+  Font.free titleFont
   return Resources
     { rMountainSprites = mountainSprites
     , rJungleSprites = jungle
@@ -105,6 +109,7 @@ loadResources renderer = do
     , rEscapeSprite = escapeSprite
     , rGameOverSprite = gameOverSprite
     , rHiscoreSprite = hiscoreSprite
+    , rTitleSprite = titleSprite
     }
   where
     toTexture surface = SDL.createTextureFromSurface renderer surface
@@ -125,6 +130,7 @@ freeResources r = do
   SDL.destroyTexture (rSpaceSprite r)
   SDL.destroyTexture (rGameOverSprite r)
   SDL.destroyTexture (rHiscoreSprite r)
+  SDL.destroyTexture (rTitleSprite r)
 
   Mixer.free (rGameMusic r)
   Mixer.free (rJumpSfx r)

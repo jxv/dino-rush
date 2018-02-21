@@ -36,5 +36,6 @@ titleStep' = do
   drawGround (0, groundY)
   drawDino loc (truncate dinoX, dinoY)
   drawRiver (0, riverY)
+  drawTitleText (300, 180)
   modify $ titleVars %~ (\tv -> tv { tvPlayer = pos', tvMountainPos = mountainPos' })
   when (ksStatus (iSpace input) == KeyStatus'Pressed) (toScene Scene'Play)
