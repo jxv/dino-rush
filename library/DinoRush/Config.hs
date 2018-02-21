@@ -1,40 +1,14 @@
-module DinoRush.Config where
+module DinoRush.Config
+  ( Config(..)
+  , Resources(..)
+  ) where
 
 import qualified SDL
-import qualified SDL.Mixer as Mixer
-import qualified Animate
 
-import DinoRush.Engine.Bird
-import DinoRush.Engine.Dino
-import DinoRush.Engine.Mountain
-import DinoRush.Engine.Lava
-import DinoRush.Engine.Rock
-import DinoRush.Engine.Types
+import DinoRush.Resource
 
 data Config = Config
   { cWindow :: SDL.Window
   , cRenderer :: SDL.Renderer
   , cResources :: Resources
-  }
-
-data Resources = Resources
-  { rMountainSprites :: Animate.SpriteSheet MountainKey SDL.Texture Seconds
-  , rJungleSprites :: SDL.Texture
-  , rGroundSprites :: SDL.Texture
-  , rRiverSprites :: SDL.Texture
-  , rDinoSprites :: Animate.SpriteSheet DinoKey SDL.Texture Seconds
-  , rBirdSprites :: Animate.SpriteSheet BirdKey SDL.Texture Seconds
-  , rLavaSprites :: Animate.SpriteSheet LavaKey SDL.Texture Seconds
-  , rRockSprites :: Animate.SpriteSheet RockKey SDL.Texture Seconds
-  , rGameMusic :: Mixer.Music
-  , rJumpSfx :: Mixer.Chunk
-  , rDuckSfx :: Mixer.Chunk
-  , rPointSfx :: Mixer.Chunk
-  , rBirdSfx :: Mixer.Chunk
-  , rHurtSfx :: Mixer.Chunk
-  , rLavaSfx :: Mixer.Chunk
-  , rQuakeSfx :: Mixer.Chunk
-  , rRockSfx :: Mixer.Chunk
-  , rDeathSfx :: Mixer.Chunk
-  , rRecoverSfx :: Mixer.Chunk
   }

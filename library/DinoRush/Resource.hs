@@ -2,18 +2,41 @@ module DinoRush.Resource where
 
 import qualified SDL
 import qualified SDL.Mixer as Mixer
+import qualified SDL.Font as Font
 import qualified SDL.Image as Image
 import qualified Animate
 import Data.StateVar (($=))
 import SDL.Vect
 
-import DinoRush.Config
 import DinoRush.Engine.Types
 import DinoRush.Engine.Dino
 import DinoRush.Engine.Bird
 import DinoRush.Engine.Lava
 import DinoRush.Engine.Mountain
 import DinoRush.Engine.Rock
+
+data Resources = Resources
+  { rMountainSprites :: Animate.SpriteSheet MountainKey SDL.Texture Seconds
+  , rJungleSprites :: SDL.Texture
+  , rGroundSprites :: SDL.Texture
+  , rRiverSprites :: SDL.Texture
+  , rDinoSprites :: Animate.SpriteSheet DinoKey SDL.Texture Seconds
+  , rBirdSprites :: Animate.SpriteSheet BirdKey SDL.Texture Seconds
+  , rLavaSprites :: Animate.SpriteSheet LavaKey SDL.Texture Seconds
+  , rRockSprites :: Animate.SpriteSheet RockKey SDL.Texture Seconds
+  , rGameMusic :: Mixer.Music
+  , rJumpSfx :: Mixer.Chunk
+  , rDuckSfx :: Mixer.Chunk
+  , rPointSfx :: Mixer.Chunk
+  , rBirdSfx :: Mixer.Chunk
+  , rHurtSfx :: Mixer.Chunk
+  , rLavaSfx :: Mixer.Chunk
+  , rQuakeSfx :: Mixer.Chunk
+  , rRockSfx :: Mixer.Chunk
+  , rDeathSfx :: Mixer.Chunk
+  , rRecoverSfx :: Mixer.Chunk
+  , rFont :: Font.Font
+  }
 
 loadSurface :: FilePath -> Maybe Animate.Color -> IO SDL.Surface
 loadSurface path alpha = do
@@ -25,6 +48,7 @@ loadSurface path alpha = do
 
 loadResources :: SDL.Renderer -> IO Resources
 loadResources renderer = do
+  font <- Font.load "resource/Computer Speak v0.3.ttf" 24
   gameMusic <- Mixer.load "resource/v42.mod"
   jumpSfx <- Mixer.load "resource/jump.wav"
   pointSfx <- Mixer.load "resource/point.wav"
@@ -64,6 +88,7 @@ loadResources renderer = do
     , rDeathSfx = deathSfx
     , rRecoverSfx = recoverSfx
     , rGameMusic = gameMusic
+    , rFont = font
     }
   where
     loadTexture path c = SDL.createTextureFromSurface renderer =<< loadSurface path c
@@ -78,6 +103,8 @@ freeResources r = do
   SDL.destroyTexture $ Animate.ssImage (rBirdSprites r)
   SDL.destroyTexture $ Animate.ssImage (rLavaSprites r)
   SDL.destroyTexture $ Animate.ssImage (rRockSprites r)
+
+  Font.free (rFont r)
 
   Mixer.free (rGameMusic r)
   Mixer.free (rJumpSfx r)

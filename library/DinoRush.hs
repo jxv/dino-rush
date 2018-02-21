@@ -4,6 +4,7 @@ module DinoRush
 
 import qualified SDL
 import qualified SDL.Mixer as Mixer
+import qualified SDL.Font as Font
 import qualified Data.Text.IO as T
 
 import Control.Monad.IO.Class (MonadIO(..))
@@ -36,6 +37,7 @@ import DinoRush.State
 main :: IO ()
 main = do
   SDL.initialize [SDL.InitVideo, SDL.InitAudio]
+  Font.initialize
   Mixer.openAudio Mixer.defaultAudio 256
   window <- SDL.createWindow "Dino Rush" SDL.defaultWindow { SDL.windowInitialSize = V2 1280 720, SDL.windowMode = SDL.Fullscreen }
   renderer <- SDL.createRenderer window (-1) SDL.defaultRenderer
@@ -51,6 +53,7 @@ main = do
   freeResources resources
   Mixer.closeAudio
   Mixer.quit
+  Font.quit
   SDL.quit
 
 newtype DinoRush a = DinoRush (ReaderT Config (StateT Vars IO) a)

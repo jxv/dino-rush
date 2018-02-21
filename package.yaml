@@ -40,6 +40,7 @@ library:
     - sdl2
     - sdl2-image
     - sdl2-mixer
+    - sdl2-ttf
     - StateVar
     - text
     - random

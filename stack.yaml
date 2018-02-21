@@ -3,6 +3,7 @@ packages:
 - '.'
 extra-deps:
 - 'sdl2-mixer-1.1.0'
+- 'sdl2-ttf-2.0.2'
 - 'animate-0.6.0'
 - 'key-state-0.1.0'
 flags: {}
