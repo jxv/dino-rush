@@ -35,8 +35,11 @@ data Resources = Resources
   , rRockSfx :: Mixer.Chunk
   , rDeathSfx :: Mixer.Chunk
   , rRecoverSfx :: Mixer.Chunk
-  , rFont :: Font.Font
   , rPauseSprite :: SDL.Texture
+  , rSpaceSprite :: SDL.Texture
+  , rEscapeSprite :: SDL.Texture
+  , rGameOverSprite :: SDL.Texture
+  , rHiscoreSprite :: SDL.Texture
   }
 
 loadSurface :: FilePath -> Maybe Animate.Color -> IO SDL.Surface
@@ -49,7 +52,8 @@ loadSurface path alpha = do
 
 loadResources :: SDL.Renderer -> IO Resources
 loadResources renderer = do
-  font <- Font.load "resource/Computer Speak v0.3.ttf" 24
+  smallFont <- Font.load "resource/Computer Speak v0.3.ttf" 24
+  bigFont <- Font.load "resource/Computer Speak v0.3.ttf" 64
   gameMusic <- Mixer.load "resource/v42.mod"
   jumpSfx <- Mixer.load "resource/jump.wav"
   pointSfx <- Mixer.load "resource/point.wav"
@@ -65,11 +69,17 @@ loadResources renderer = do
   jungle <- loadTexture "resource/jungle.png" Nothing
   ground <- loadTexture "resource/ground.png" Nothing
   river <- loadTexture "resource/river.png" Nothing
-  pauseSprite <- toTexture =<< Font.solid font (V4 255 255 255 255) "PAUSED"
+  pauseSprite <- toTexture =<< Font.solid bigFont (V4 255 255 255 255) "PAUSED"
+  spaceSprite <- toTexture =<< Font.solid smallFont (V4 255 255 255 255) "PRESS SPACE"
+  escapeSprite <- toTexture =<< Font.solid smallFont (V4 255 255 255 255) "PRESS ESCAPE TO QUIT"
+  gameOverSprite <- toTexture =<< Font.solid bigFont (V4 255 255 255 255) "GAME OVER"
+  hiscoreSprite <- toTexture =<< Font.solid smallFont (V4 255 255 255 255) "HISCORE"
   dinoSprites <- Animate.readSpriteSheetJSON loadTexture "resource/dino.json" :: IO (Animate.SpriteSheet DinoKey SDL.Texture Seconds)
   birdSprites <- Animate.readSpriteSheetJSON loadTexture "resource/bird.json" :: IO (Animate.SpriteSheet BirdKey SDL.Texture Seconds)
   lavaSprites <- Animate.readSpriteSheetJSON loadTexture "resource/lava.json" :: IO (Animate.SpriteSheet LavaKey SDL.Texture Seconds)
   rockSprites <- Animate.readSpriteSheetJSON loadTexture "resource/rock.json" :: IO (Animate.SpriteSheet RockKey SDL.Texture Seconds)
+  Font.free smallFont
+  Font.free bigFont
   return Resources
     { rMountainSprites = mountainSprites
     , rJungleSprites = jungle
@@ -90,8 +100,11 @@ loadResources renderer = do
     , rDeathSfx = deathSfx
     , rRecoverSfx = recoverSfx
     , rGameMusic = gameMusic
-    , rFont = font
     , rPauseSprite = pauseSprite
+    , rSpaceSprite = spaceSprite
+    , rEscapeSprite = escapeSprite
+    , rGameOverSprite = gameOverSprite
+    , rHiscoreSprite = hiscoreSprite
     }
   where
     toTexture surface = SDL.createTextureFromSurface renderer surface
@@ -107,8 +120,11 @@ freeResources r = do
   SDL.destroyTexture $ Animate.ssImage (rBirdSprites r)
   SDL.destroyTexture $ Animate.ssImage (rLavaSprites r)
   SDL.destroyTexture $ Animate.ssImage (rRockSprites r)
-
-  Font.free (rFont r)
+  SDL.destroyTexture (rPauseSprite r)
+  SDL.destroyTexture (rEscapeSprite r)
+  SDL.destroyTexture (rSpaceSprite r)
+  SDL.destroyTexture (rGameOverSprite r)
+  SDL.destroyTexture (rHiscoreSprite r)
 
   Mixer.free (rGameMusic r)
   Mixer.free (rJumpSfx r)

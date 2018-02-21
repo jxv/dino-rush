@@ -26,5 +26,5 @@ drawPause :: (Renderer m, CameraControl m) => m ()
 drawPause = do
   drawBlackOverlay 0.5
   enableHUD
-  drawPauseText (540,330)
+  drawPauseText (530,330)
   disableHUD
