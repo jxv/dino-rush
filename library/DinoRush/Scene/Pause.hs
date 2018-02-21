@@ -7,8 +7,8 @@ import KeyState
 import DinoRush.Effect.Renderer
 import DinoRush.Effect.Camera
 import DinoRush.Engine.Input
-import DinoRush.Scene.Play
 import DinoRush.Engine.Play
+import DinoRush.Scene.Play
 import DinoRush.Manager.Input
 import DinoRush.Manager.Scene
 

@@ -8,6 +8,7 @@ import DinoRush.Engine.Input
 import DinoRush.Engine.Camera
 import DinoRush.Engine.Obstacle
 import DinoRush.Engine.Play
+import DinoRush.Engine.GameOver
 import DinoRush.Engine.Title
 
 data Vars = Vars
@@ -15,17 +16,21 @@ data Vars = Vars
   , vNextScene :: Scene
   , vTitle :: TitleVars
   , vPlay :: PlayVars
+  , vGameOver :: GameOverVars
   , vInput :: Input
   , vCamera :: Camera
   } deriving (Show, Eq)
 
 initVars :: [(Int, ObstacleTag)] -> Vars
-initVars mkObstacles = Vars Scene'Title Scene'Title initTitleVars (initPlayVars mkObstacles) initInput initCamera
+initVars mkObstacles = Vars Scene'Title Scene'Title initTitleVars (initPlayVars mkObstacles) initGameOverVars initInput initCamera
 
 instance HasTitleVars Vars where
   titleVars = lens vTitle (\v s -> v { vTitle = s })
 
 instance HasPlayVars Vars where
   playVars = lens vPlay (\v s -> v { vPlay = s })
+
+instance HasGameOverVars Vars where
+  gameOverVars = lens vGameOver (\v s -> v { vGameOver = s })
 
 makeClassy ''Vars
