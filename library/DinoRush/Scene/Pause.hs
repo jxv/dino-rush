@@ -24,7 +24,7 @@ pauseStep' = do
 
 drawPause :: (Renderer m, CameraControl m) => m ()
 drawPause = do
-  drawBlackOverlay 0.5
+  drawBlackOverlay 0.8
   enableHUD
-  drawPauseText (530,330)
+  drawPauseText (530,270)
   disableHUD
