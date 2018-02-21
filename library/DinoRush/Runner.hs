@@ -40,7 +40,9 @@ playTransition = do
   playGameMusic
 
 deathTransition :: (Audio m) => m ()
-deathTransition = stopGameMusic
+deathTransition = do
+  stopGameMusic
+  playDeathSfx
 
 toScene' :: MonadState Vars m => Scene -> m ()
 toScene' scene = modify (\v -> v { vNextScene = scene })
