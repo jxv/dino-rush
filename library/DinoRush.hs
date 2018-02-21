@@ -39,7 +39,7 @@ main = do
   SDL.initialize [SDL.InitVideo, SDL.InitAudio]
   Font.initialize
   Mixer.openAudio Mixer.defaultAudio 256
-  window <- SDL.createWindow "Dino Rush" SDL.defaultWindow { SDL.windowInitialSize = V2 1280 720, SDL.windowMode = SDL.Fullscreen }
+  window <- SDL.createWindow "Dino Rush" SDL.defaultWindow { SDL.windowInitialSize = V2 1280 720 }
   renderer <- SDL.createRenderer window (-1) SDL.defaultRenderer
   resources <- loadResources renderer
   mkObstacles <- streamOfObstacles <$> getStdGen
@@ -119,6 +119,9 @@ instance Renderer DinoRush where
   drawRiver = drawHorizontalScrollImage (rRiverSprites . cResources)
   drawBlackOverlay = drawBlackOverlay'
   drawPauseText = drawTextureSprite (rPauseSprite . cResources)
+  drawGameOverText = drawTextureSprite (rGameOverSprite . cResources)
+  drawPressSpaceText = drawTextureSprite (rSpaceSprite . cResources)
+  drawPressEscapeText = drawTextureSprite (rEscapeSprite . cResources)
 
 instance Title DinoRush where
   titleStep = titleStep'

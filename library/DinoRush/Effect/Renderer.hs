@@ -39,6 +39,9 @@ class Monad m => Renderer m where
   drawRiver :: (Int, Int) -> m ()
   drawBlackOverlay :: Percent -> m ()
   drawPauseText :: (Int, Int) -> m ()
+  drawGameOverText :: (Int, Int) -> m ()
+  drawPressSpaceText :: (Int, Int) -> m ()
+  drawPressEscapeText :: (Int, Int) -> m ()
 
 clearScreen' :: (SDLRenderer m, MonadReader Config m) => m ()
 clearScreen' = do

@@ -19,4 +19,13 @@ gameOverStep' :: (HasPlayVars s, MonadState s m, SceneManager m, HasInput m, Ren
 gameOverStep' = do
   input <- getInput
   drawPlay
+  drawGameOver
   when (ksStatus (iSpace input) == KeyStatus'Pressed) (toScene Scene'Title)
+
+drawGameOver :: (Renderer m, CameraControl m) => m ()
+drawGameOver = do
+  drawBlackOverlay 0.5
+  enableHUD
+  drawGameOverText (470,300)
+  drawPressSpaceText (500,400)
+  disableHUD
