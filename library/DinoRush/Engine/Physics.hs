@@ -2,8 +2,6 @@ module DinoRush.Engine.Physics where
 
 import Linear.V2
 
-import DinoRush.Engine.Types
-
 data Aabb = Aabb
   { aMin :: V2 Float
   , aMax :: V2 Float

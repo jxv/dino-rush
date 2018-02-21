@@ -1,7 +1,5 @@
 module DinoRush.Engine.Input where
 
-import qualified SDL
-import Control.Monad.IO.Class (MonadIO(..))
 import KeyState
 
 data Input = Input

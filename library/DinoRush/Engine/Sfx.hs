@@ -5,7 +5,6 @@ data Sfx
   | Sfx'Point
   | Sfx'Duck
   | Sfx'Bird
-  | Sfx'Bouncer
   | Sfx'Hurt
   | Sfx'Lava
   | Sfx'Quake

@@ -66,7 +66,6 @@ instance Audio DinoRush where
   playDuckSfx = playDuckSfx'
   playPointSfx = playPointSfx'
   playBirdSfx = playBirdSfx'
-  playBouncerSfx = playBouncerSfx'
   playHurtSfx = playHurtSfx'
   playLavaSfx = playLavaSfx'
   playQuakeSfx = playQuakeSfx'
@@ -104,13 +103,11 @@ instance Renderer DinoRush where
   getLavaAnimations = getSpriteAnimations (rLavaSprites . cResources)
   getRockAnimations = getSpriteAnimations (rRockSprites . cResources)
   getBirdAnimations = getSpriteAnimations (rBirdSprites . cResources)
-  getBouncerAnimations = getSpriteAnimations (rBouncerSprites . cResources)
   getMountainAnimations = getSpriteAnimations (rMountainSprites . cResources)
   drawDino = drawSprite (rDinoSprites . cResources)
   drawLava = drawSprite (rLavaSprites . cResources)
   drawRock = drawSprite (rRockSprites . cResources)
   drawBird = drawSprite (rBirdSprites . cResources)
-  drawBouncer = drawSprite (rBouncerSprites . cResources)
   drawMountain = drawHorizontalScrollSprite (rMountainSprites . cResources) 16
   drawJungle = drawHorizontalScrollImage (rJungleSprites . cResources)
   drawGround = drawHorizontalScrollImage (rGroundSprites . cResources)

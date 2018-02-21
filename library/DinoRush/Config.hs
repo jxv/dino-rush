@@ -5,7 +5,6 @@ import qualified SDL.Mixer as Mixer
 import qualified Animate
 
 import DinoRush.Engine.Bird
-import DinoRush.Engine.Bouncer
 import DinoRush.Engine.Dino
 import DinoRush.Engine.Mountain
 import DinoRush.Engine.Lava
@@ -25,7 +24,6 @@ data Resources = Resources
   , rRiverSprites :: SDL.Texture
   , rDinoSprites :: Animate.SpriteSheet DinoKey SDL.Texture Seconds
   , rBirdSprites :: Animate.SpriteSheet BirdKey SDL.Texture Seconds
-  , rBouncerSprites :: Animate.SpriteSheet BouncerKey SDL.Texture Seconds
   , rLavaSprites :: Animate.SpriteSheet LavaKey SDL.Texture Seconds
   , rRockSprites :: Animate.SpriteSheet RockKey SDL.Texture Seconds
   , rGameMusic :: Mixer.Music
@@ -33,7 +31,6 @@ data Resources = Resources
   , rDuckSfx :: Mixer.Chunk
   , rPointSfx :: Mixer.Chunk
   , rBirdSfx :: Mixer.Chunk
-  , rBouncerSfx :: Mixer.Chunk
   , rHurtSfx :: Mixer.Chunk
   , rLavaSfx :: Mixer.Chunk
   , rQuakeSfx :: Mixer.Chunk

@@ -1,13 +1,8 @@
 module DinoRush.Engine.Types where
 
-import qualified SDL
-import qualified SDL.Mixer as Mixer
 import qualified Animate
 
-import Control.Lens
-import Data.Text (Text)
 import Data.Aeson (FromJSON, ToJSON)
-import System.Random
 
 type Animations key = Animate.Animations key (Animate.SpriteClip key) Seconds
 type DrawSprite key m = Animate.SpriteClip key -> (Int, Int) -> m ()

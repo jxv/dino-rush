@@ -14,7 +14,6 @@ class Monad m => Audio m where
   playDuckSfx :: m ()
   playPointSfx :: m ()
   playBirdSfx :: m ()
-  playBouncerSfx :: m ()
   playHurtSfx :: m ()
   playLavaSfx :: m ()
   playRockSfx :: m ()
@@ -38,7 +37,6 @@ playJumpSfx',
   playDuckSfx',
   playPointSfx',
   playBirdSfx',
-  playBouncerSfx',
   playHurtSfx',
   playLavaSfx',
   playRockSfx',
@@ -49,7 +47,6 @@ playJumpSfx' = playChunk rJumpSfx
 playDuckSfx' = playChunk rDuckSfx
 playPointSfx' = playChunk rPointSfx
 playBirdSfx' = playChunk rBirdSfx
-playBouncerSfx' = playChunk rBouncerSfx
 playHurtSfx' = playChunk rHurtSfx
 playLavaSfx' = playChunk rLavaSfx
 playRockSfx' = playChunk rRockSfx

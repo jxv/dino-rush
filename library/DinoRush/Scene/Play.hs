@@ -51,7 +51,6 @@ stepSfx dinoAction point obstacle = dinoSfx ++ pointSfx ++ obstacleSfx
         ObstacleTag'Lava -> [Sfx'Lava]
         ObstacleTag'Rock -> [Sfx'Rock]
         ObstacleTag'Bird -> [Sfx'Bird]
-        ObstacleTag'Bouncer -> [Sfx'Bouncer]
 
 drawPlay :: (HasPlayVars s, MonadState s m, Renderer m) => m ()
 drawPlay = do
@@ -72,14 +71,12 @@ drawObstacles obstacles = do
   lavaAnimations <- getLavaAnimations
   rockAnimations <- getRockAnimations
   birdAnimations <- getBirdAnimations
-  bouncerAnimations <- getBouncerAnimations
   forM_ obstacles $ \ObstacleState{osInfo,osDistance} -> let
     x = truncate osDistance
     in case osInfo of
       ObstacleInfo'Lava pos -> drawLava (Animate.currentLocation lavaAnimations pos) (x, lavaY)
       ObstacleInfo'Rock pos -> drawRock (Animate.currentLocation rockAnimations pos) (x, rockY)
       ObstacleInfo'Bird pos -> drawBird (Animate.currentLocation birdAnimations pos) (x, birdY)
-      ObstacleInfo'Bouncer percentY pos -> drawBouncer (Animate.currentLocation bouncerAnimations pos) (x, truncate percentY + bouncerY)
 
 playStep' :: (HasPlayVars s, MonadState s m, Logger m, CameraControl m, Clock m, Renderer m, Audio m, HasInput m, SceneManager m) => m ()
 playStep' = do
@@ -97,7 +94,6 @@ sfxPlay = do
     Sfx'Duck -> playDuckSfx
     Sfx'Point -> playPointSfx
     Sfx'Bird -> playBirdSfx
-    Sfx'Bouncer -> playBouncerSfx
     Sfx'Hurt -> playHurtSfx
     Sfx'Lava -> playLavaSfx
     Sfx'Quake -> playQuakeSfx
@@ -177,7 +173,6 @@ updateObstacles = do
           ObstacleTag'Lava -> [Sfx'Lava]
           ObstacleTag'Rock -> [Sfx'Rock]
           ObstacleTag'Bird -> [Sfx'Bird]
-          ObstacleTag'Bouncer -> [Sfx'Bouncer]
   modifyPlayVars $ \pv -> pv
     { pvObstacles = obstacles
     , pvSfx = pvSfx pv ++ pointSfx ++ obstacleSfx

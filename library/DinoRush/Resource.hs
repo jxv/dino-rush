@@ -11,7 +11,6 @@ import DinoRush.Config
 import DinoRush.Engine.Types
 import DinoRush.Engine.Dino
 import DinoRush.Engine.Bird
-import DinoRush.Engine.Bouncer
 import DinoRush.Engine.Lava
 import DinoRush.Engine.Mountain
 import DinoRush.Engine.Rock
@@ -31,7 +30,6 @@ loadResources renderer = do
   pointSfx <- Mixer.load "resource/point.wav"
   birdSfx <- Mixer.load "resource/bird.wav"
   duckSfx <- Mixer.load "resource/duck.wav"
-  bouncerSfx <- Mixer.load "resource/bouncer.wav"
   hurtSfx <- Mixer.load "resource/hurt.wav"
   quakeSfx <- Mixer.load "resource/quake.wav"
   rockSfx <- Mixer.load "resource/rock.wav"
@@ -44,7 +42,6 @@ loadResources renderer = do
   river <- loadTexture "resource/river.png" Nothing
   dinoSprites <- Animate.readSpriteSheetJSON loadTexture "resource/dino.json" :: IO (Animate.SpriteSheet DinoKey SDL.Texture Seconds)
   birdSprites <- Animate.readSpriteSheetJSON loadTexture "resource/bird.json" :: IO (Animate.SpriteSheet BirdKey SDL.Texture Seconds)
-  bouncerSprites <- Animate.readSpriteSheetJSON loadTexture "resource/bouncer.json" :: IO (Animate.SpriteSheet BouncerKey SDL.Texture Seconds)
   lavaSprites <- Animate.readSpriteSheetJSON loadTexture "resource/lava.json" :: IO (Animate.SpriteSheet LavaKey SDL.Texture Seconds)
   rockSprites <- Animate.readSpriteSheetJSON loadTexture "resource/rock.json" :: IO (Animate.SpriteSheet RockKey SDL.Texture Seconds)
   return Resources
@@ -54,14 +51,12 @@ loadResources renderer = do
     , rRiverSprites = river
     , rDinoSprites = dinoSprites
     , rBirdSprites = birdSprites
-    , rBouncerSprites = bouncerSprites
     , rLavaSprites = lavaSprites
     , rRockSprites = rockSprites
     , rJumpSfx = jumpSfx
     , rDuckSfx = duckSfx
     , rPointSfx = pointSfx
     , rBirdSfx = birdSfx
-    , rBouncerSfx = bouncerSfx
     , rHurtSfx = hurtSfx
     , rLavaSfx = lavaSfx
     , rQuakeSfx = quakeSfx
@@ -89,7 +84,6 @@ freeResources r = do
   Mixer.free (rDuckSfx r)
   Mixer.free (rPointSfx r)
   Mixer.free (rBirdSfx r)
-  Mixer.free (rBouncerSfx r)
   Mixer.free (rHurtSfx r)
   Mixer.free (rLavaSfx r)
   Mixer.free (rQuakeSfx r)

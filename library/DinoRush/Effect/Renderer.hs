@@ -12,7 +12,6 @@ import DinoRush.Engine.Dino
 import DinoRush.Engine.Lava
 import DinoRush.Engine.Rock
 import DinoRush.Engine.Bird
-import DinoRush.Engine.Bouncer
 import DinoRush.Engine.Mountain
 import DinoRush.Wrapper.SDLRenderer
 
@@ -28,13 +27,11 @@ class Monad m => Renderer m where
   getLavaAnimations :: m (Animations LavaKey)
   getRockAnimations :: m (Animations RockKey)
   getBirdAnimations :: m (Animations BirdKey)
-  getBouncerAnimations :: m (Animations BouncerKey)
   getMountainAnimations :: m (Animations MountainKey)
   drawDino :: DrawSprite DinoKey m
   drawLava :: DrawSprite LavaKey m
   drawRock :: DrawSprite RockKey m
   drawBird :: DrawSprite BirdKey m
-  drawBouncer :: DrawSprite BouncerKey m
   drawMountain :: DrawSprite MountainKey m
   drawJungle :: (Int, Int) -> m ()
   drawGround :: (Int, Int) -> m ()

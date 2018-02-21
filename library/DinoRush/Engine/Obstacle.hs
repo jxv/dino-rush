@@ -6,7 +6,6 @@ import Linear (V2(..))
 
 import DinoRush.Engine.Types
 import DinoRush.Engine.Bird
-import DinoRush.Engine.Bouncer
 import DinoRush.Engine.Lava
 import DinoRush.Engine.Rock
 import DinoRush.Engine.Physics
@@ -15,7 +14,6 @@ data ObstacleTag
   = ObstacleTag'Lava
   | ObstacleTag'Rock
   | ObstacleTag'Bird
-  | ObstacleTag'Bouncer
   deriving (Show, Eq, Ord, Bounded, Enum)
 
 instance Random ObstacleTag where
@@ -26,7 +24,6 @@ data ObstacleInfo
   = ObstacleInfo'Lava (Animate.Position LavaKey Seconds)
   | ObstacleInfo'Rock (Animate.Position RockKey Seconds)
   | ObstacleInfo'Bird (Animate.Position BirdKey Seconds)
-  | ObstacleInfo'Bouncer Percent (Animate.Position BouncerKey Seconds)
   deriving (Show, Eq)
 
 data ObstacleState = ObstacleState
@@ -34,18 +31,16 @@ data ObstacleState = ObstacleState
   , osDistance :: Distance
   } deriving (Show, Eq)
 
-lavaY, rockY, birdY, bouncerY :: Num a => a
+lavaY, rockY, birdY :: Num a => a
 lavaY = 16 * 28
 rockY = 16 * 26
 birdY = 16 * 22
-bouncerY = 16 * 26
 
 obstacleAabb :: ObstacleState -> Aabb
 obstacleAabb ObstacleState{osInfo,osDistance} = case osInfo of
   ObstacleInfo'Lava _ -> Aabb (V2 (0 + dist) lavaY) (V2 (32 + dist) (lavaY + 32))
   ObstacleInfo'Rock _ -> Aabb (V2 (0 + dist) rockY) (V2 (32 + dist) (rockY + 32))
   ObstacleInfo'Bird _ -> Aabb (V2 (0 + dist) birdY) (V2 (32 + dist) (birdY + 32))
-  ObstacleInfo'Bouncer _ _ -> Aabb (V2 (0 + dist) bouncerY) (V2 (32 + dist) (bouncerY + 32))
   where
     dist = realToFrac osDistance
 
@@ -80,7 +75,6 @@ placeObstacle (idxDist, obsTag) = ObstacleState
       ObstacleTag'Lava -> ObstacleInfo'Lava (Animate.initPosition LavaKey'Idle)
       ObstacleTag'Rock -> ObstacleInfo'Rock (Animate.initPosition RockKey'Idle)
       ObstacleTag'Bird -> ObstacleInfo'Bird (Animate.initPosition BirdKey'Idle)
-      ObstacleTag'Bouncer -> ObstacleInfo'Bouncer 0 (Animate.initPosition BouncerKey'Idle)
   , osDistance = realToFrac (idxDist * 32) + realToFrac arenaWidth
   }
 
