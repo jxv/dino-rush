@@ -38,4 +38,6 @@ data Resources = Resources
   , rLavaSfx :: Mixer.Chunk
   , rQuakeSfx :: Mixer.Chunk
   , rRockSfx :: Mixer.Chunk
+  , rDeathSfx :: Mixer.Chunk
+  , rRecoverSfx :: Mixer.Chunk
   }

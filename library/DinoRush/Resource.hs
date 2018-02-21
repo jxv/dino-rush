@@ -36,6 +36,8 @@ loadResources renderer = do
   quakeSfx <- Mixer.load "resource/quake.wav"
   rockSfx <- Mixer.load "resource/rock.wav"
   lavaSfx <- Mixer.load "resource/lava.wav"
+  deathSfx <- Mixer.load "resource/death.wav"
+  recoverSfx <- Mixer.load "resource/recover.wav"
   mountainSprites <- Animate.readSpriteSheetJSON loadTexture "resource/mountain.json" :: IO (Animate.SpriteSheet MountainKey SDL.Texture Seconds)
   jungle <- loadTexture "resource/jungle.png" Nothing
   ground <- loadTexture "resource/ground.png" Nothing
@@ -64,6 +66,8 @@ loadResources renderer = do
     , rLavaSfx = lavaSfx
     , rQuakeSfx = quakeSfx
     , rRockSfx = rockSfx
+    , rDeathSfx = deathSfx
+    , rRecoverSfx = recoverSfx
     , rGameMusic = gameMusic
     }
   where
@@ -90,3 +94,5 @@ freeResources r = do
   Mixer.free (rLavaSfx r)
   Mixer.free (rQuakeSfx r)
   Mixer.free (rRockSfx r)
+  Mixer.free (rRecoverSfx r)
+  Mixer.free (rDeathSfx r)

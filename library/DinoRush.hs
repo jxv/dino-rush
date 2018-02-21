@@ -71,6 +71,8 @@ instance Audio DinoRush where
   playLavaSfx = playLavaSfx'
   playQuakeSfx = playQuakeSfx'
   playRockSfx = playRockSfx'
+  playRecoverSfx = playRecoverSfx'
+  playDeathSfx = playDeathSfx'
 
 instance Clock DinoRush where
   delayMilliseconds = liftIO . delayMilliseconds'

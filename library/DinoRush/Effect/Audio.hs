@@ -19,6 +19,8 @@ class Monad m => Audio m where
   playLavaSfx :: m ()
   playRockSfx :: m ()
   playQuakeSfx :: m ()
+  playDeathSfx :: m ()
+  playRecoverSfx :: m ()
 
 playGameMusic' :: (MonadReader Config m, MonadIO m) => m ()
 playGameMusic' = asks (rGameMusic . cResources) >>= Mixer.playMusic Mixer.Forever
@@ -40,7 +42,9 @@ playJumpSfx',
   playHurtSfx',
   playLavaSfx',
   playRockSfx',
-  playQuakeSfx' :: (MonadReader Config m, MonadIO m, MonadThrow m, MonadCatch m) => m ()
+  playQuakeSfx',
+  playDeathSfx',
+  playRecoverSfx' :: (MonadReader Config m, MonadIO m, MonadThrow m, MonadCatch m) => m ()
 playJumpSfx' = playChunk rJumpSfx
 playDuckSfx' = playChunk rDuckSfx
 playPointSfx' = playChunk rPointSfx
@@ -50,3 +54,5 @@ playHurtSfx' = playChunk rHurtSfx
 playLavaSfx' = playChunk rLavaSfx
 playRockSfx' = playChunk rRockSfx
 playQuakeSfx' = playChunk rQuakeSfx
+playDeathSfx' = playChunk rDeathSfx
+playRecoverSfx' = playChunk rRecoverSfx
