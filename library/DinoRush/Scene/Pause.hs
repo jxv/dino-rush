@@ -19,4 +19,9 @@ pauseStep' :: (HasPlayVars s, MonadState s m, SceneManager m, HasInput m, Render
 pauseStep' = do
   input <- getInput
   drawPlay
+  drawPause
   when (ksStatus (iSpace input) == KeyStatus'Pressed) (toScene Scene'Play)
+
+drawPause :: Renderer m => m ()
+drawPause = do
+  drawBlackOverlay 0.5

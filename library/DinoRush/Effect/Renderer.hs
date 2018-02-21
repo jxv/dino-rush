@@ -2,6 +2,7 @@ module DinoRush.Effect.Renderer where
 
 import qualified Animate
 import qualified SDL
+import Data.StateVar (($=))
 import Foreign.C.Types
 import SDL.Vect
 import Control.Monad.Reader
@@ -36,6 +37,7 @@ class Monad m => Renderer m where
   drawJungle :: (Int, Int) -> m ()
   drawGround :: (Int, Int) -> m ()
   drawRiver :: (Int, Int) -> m ()
+  drawBlackOverlay :: Percent -> m ()
 
 clearScreen' :: (SDLRenderer m, MonadReader Config m) => m ()
 clearScreen' = do
@@ -88,3 +90,11 @@ drawHorizontalScrollImage getTex (x,y) = do
   let dim = SDL.V2 textureWidth textureHeight
   drawTexture renderer tex Nothing (Just $ SDL.Rectangle (SDL.P $ SDL.V2 (fromIntegral x) (fromIntegral y)) dim)
   drawTexture renderer tex Nothing (Just $ SDL.Rectangle (SDL.P $ SDL.V2 (fromIntegral x + 1280) (fromIntegral y)) dim)
+
+drawBlackOverlay' :: (MonadReader Config m, SDLRenderer m, MonadIO m) => Percent -> m ()
+drawBlackOverlay' (Percent percent) = do
+  renderer <- asks cRenderer
+  SDL.rendererDrawBlendMode renderer $= SDL.BlendAlphaBlend
+  SDL.rendererDrawColor renderer $= (V4 0 0 0 (truncate $ 255 * percent))
+  SDL.fillRect renderer Nothing
+  SDL.rendererDrawBlendMode renderer $= SDL.BlendNone

@@ -117,6 +117,7 @@ instance Renderer DinoRush where
   drawJungle = drawHorizontalScrollImage (rJungleSprites . cResources)
   drawGround = drawHorizontalScrollImage (rGroundSprites . cResources)
   drawRiver = drawHorizontalScrollImage (rRiverSprites . cResources)
+  drawBlackOverlay = drawBlackOverlay'
 
 instance Title DinoRush where
   titleStep = titleStep'
