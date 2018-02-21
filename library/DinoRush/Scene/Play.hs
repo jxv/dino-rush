@@ -133,35 +133,96 @@ detectCollision :: [ObstacleState] -> DinoState -> Bool
 detectCollision obstacles dinoState = or $ flip map obstacles $ \obs ->
   collisionIntersect (dinoAabb (dsHeight dinoState)) (obstacleAabb obs)
 
+modifyPlayVars :: (MonadState s m, HasPlayVars s) => (PlayVars -> PlayVars) -> m ()
+modifyPlayVars f = modify $ playVars %~ f
+
+clearSfx :: (MonadState s m, HasPlayVars s) => m ()
+clearSfx = modifyPlayVars $ \pv -> pv { pvSfx = [] }
+
+updateSpeed :: (MonadState s m, HasPlayVars s) => Step DinoAction -> m ()
+updateSpeed da = modifyPlayVars $ \pv -> pv { pvSpeed = stepSpeed da (pvSpeed pv) }
+
+updateDino :: (MonadState s m, HasPlayVars s, Renderer m) => Step DinoAction -> m ()
+updateDino da = do
+  dinoAnimations <- getDinoAnimations
+  let sfx = case da of
+        Step'Sustain _ -> []
+        Step'Change _ da' -> case da' of
+          DinoAction'Jump -> [Sfx'Jump]
+          DinoAction'Duck -> [Sfx'Duck]
+          DinoAction'Hurt -> [Sfx'Hurt]
+          _ -> []
+  modifyPlayVars $ \pv -> pv
+    { pvDinoState = stepDinoState da (pvDinoState pv)
+    , pvSfx = pvSfx pv ++ sfx
+    , pvDinoPos = stepDinoPosition da dinoAnimations (pvDinoPos pv)
+    }
+
+updateZoom :: (MonadState s m, HasPlayVars s) => Step DinoAction -> m ()
+updateZoom da = modifyPlayVars $ \pv -> pv { pvZoom = stepZoom (pvZoom pv) (smash da) }
+
+updateCamera :: (MonadState s m, HasPlayVars s, CameraControl m) => m ()
+updateCamera = do
+  zoom <- gets (pvZoom . view playVars)
+  adjustCamera $ lerpCamera ((1 - zoom) ** (1.8 :: Float)) duckCamera initCamera
+
+updateObstacles :: (MonadState s m, HasPlayVars s) => m ()
+updateObstacles = do
+  PlayVars{pvUpcomingObstacles,pvObstacles,pvSpeed} <- gets (view playVars)
+  let (obstacles, removedCount, upcomingObstacles, newObstacleTag) = iterateObstacles pvUpcomingObstacles pvSpeed pvObstacles
+  let pointSfx = if removedCount > 0 then [Sfx'Point] else []
+  let obstacleSfx = case newObstacleTag of
+        Nothing -> []
+        Just o -> case o of
+          ObstacleTag'Lava -> [Sfx'Lava]
+          ObstacleTag'Rock -> [Sfx'Rock]
+          ObstacleTag'Bird -> [Sfx'Bird]
+          ObstacleTag'Bouncer -> [Sfx'Bouncer]
+  modifyPlayVars $ \pv -> pv
+    { pvObstacles = obstacles
+    , pvSfx = pvSfx pv ++ pointSfx ++ obstacleSfx
+    , pvScore = pvScore pv + fromIntegral removedCount
+    , pvUpcomingObstacles = upcomingObstacles
+    }
+
+tryCollision :: (MonadState s m, HasPlayVars s) => Step DinoAction -> m (Bool, Step DinoAction)
+tryCollision da = do
+  pv <- gets (view playVars)
+  let collision = detectCollision (pvObstacles pv) (pvDinoState pv) && dsRecover (pvDinoState pv) == Nothing
+  let da' = applyHurt collision da (dsRecover (pvDinoState pv))
+  return (collision, da')
+
+updateScrolling :: (Renderer m, HasPlayVars s, MonadState s m) => m ()
+updateScrolling = do
+  mountainAnimations <- getMountainAnimations
+  modifyPlayVars $ \pv -> let
+    speed = pvSpeed pv
+    in pv
+      { pvMountainPos = Animate.stepPosition mountainAnimations (pvMountainPos pv) frameDeltaSeconds
+      , pvMountainScroll = stepHorizontalDistance (realToFrac $ pvMountainScroll pv) (realToFrac (-speed) / 3)
+      , pvJungleScroll = stepHorizontalDistance (realToFrac $ pvJungleScroll pv) (realToFrac (-speed) / 2)
+      , pvGroundScroll = stepHorizontalDistance (realToFrac $ pvGroundScroll pv) (realToFrac (-speed))
+      , pvRiverScroll = stepHorizontalDistance (realToFrac $ pvRiverScroll pv) (realToFrac (-speed) * 1.5)
+      }
+
+updateLives :: (MonadState s m, HasPlayVars s) => Bool -> m ()
+updateLives collision = modifyPlayVars $ \pv -> pv { pvLives = pvLives pv - (if collision then 1 else 0) }
+
+getDead :: (MonadState s m, HasPlayVars s) => m Bool
+getDead = (<= 0) <$> gets (pvLives . view playVars)
+
 updatePlay :: (HasPlayVars s, MonadState s m, Logger m, Clock m, CameraControl m, Renderer m, HasInput m, SceneManager m) => m ()
 updatePlay = do
   input <- getInput
-  dinoAnimations <- getDinoAnimations
-  mountainAnimations <- getMountainAnimations
-  pv' <- gets (view playVars)
-  let dinoAction' = stepDinoAction input (pvDinoState pv')
-  let speed = stepSpeed dinoAction' (pvSpeed pv')
-  let (obstacles, removedCount, upcomingObstacles, newObstacleTag) = iterateObstacles (pvUpcomingObstacles pv') speed (pvObstacles pv')
-  let collision = detectCollision obstacles (pvDinoState pv') && dsRecover (pvDinoState pv') == Nothing
-  let dinoAction = applyHurt collision dinoAction' (dsRecover (pvDinoState pv'))
-  let zoom' = stepZoom (pvZoom pv') (smash dinoAction)
-  let dinoState = stepDinoState dinoAction (pvDinoState pv')
-  adjustCamera $ lerpCamera ((1 - zoom') ** (1.8 :: Float)) duckCamera initCamera
-  modify $ playVars %~ (\pv -> pv
-    { pvDinoPos = stepDinoPosition dinoAction dinoAnimations (pvDinoPos pv)
-    , pvMountainPos = Animate.stepPosition mountainAnimations (pvMountainPos pv) frameDeltaSeconds
-    , pvMountainScroll = stepHorizontalDistance (realToFrac $ pvMountainScroll pv) (realToFrac (-speed) / 3)
-    , pvJungleScroll = stepHorizontalDistance (realToFrac $ pvJungleScroll pv) (realToFrac (-speed) / 2)
-    , pvGroundScroll = stepHorizontalDistance (realToFrac $ pvGroundScroll pv) (realToFrac (-speed))
-    , pvRiverScroll = stepHorizontalDistance (realToFrac $ pvRiverScroll pv) (realToFrac (-speed) * 1.5)
-    , pvSpeed = speed
-    , pvZoom = zoom'
-    , pvDinoState = dinoState
-    , pvSfx = stepSfx dinoAction (removedCount > 0) newObstacleTag
-    , pvObstacles = obstacles
-    , pvScore = pvScore pv + fromIntegral removedCount
-    , pvUpcomingObstacles = upcomingObstacles
-    , pvLives = pvLives pv - (if collision then 1 else 0)
-    })
-  isDead <- (<= 0) <$> gets (pvLives . view playVars)
+  clearSfx
+  da <- (stepDinoAction input . pvDinoState) <$> gets (view playVars)
+  updateSpeed da
+  updateObstacles
+  (collision, da') <- tryCollision da
+  updateZoom da'
+  updateDino da'
+  updateCamera
+  updateScrolling
+  updateLives collision
+  isDead <- getDead
   when isDead (toScene Scene'Death)
