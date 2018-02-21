@@ -9,6 +9,7 @@ import DinoRush.Config
 
 class Monad m => Audio m where
   playGameMusic :: m ()
+  stopGameMusic :: m ()
   playJumpSfx :: m ()
   playDuckSfx :: m ()
   playPointSfx :: m ()
@@ -21,6 +22,9 @@ class Monad m => Audio m where
 
 playGameMusic' :: (MonadReader Config m, MonadIO m) => m ()
 playGameMusic' = asks (rGameMusic . cResources) >>= Mixer.playMusic Mixer.Forever
+
+stopGameMusic' :: MonadIO m => m ()
+stopGameMusic' = Mixer.haltMusic
 
 playChunk :: (MonadReader Config m, MonadIO m, MonadThrow m, MonadCatch m) => (Resources -> Mixer.Chunk) -> m ()
 playChunk sfx = flip catch ignore $ asks (sfx . cResources) >>= Mixer.play

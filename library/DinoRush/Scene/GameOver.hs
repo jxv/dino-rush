@@ -1,22 +1,21 @@
-{-# LANGUAGE TemplateHaskell #-}
 module DinoRush.Scene.GameOver where
 
-import qualified Animate
-import Control.Lens
+import Control.Monad (when)
+import Control.Monad.State (MonadState)
+import KeyState
 
-import DinoRush.Engine.Dino
-import DinoRush.Engine.Obstacle
-import DinoRush.Engine.Types
+import DinoRush.Effect.Renderer
+import DinoRush.Engine.Input
+import DinoRush.Scene.Play
+import DinoRush.Engine.Play
+import DinoRush.Manager.Input
+import DinoRush.Manager.Scene
 
-data GameOverVars = GameOverVars
-  { govPlayer :: Animate.Position DinoKey Seconds
-  , govMountainScroll :: Percent
-  , govBackgroundPositionClose :: Percent
-  , govGroundPosition :: Percent
-  , govObstacles :: [(Distance, ObstacleTag)]
-  } deriving (Show, Eq)
+class Monad m => GameOver m where
+  gameOverStep :: m ()
 
-makeClassy ''GameOverVars
-
-gameOverStep :: Monad m => m ()
-gameOverStep = return ()
+gameOverStep' :: (HasPlayVars s, MonadState s m, SceneManager m, HasInput m, Renderer m) => m ()
+gameOverStep' = do
+  input <- getInput
+  drawPlay
+  when (ksStatus (iSpace input) == KeyStatus'Pressed) (toScene Scene'Title)

@@ -30,6 +30,7 @@ import DinoRush.Scene.Title
 import DinoRush.Scene.Pause
 import DinoRush.Scene.Play
 import DinoRush.Scene.Death
+import DinoRush.Scene.GameOver
 import DinoRush.State
 
 main :: IO ()
@@ -60,6 +61,7 @@ runDinoRush config v (DinoRush m) = evalStateT (runReaderT m config) v
 
 instance Audio DinoRush where
   playGameMusic = playGameMusic'
+  stopGameMusic = stopGameMusic'
   playJumpSfx = playJumpSfx'
   playDuckSfx = playDuckSfx'
   playPointSfx = playPointSfx'
@@ -123,6 +125,9 @@ instance Pause DinoRush where
 
 instance Death DinoRush where
   deathStep = deathStep'
+
+instance GameOver DinoRush where
+  gameOverStep = gameOverStep'
 
 instance CameraControl DinoRush where
   adjustCamera = adjustCamera'

@@ -18,4 +18,4 @@ deathStep' :: (HasPlayVars s, MonadState s m, SceneManager m, HasInput m, Render
 deathStep' = do
   input <- getInput
   drawPlay
-  when (ksStatus (iSpace input) == KeyStatus'Pressed) (toScene Scene'Title)
+  when (ksStatus (iSpace input) == KeyStatus'Pressed) (toScene Scene'GameOver)
