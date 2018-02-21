@@ -44,6 +44,12 @@ deathTransition = do
   stopGameMusic
   playDeathSfx
 
+pauseToPlay :: Audio m => m ()
+pauseToPlay = raiseGameMusic
+
+playToPause :: Audio m => m ()
+playToPause = lowerGameMusic
+
 toScene' :: MonadState Vars m => Scene -> m ()
 toScene' scene = modify (\v -> v { vNextScene = scene })
 
@@ -91,11 +97,14 @@ mainLoop = do
           Scene'Title -> titleTransition
           Scene'Play -> case scene of
             Scene'Title -> playTransition
+            Scene'Pause -> pauseToPlay
             _ -> return ()
           Scene'Death -> case scene of
             Scene'Play -> deathTransition
             _ -> return ()
-          Scene'Pause -> return ()
+          Scene'Pause -> case scene of
+            Scene'Play -> playToPause
+            _ -> return ()
           Scene'GameOver -> return ()
           Scene'Quit -> return ()
         modify (\v -> v { vScene = nextScene })

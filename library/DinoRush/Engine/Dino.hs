@@ -67,7 +67,7 @@ dinoHeight' (Just (Percent percent)) = sin (percent * pi) * (-32 * 4) + dinoY
 dinoHeight' _ = dinoY
 
 dinoAabb :: Maybe Percent -> Aabb
-dinoAabb maybeHeight = Aabb (V2 dinoX y) (V2 (dinoX + 32) (y + 48))
+dinoAabb maybeHeight = Aabb (V2 (dinoX + 4) y) (V2 (dinoX + 24) (y + 48))
   where
     y = dinoHeight' maybeHeight
 

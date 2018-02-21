@@ -20,12 +20,20 @@ class Monad m => Audio m where
   playQuakeSfx :: m ()
   playDeathSfx :: m ()
   playRecoverSfx :: m ()
+  lowerGameMusic :: m ()
+  raiseGameMusic :: m ()
 
 playGameMusic' :: (MonadReader Config m, MonadIO m) => m ()
 playGameMusic' = asks (rGameMusic . cResources) >>= Mixer.playMusic Mixer.Forever
 
 stopGameMusic' :: MonadIO m => m ()
 stopGameMusic' = Mixer.haltMusic
+
+lowerGameMusic' :: MonadIO m => m ()
+lowerGameMusic' = Mixer.setMusicVolume 16
+
+raiseGameMusic' :: MonadIO m => m ()
+raiseGameMusic' = Mixer.setMusicVolume 128
 
 playChunk :: (MonadReader Config m, MonadIO m, MonadThrow m, MonadCatch m) => (Resources -> Mixer.Chunk) -> m ()
 playChunk sfx = flip catch ignore $ asks (sfx . cResources) >>= Mixer.play
