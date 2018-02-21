@@ -36,6 +36,7 @@ data Resources = Resources
   , rDeathSfx :: Mixer.Chunk
   , rRecoverSfx :: Mixer.Chunk
   , rFont :: Font.Font
+  , rPauseSprite :: SDL.Texture
   }
 
 loadSurface :: FilePath -> Maybe Animate.Color -> IO SDL.Surface
@@ -64,6 +65,7 @@ loadResources renderer = do
   jungle <- loadTexture "resource/jungle.png" Nothing
   ground <- loadTexture "resource/ground.png" Nothing
   river <- loadTexture "resource/river.png" Nothing
+  pauseSprite <- toTexture =<< Font.solid font (V4 255 255 255 255) "PAUSED"
   dinoSprites <- Animate.readSpriteSheetJSON loadTexture "resource/dino.json" :: IO (Animate.SpriteSheet DinoKey SDL.Texture Seconds)
   birdSprites <- Animate.readSpriteSheetJSON loadTexture "resource/bird.json" :: IO (Animate.SpriteSheet BirdKey SDL.Texture Seconds)
   lavaSprites <- Animate.readSpriteSheetJSON loadTexture "resource/lava.json" :: IO (Animate.SpriteSheet LavaKey SDL.Texture Seconds)
@@ -89,8 +91,10 @@ loadResources renderer = do
     , rRecoverSfx = recoverSfx
     , rGameMusic = gameMusic
     , rFont = font
+    , rPauseSprite = pauseSprite
     }
   where
+    toTexture surface = SDL.createTextureFromSurface renderer surface
     loadTexture path c = SDL.createTextureFromSurface renderer =<< loadSurface path c
 
 freeResources :: Resources -> IO ()

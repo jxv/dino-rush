@@ -38,6 +38,7 @@ class Monad m => Renderer m where
   drawGround :: (Int, Int) -> m ()
   drawRiver :: (Int, Int) -> m ()
   drawBlackOverlay :: Percent -> m ()
+  drawPauseText :: (Int, Int) -> m ()
 
 clearScreen' :: (SDLRenderer m, MonadReader Config m) => m ()
 clearScreen' = do
@@ -58,6 +59,18 @@ groundY = 16 * 28
 riverY = 16 * 36
 
 --
+
+drawTextureSprite :: (SDLRenderer m, MonadReader Config m) => (Config -> SDL.Texture) -> (Int, Int) -> m ()
+drawTextureSprite getTex (x,y) = do
+  renderer <- asks cRenderer
+  tex <- asks getTex
+  SDL.TextureInfo{textureWidth,textureHeight} <- queryTexture tex
+  let dim = V2 textureWidth textureHeight
+  drawTexture
+    renderer
+    tex
+    Nothing
+    (Just $ SDL.Rectangle (SDL.P $ SDL.V2 (fromIntegral x) (fromIntegral y)) dim)
 
 drawSprite :: (SDLRenderer m, MonadReader Config m) => (Config -> Animate.SpriteSheet key SDL.Texture Seconds) -> Animate.SpriteClip key -> (Int, Int) -> m ()
 drawSprite ss clip (x,y) = do

@@ -22,6 +22,9 @@ pauseStep' = do
   drawPause
   when (ksStatus (iSpace input) == KeyStatus'Pressed) (toScene Scene'Play)
 
-drawPause :: Renderer m => m ()
+drawPause :: (Renderer m, CameraControl m) => m ()
 drawPause = do
   drawBlackOverlay 0.5
+  enableHUD
+  drawPauseText (540,330)
+  disableHUD

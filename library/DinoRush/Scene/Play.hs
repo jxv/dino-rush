@@ -158,15 +158,6 @@ updateCamera = do
   zoom <- gets (pvZoom . view playVars)
   let cam = lerpCamera ((1 - zoom) ** (1.8 :: Float)) duckCamera initCamera
   adjustCamera cam
-  modifyPlayVars $ \pv -> pv { pvCamera = cam }
-
-enableHUD :: CameraControl m => m ()
-enableHUD = adjustCamera initCamera
-
-disableHUD :: (MonadState s m, HasPlayVars s, CameraControl m) => m ()
-disableHUD = do
-  cam <- gets (pvCamera . view playVars)
-  adjustCamera cam
 
 updateObstacles :: (MonadState s m, HasPlayVars s) => m ()
 updateObstacles = do

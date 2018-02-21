@@ -118,6 +118,7 @@ instance Renderer DinoRush where
   drawGround = drawHorizontalScrollImage (rGroundSprites . cResources)
   drawRiver = drawHorizontalScrollImage (rRiverSprites . cResources)
   drawBlackOverlay = drawBlackOverlay'
+  drawPauseText = drawTextureSprite (rPauseSprite . cResources)
 
 instance Title DinoRush where
   titleStep = titleStep'
@@ -136,3 +137,5 @@ instance GameOver DinoRush where
 
 instance CameraControl DinoRush where
   adjustCamera = adjustCamera'
+  enableHUD = enableHUD'
+  disableHUD = disableHUD'
