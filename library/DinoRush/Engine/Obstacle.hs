@@ -48,7 +48,7 @@ randomRBoundedEnum :: (Bounded a, Enum a, RandomGen g) => (a, a) -> g -> (a, g)
 randomRBoundedEnum (aMin, aMax) g = let
   (index, g') = randomR (fromEnum aMin, fromEnum aMax) g
   lastEnum = maxBound
-  a = [minBound..lastEnum] !! (index `mod` fromEnum lastEnum)
+  a = [minBound..lastEnum] !! (index `mod` (fromEnum lastEnum + 1))
   in (a, g')
 
 streamOfObstacles :: RandomGen g => g -> [(Int, ObstacleTag)]
