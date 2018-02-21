@@ -7,7 +7,7 @@ import Data.Aeson (FromJSON, ToJSON)
 type Animations key = Animate.Animations key (Animate.SpriteClip key) Seconds
 type DrawSprite key m = Animate.SpriteClip key -> (Int, Int) -> m ()
 
-newtype Lives = Lives Int
+newtype Stocks = Stocks Int
   deriving (Show, Eq, Num, Integral, Real, Ord, Enum)
 
 newtype Percent = Percent Float

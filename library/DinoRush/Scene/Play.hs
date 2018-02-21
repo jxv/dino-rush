@@ -47,6 +47,12 @@ drawPlay = do
   when (pvShowDino pv) $ drawDino dinoLoc (truncate dinoX, dinoHeight (dsHeight $ pvDinoState pv))
   drawObstacles (pvObstacles pv)
   drawRiver (truncate $ pvRiverScroll pv, riverY)
+  drawStocks pv dinoAnimations
+  where
+    drawStocks pv dinoAnimations =
+      flip mapM_ [1..(fromIntegral $ pvStocks pv)] $ \stock -> do
+        let idleLoc = Animate.currentLocation dinoAnimations (Animate.initPosition DinoKey'Kick)
+        drawDino idleLoc (20 + 48 * (stock - 1), 32)
 
 drawObstacles :: Renderer m => [ObstacleState] -> m ()
 drawObstacles obstacles = do
@@ -133,7 +139,6 @@ updateDino sda = do
           DinoAction'Move -> case da of
             DinoAction'Hurt -> [Sfx'Recover]
             _ -> []
-
   modifyPlayVars $ \pv -> let
     ds = stepDinoState sda (pvDinoState pv)
     in pv
@@ -189,11 +194,11 @@ updateScrolling = do
       , pvRiverScroll = stepHorizontalDistance (realToFrac $ pvRiverScroll pv) (realToFrac (-speed) * 1.5)
       }
 
-updateLives :: (MonadState s m, HasPlayVars s) => Bool -> m ()
-updateLives collision = modifyPlayVars $ \pv -> pv { pvLives = pvLives pv - (if collision then 1 else 0) }
+updateStocks :: (MonadState s m, HasPlayVars s) => Bool -> m ()
+updateStocks collision = modifyPlayVars $ \pv -> pv { pvStocks = pvStocks pv - (if collision then 1 else 0) }
 
 getDead :: (MonadState s m, HasPlayVars s) => m Bool
-getDead = (<= 0) <$> gets (pvLives . view playVars)
+getDead = (<= 0) <$> gets (pvStocks . view playVars)
 
 updatePlay :: (HasPlayVars s, MonadState s m, Logger m, Clock m, CameraControl m, Renderer m, HasInput m, SceneManager m) => m ()
 updatePlay = do
@@ -207,6 +212,6 @@ updatePlay = do
   updateDino da'
   updateCamera
   updateScrolling
-  updateLives collision
+  updateStocks collision
   isDead <- getDead
   when isDead (toScene Scene'Death)
