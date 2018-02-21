@@ -5,6 +5,7 @@ import qualified Animate
 import Control.Lens
 
 import DinoRush.Engine.Dino
+import DinoRush.Engine.Camera
 import DinoRush.Engine.Mountain
 import DinoRush.Engine.Obstacle
 import DinoRush.Engine.Sfx
@@ -27,6 +28,7 @@ data PlayVars = PlayVars
   , pvRiverScroll :: Distance
   , pvObstacles :: [ObstacleState]
   , pvUpcomingObstacles :: [(Int, ObstacleTag)]
+  , pvCamera :: Camera
   } deriving (Show, Eq)
 
 makeClassy ''PlayVars
@@ -49,4 +51,5 @@ initPlayVars upcomingObstacles = PlayVars
   , pvRiverScroll = 0
   , pvObstacles = []
   , pvUpcomingObstacles = upcomingObstacles
+  , pvCamera = initCamera
   }

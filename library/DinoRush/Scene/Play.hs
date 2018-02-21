@@ -34,7 +34,7 @@ stepHorizontalDistance dist speed = if dist' <= -1280 then dist' + 1280 else dis
   where
     dist' = dist + speed
 
-drawPlay :: (HasPlayVars s, MonadState s m, Renderer m) => m ()
+drawPlay :: (HasPlayVars s, MonadState s m, Renderer m, CameraControl m) => m ()
 drawPlay = do
   dinoAnimations <- getDinoAnimations
   mountainAnimations <- getMountainAnimations
@@ -47,7 +47,9 @@ drawPlay = do
   when (pvShowDino pv) $ drawDino dinoLoc (truncate dinoX, dinoHeight (dsHeight $ pvDinoState pv))
   drawObstacles (pvObstacles pv)
   drawRiver (truncate $ pvRiverScroll pv, riverY)
+  enableHUD
   drawStocks pv dinoAnimations
+  disableHUD
   where
     drawStocks pv dinoAnimations =
       flip mapM_ [1..(fromIntegral $ pvStocks pv)] $ \stock -> do
@@ -154,7 +156,17 @@ updateZoom da = modifyPlayVars $ \pv -> pv { pvZoom = stepZoom (pvZoom pv) (smas
 updateCamera :: (MonadState s m, HasPlayVars s, CameraControl m) => m ()
 updateCamera = do
   zoom <- gets (pvZoom . view playVars)
-  adjustCamera $ lerpCamera ((1 - zoom) ** (1.8 :: Float)) duckCamera initCamera
+  let cam = lerpCamera ((1 - zoom) ** (1.8 :: Float)) duckCamera initCamera
+  adjustCamera cam
+  modifyPlayVars $ \pv -> pv { pvCamera = cam }
+
+enableHUD :: CameraControl m => m ()
+enableHUD = adjustCamera initCamera
+
+disableHUD :: (MonadState s m, HasPlayVars s, CameraControl m) => m ()
+disableHUD = do
+  cam <- gets (pvCamera . view playVars)
+  adjustCamera cam
 
 updateObstacles :: (MonadState s m, HasPlayVars s) => m ()
 updateObstacles = do

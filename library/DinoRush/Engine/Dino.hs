@@ -63,7 +63,7 @@ dinoHeight :: Maybe Percent -> Int
 dinoHeight p = truncate (dinoHeight' p)
 
 dinoHeight' :: Maybe Percent -> Float
-dinoHeight' (Just (Percent percent)) = sin (percent * pi) * (-32 * 4) + dinoY
+dinoHeight' (Just (Percent percent)) = sin (percent * pi) * (-32 * 7) + dinoY
 dinoHeight' _ = dinoY
 
 dinoAabb :: Maybe Percent -> Aabb
@@ -132,11 +132,16 @@ stepDinoPosition (Step'Change _ da) _ _ = case da of
   DinoAction'Hurt -> Animate.initPosition DinoKey'Hurt
 
 stepSpeed :: Step DinoAction -> Percent -> Percent
-stepSpeed dinoAction speed = clamp speed' 1 20
+stepSpeed sda speed = clamp speed' 1 20
   where
-    speed'
-      | Step'Sustain DinoAction'Duck == dinoAction = speed - 0.1
-      | otherwise = speed + 0.03
+    da = smash sda
+    speed' = case da of
+      DinoAction'Duck -> speed - 0.1
+      DinoAction'Move -> speed + 0.03
+      DinoAction'Jump -> speed
+      DinoAction'Hurt -> speed - 0.15
+
+
 
 showDino :: DinoState -> Bool
 showDino DinoState{dsRecover} = case dsRecover of
