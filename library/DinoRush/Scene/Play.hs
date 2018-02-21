@@ -44,7 +44,7 @@ drawPlay = do
   drawMountain mountainLoc (truncate $ pvMountainScroll pv, mountainY)
   drawJungle (truncate $ pvJungleScroll pv, jungleY)
   drawGround (truncate $ pvGroundScroll pv, groundY)
-  drawDino dinoLoc (truncate dinoX, dinoHeight (dsHeight $ pvDinoState pv))
+  when (pvShowDino pv) $ drawDino dinoLoc (truncate dinoX, dinoHeight (dsHeight $ pvDinoState pv))
   drawObstacles (pvObstacles pv)
   drawRiver (truncate $ pvRiverScroll pv, riverY)
 
@@ -133,11 +133,15 @@ updateDino sda = do
           DinoAction'Move -> case da of
             DinoAction'Hurt -> [Sfx'Recover]
             _ -> []
-  modifyPlayVars $ \pv -> pv
-    { pvDinoState = stepDinoState sda (pvDinoState pv)
-    , pvSfx = pvSfx pv ++ sfx
-    , pvDinoPos = stepDinoPosition sda dinoAnimations (pvDinoPos pv)
-    }
+
+  modifyPlayVars $ \pv -> let
+    ds = stepDinoState sda (pvDinoState pv)
+    in pv
+      { pvDinoState = ds
+      , pvShowDino = showDino ds
+      , pvSfx = pvSfx pv ++ sfx
+      , pvDinoPos = stepDinoPosition sda dinoAnimations (pvDinoPos pv)
+      }
 
 updateZoom :: (MonadState s m, HasPlayVars s) => Step DinoAction -> m ()
 updateZoom da = modifyPlayVars $ \pv -> pv { pvZoom = stepZoom (pvZoom pv) (smash da) }

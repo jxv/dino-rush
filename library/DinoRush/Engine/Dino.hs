@@ -137,3 +137,8 @@ stepSpeed dinoAction speed = clamp speed' 1 20
     speed'
       | Step'Sustain DinoAction'Duck == dinoAction = speed - 0.1
       | otherwise = speed + 0.03
+
+showDino :: DinoState -> Bool
+showDino DinoState{dsRecover} = case dsRecover of
+  Nothing -> True
+  Just percent -> sin (1000 * (percent ** 3)) >= 0

@@ -16,6 +16,7 @@ data PlayVars = PlayVars
   , pvSpeed :: Percent
   , pvZoom :: Float
   , pvProgress :: Distance
+  , pvShowDino :: Bool
   , pvDinoPos :: Animate.Position DinoKey Seconds
   , pvSfx :: [Sfx]
   , pvMountainPos :: Animate.Position MountainKey Seconds
@@ -35,6 +36,7 @@ initPlayVars upcomingObstacles = PlayVars
   { pvScore = 0
   , pvLives = 3
   , pvSpeed = 1
+  , pvShowDino = True
   , pvProgress = 0
   , pvZoom = 1
   , pvDinoState = DinoState DinoAction'Move Nothing Nothing Nothing

@@ -11,7 +11,7 @@ newtype Lives = Lives Int
   deriving (Show, Eq, Num, Integral, Real, Ord, Enum)
 
 newtype Percent = Percent Float
-  deriving (Show, Eq, Num, Fractional, RealFrac, Real, Ord)
+  deriving (Show, Eq, Num, Fractional, Floating, RealFrac, Real, Ord)
 
 newtype Distance = Distance Float
   deriving (Show, Eq, Num, Fractional, RealFrac, Real, Ord)
