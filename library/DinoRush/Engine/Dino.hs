@@ -142,3 +142,12 @@ showDino :: DinoState -> Bool
 showDino DinoState{dsRecover} = case dsRecover of
   Nothing -> True
   Just percent -> sin (1000 * (percent ** 3)) >= 0
+
+addStocks :: Score -> Score -> Bool
+addStocks s s' = or [pass 1, pass 5, pass 10, pass 20, pass 35, pass 50, pass 75, powerOf50]
+  where
+    pass n = s < n && s' >= n
+    powerOf50 = s' >= 100 && mod s 50 > mod s' 50
+
+nextStocks :: Score -> Score -> Stocks -> Stocks
+nextStocks s s' st = min 10 (st + if addStocks s s' then 1 else 0)

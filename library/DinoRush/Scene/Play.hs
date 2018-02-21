@@ -167,12 +167,15 @@ updateObstacles = do
           ObstacleTag'Lava -> [Sfx'Lava]
           ObstacleTag'Rock -> [Sfx'Rock]
           ObstacleTag'Bird -> [Sfx'Bird]
-  modifyPlayVars $ \pv -> pv
-    { pvObstacles = obstacles
-    , pvSfx = pvSfx pv ++ pointSfx ++ obstacleSfx
-    , pvScore = pvScore pv + fromIntegral removedCount
-    , pvUpcomingObstacles = upcomingObstacles
-    }
+  modifyPlayVars $ \pv -> let
+    score = pvScore pv + fromIntegral removedCount
+    in pv
+      { pvObstacles = obstacles
+      , pvSfx = pvSfx pv ++ pointSfx ++ obstacleSfx
+      , pvScore = score
+      , pvUpcomingObstacles = upcomingObstacles
+      , pvStocks = nextStocks (pvScore pv) score (pvStocks pv)
+      }
 
 tryCollision :: (MonadState s m, HasPlayVars s) => Step DinoAction -> m (Bool, Step DinoAction)
 tryCollision da = do
