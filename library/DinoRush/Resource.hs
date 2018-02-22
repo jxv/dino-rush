@@ -5,11 +5,13 @@ import qualified SDL.Mixer as Mixer
 import qualified SDL.Font as Font
 import qualified SDL.Image as Image
 import qualified Animate
+import Data.Text.Conversions (toText)
 import Data.StateVar (($=))
 import SDL.Vect
 
 import DinoRush.Engine.Types
 import DinoRush.Engine.Dino
+import DinoRush.Engine.Font
 import DinoRush.Engine.Bird
 import DinoRush.Engine.Lava
 import DinoRush.Engine.Mountain
@@ -41,6 +43,7 @@ data Resources = Resources
   , rGameOverSprite :: SDL.Texture
   , rHiscoreSprite :: SDL.Texture
   , rTitleSprite :: SDL.Texture
+  , rNumberSprites :: Number -> SDL.Texture
   }
 
 loadSurface :: FilePath -> Maybe Animate.Color -> IO SDL.Surface
@@ -77,6 +80,29 @@ loadResources renderer = do
   gameOverSprite <- toTexture =<< Font.solid bigFont (V4 255 255 255 255) "GAME OVER"
   hiscoreSprite <- toTexture =<< Font.solid smallFont (V4 255 255 255 255) "HISCORE"
   titleSprite <- toTexture =<< Font.shaded titleFont (V4 0xff 0xff 0xff 0xff) (V4 0x11 0x08 0x1e 0x2a) " DINO RUSH "
+  let drawFont :: Int -> IO SDL.Texture
+      drawFont n = toTexture =<< Font.solid smallFont (V4 255 255 255 255) (toText $ show n)
+  num0 <- drawFont 0
+  num1 <- drawFont 1
+  num2 <- drawFont 2
+  num3 <- drawFont 3
+  num4 <- drawFont 4
+  num5 <- drawFont 5
+  num6 <- drawFont 6
+  num7 <- drawFont 7
+  num8 <- drawFont 8
+  num9 <- drawFont 9
+  let numberSprites = \n -> case n of
+        Number'0 -> num0
+        Number'1 -> num1
+        Number'2 -> num2
+        Number'3 -> num3
+        Number'4 -> num4
+        Number'5 -> num5
+        Number'6 -> num6
+        Number'7 -> num7
+        Number'8 -> num8
+        Number'9 -> num9
   dinoSprites <- Animate.readSpriteSheetJSON loadTexture "resource/dino.json" :: IO (Animate.SpriteSheet DinoKey SDL.Texture Seconds)
   birdSprites <- Animate.readSpriteSheetJSON loadTexture "resource/bird.json" :: IO (Animate.SpriteSheet BirdKey SDL.Texture Seconds)
   lavaSprites <- Animate.readSpriteSheetJSON loadTexture "resource/lava.json" :: IO (Animate.SpriteSheet LavaKey SDL.Texture Seconds)
@@ -110,6 +136,7 @@ loadResources renderer = do
     , rGameOverSprite = gameOverSprite
     , rHiscoreSprite = hiscoreSprite
     , rTitleSprite = titleSprite
+    , rNumberSprites = numberSprites
     }
   where
     toTexture surface = SDL.createTextureFromSurface renderer surface

@@ -13,6 +13,7 @@ import DinoRush.Engine.Dino
 import DinoRush.Engine.Lava
 import DinoRush.Engine.Rock
 import DinoRush.Engine.Bird
+import DinoRush.Engine.Font
 import DinoRush.Engine.Mountain
 import DinoRush.Wrapper.SDLRenderer
 
@@ -44,6 +45,7 @@ class Monad m => Renderer m where
   drawPressSpaceText :: (Int, Int) -> m ()
   drawPressEscapeText :: (Int, Int) -> m ()
   drawTitleText :: (Int, Int) -> m ()
+  drawNumber :: Number -> (Int, Int) -> m ()
 
 clearScreen' :: (SDLRenderer m, MonadReader Config m) => m ()
 clearScreen' = do

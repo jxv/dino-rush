@@ -124,6 +124,7 @@ instance Renderer DinoRush where
   drawPressSpaceText = drawTextureSprite (rSpaceSprite . cResources)
   drawPressEscapeText = drawTextureSprite (rEscapeSprite . cResources)
   drawTitleText = drawTextureSprite (rTitleSprite . cResources)
+  drawNumber n = drawTextureSprite (flip rNumberSprites n . cResources)
 
 instance Title DinoRush where
   titleStep = titleStep'

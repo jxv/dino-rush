@@ -43,6 +43,7 @@ library:
     - sdl2-ttf
     - StateVar
     - text
+    - text-conversions
     - random
   source-dirs: library
 executables:

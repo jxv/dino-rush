@@ -22,6 +22,7 @@ import DinoRush.Engine.Dino
 import DinoRush.Engine.Obstacle
 import DinoRush.Engine.Play
 import DinoRush.Engine.Sfx
+import DinoRush.Engine.Font
 import DinoRush.Engine.Physics
 import DinoRush.Manager.Scene
 import DinoRush.Manager.Input
@@ -50,12 +51,18 @@ drawPlay = do
   enableHUD
   drawStocks pv dinoAnimations
   drawHiscore (1150, 16)
+  drawScore (pvScore pv) (1234, 128)
   disableHUD
   where
     drawStocks pv dinoAnimations =
       flip mapM_ [1..(fromIntegral $ pvStocks pv)] $ \stock -> do
         let idleLoc = Animate.currentLocation dinoAnimations (Animate.initPosition DinoKey'Kick)
         drawDino idleLoc (20 + 48 * (stock - 1), 32)
+
+drawScore :: Renderer m => Score -> (Int, Int) -> m ()
+drawScore score (x,y) = mapM_
+  (\(i, n) -> drawNumber n (x - i * 16, y))
+  (zip [0..] (toNumberReverse (fromIntegral score)))
 
 drawObstacles :: Renderer m => [ObstacleState] -> m ()
 drawObstacles obstacles = do
