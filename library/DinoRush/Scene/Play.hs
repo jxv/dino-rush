@@ -212,6 +212,9 @@ updateScrolling = do
 updateStocks :: (MonadState s m, HasPlayVars s) => Bool -> m ()
 updateStocks collision = modifyPlayVars $ \pv -> pv { pvStocks = pvStocks pv - (if collision then 1 else 0) }
 
+updateHiscore :: (MonadState s m, HasPlayVars s) => m ()
+updateHiscore = modifyPlayVars $ \pv -> pv { pvHiscore = max (pvHiscore pv) (pvScore pv) }
+
 getDead :: (MonadState s m, HasPlayVars s) => m Bool
 getDead = (<= 0) <$> gets (pvStocks . view playVars)
 
@@ -228,5 +231,6 @@ updatePlay = do
   updateCamera
   updateScrolling
   updateStocks collision
+  updateHiscore
   isDead <- getDead
   when isDead (toScene Scene'Death)
