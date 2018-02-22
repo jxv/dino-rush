@@ -25,7 +25,7 @@ gameOverStep' = do
   drawGameOver
   when (ksStatus (iSpace input) == KeyStatus'Pressed) (toScene Scene'Title)
 
-updateGameOver :: (HasGameOverVars s, MonadState s m) => m ()
+updateGameOver :: (HasGameOverVars s, HasPlayVars s, MonadState s m) => m ()
 updateGameOver = modify $ gameOverVars %~ stepGameOverVars
 
 drawGameOver :: (Renderer m, CameraControl m, MonadState s m, HasGameOverVars s) => m ()

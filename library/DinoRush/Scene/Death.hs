@@ -1,12 +1,14 @@
 module DinoRush.Scene.Death where
 
+import qualified Animate
 import Control.Monad (when)
-import Control.Monad.State (MonadState)
-import KeyState
+import Control.Lens (view)
+import Control.Monad.State (MonadState, gets)
 
 import DinoRush.Effect.Renderer
 import DinoRush.Effect.Camera
-import DinoRush.Engine.Input
+import DinoRush.Engine.Dino
+import DinoRush.Engine.Frame
 import DinoRush.Scene.Play
 import DinoRush.Engine.Play
 import DinoRush.Manager.Input
@@ -17,6 +19,17 @@ class Monad m => Death m where
 
 deathStep' :: (HasPlayVars s, MonadState s m, SceneManager m, HasInput m, Renderer m, CameraControl m) => m ()
 deathStep' = do
-  input <- getInput
+  updateDeath
   drawPlay
-  when (ksStatus (iSpace input) == KeyStatus'Pressed) (toScene Scene'GameOver)
+  height <- gets (dsHeight . pvDinoState . view playVars)
+  case height of
+    Nothing -> return ()
+    Just h -> when (h > pi / 2) (toScene Scene'GameOver)
+
+updateDeath :: (HasPlayVars s, MonadState s m, Renderer m) => m ()
+updateDeath = do
+  animations <- getDinoAnimations
+  modifyPlayVars $ \pv -> let
+    ds = pvDinoState pv
+    ds' = ds { dsHeight = maybe (Just 0) (\x -> Just $ x + 0.03) (dsHeight ds) }
+    in pv { pvDinoState = ds', pvDinoPos = Animate.stepPosition animations (pvDinoPos pv) frameDeltaSeconds }
