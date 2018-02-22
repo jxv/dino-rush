@@ -49,6 +49,7 @@ drawPlay = do
   drawRiver (truncate $ pvRiverScroll pv, riverY)
   enableHUD
   drawStocks pv dinoAnimations
+  drawHiscore (1150, 16)
   disableHUD
   where
     drawStocks pv dinoAnimations =

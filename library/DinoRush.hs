@@ -118,6 +118,7 @@ instance Renderer DinoRush where
   drawGround = drawHorizontalScrollImage (rGroundSprites . cResources)
   drawRiver = drawHorizontalScrollImage (rRiverSprites . cResources)
   drawBlackOverlay = drawBlackOverlay'
+  drawHiscore = drawTextureSprite (rHiscoreSprite . cResources)
   drawPauseText = drawTextureSprite (rPauseSprite . cResources)
   drawGameOverText = drawTextureSprite (rGameOverSprite . cResources)
   drawPressSpaceText = drawTextureSprite (rSpaceSprite . cResources)

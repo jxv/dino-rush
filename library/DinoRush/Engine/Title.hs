@@ -23,4 +23,4 @@ titleShowPressSpace :: Float -> Bool
 titleShowPressSpace p = sin p > 0.5
 
 titleShowPressEscape :: Float -> Bool
-titleShowPressEscape p = sin p < 0.5
+titleShowPressEscape p = sin p < -0.5
