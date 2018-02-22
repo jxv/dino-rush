@@ -10,4 +10,5 @@ data Sfx
   | Sfx'Quake
   | Sfx'Rock
   | Sfx'Recover
+  | Sfx'Stock
   deriving (Show, Eq)

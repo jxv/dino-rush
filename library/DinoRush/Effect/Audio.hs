@@ -20,6 +20,7 @@ class Monad m => Audio m where
   playQuakeSfx :: m ()
   playDeathSfx :: m ()
   playRecoverSfx :: m ()
+  playStockSfx :: m ()
   lowerGameMusic :: m ()
   raiseGameMusic :: m ()
 
@@ -50,7 +51,8 @@ playJumpSfx',
   playRockSfx',
   playQuakeSfx',
   playDeathSfx',
-  playRecoverSfx' :: (MonadReader Config m, MonadIO m, MonadThrow m, MonadCatch m) => m ()
+  playRecoverSfx',
+  playStockSfx' :: (MonadReader Config m, MonadIO m, MonadThrow m, MonadCatch m) => m ()
 playJumpSfx' = playChunk rJumpSfx
 playDuckSfx' = playChunk rDuckSfx
 playPointSfx' = playChunk rPointSfx
@@ -61,3 +63,4 @@ playRockSfx' = playChunk rRockSfx
 playQuakeSfx' = playChunk rQuakeSfx
 playDeathSfx' = playChunk rDeathSfx
 playRecoverSfx' = playChunk rRecoverSfx
+playStockSfx' = playChunk rStockSfx

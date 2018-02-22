@@ -77,6 +77,7 @@ instance Audio DinoRush where
   playDeathSfx = playDeathSfx'
   lowerGameMusic = lowerGameMusic'
   raiseGameMusic = raiseGameMusic'
+  playStockSfx = playStockSfx'
 
 instance Clock DinoRush where
   delayMilliseconds = liftIO . delayMilliseconds'

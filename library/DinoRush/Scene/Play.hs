@@ -98,6 +98,7 @@ sfxPlay = do
     Sfx'Quake -> playQuakeSfx
     Sfx'Rock -> playRockSfx
     Sfx'Recover -> playRecoverSfx
+    Sfx'Stock -> playStockSfx
 
 stepZoom :: Float -> DinoAction -> Float
 stepZoom zoom dinoAction = case dinoAction of
@@ -181,9 +182,10 @@ updateObstacles = do
           ObstacleTag'Bird -> [Sfx'Bird]
   modifyPlayVars $ \pv -> let
     score = pvScore pv + fromIntegral removedCount
+    stockSfx = if addStocks (pvScore pv) score then [Sfx'Stock] else []
     in pv
       { pvObstacles = obstacles
-      , pvSfx = pvSfx pv ++ pointSfx ++ obstacleSfx
+      , pvSfx = pvSfx pv ++ pointSfx ++ obstacleSfx ++ stockSfx
       , pvScore = score
       , pvUpcomingObstacles = upcomingObstacles
       , pvStocks = nextStocks (pvScore pv) score (pvStocks pv)

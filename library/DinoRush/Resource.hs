@@ -37,6 +37,7 @@ data Resources = Resources
   , rRockSfx :: Mixer.Chunk
   , rDeathSfx :: Mixer.Chunk
   , rRecoverSfx :: Mixer.Chunk
+  , rStockSfx :: Mixer.Chunk
   , rPauseSprite :: SDL.Texture
   , rSpaceSprite :: SDL.Texture
   , rEscapeSprite :: SDL.Texture
@@ -69,6 +70,7 @@ loadResources renderer = do
   rockSfx <- Mixer.load "resource/rock.wav"
   lavaSfx <- Mixer.load "resource/lava.wav"
   deathSfx <- Mixer.load "resource/death.wav"
+  stockSfx <- Mixer.load "resource/stock.wav"
   recoverSfx <- Mixer.load "resource/recover.wav"
   mountainSprites <- Animate.readSpriteSheetJSON loadTexture "resource/mountain.json" :: IO (Animate.SpriteSheet MountainKey SDL.Texture Seconds)
   jungle <- loadTexture "resource/jungle.png" Nothing
@@ -128,6 +130,7 @@ loadResources renderer = do
     , rQuakeSfx = quakeSfx
     , rRockSfx = rockSfx
     , rDeathSfx = deathSfx
+    , rStockSfx = stockSfx
     , rRecoverSfx = recoverSfx
     , rGameMusic = gameMusic
     , rPauseSprite = pauseSprite
@@ -169,4 +172,5 @@ freeResources r = do
   Mixer.free (rQuakeSfx r)
   Mixer.free (rRockSfx r)
   Mixer.free (rRecoverSfx r)
+  Mixer.free (rStockSfx r)
   Mixer.free (rDeathSfx r)
