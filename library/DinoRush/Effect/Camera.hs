@@ -13,8 +13,8 @@ import DinoRush.Engine.Camera
 
 class Monad m => CameraControl m where
   adjustCamera :: Camera -> m ()
-  enableHUD :: m ()
-  disableHUD :: m ()
+  disableZoom :: m ()
+  enableZoom :: m ()
 
 adjustCamera' :: (MonadIO m, MonadReader Config m, MonadState Vars m) => Camera -> m ()
 adjustCamera' cam = do
@@ -22,13 +22,13 @@ adjustCamera' cam = do
   renderer <- asks cRenderer
   moveCamera renderer cam
 
-enableHUD' :: (MonadIO m, MonadReader Config m) => m ()
-enableHUD' = do
+disableZoom' :: (MonadIO m, MonadReader Config m) => m ()
+disableZoom' = do
   renderer <- asks cRenderer
   moveCamera renderer initCamera
 
-disableHUD' :: (MonadIO m, MonadReader Config m, MonadState Vars m) => m ()
-disableHUD' = do
+enableZoom' :: (MonadIO m, MonadReader Config m, MonadState Vars m) => m ()
+enableZoom' = do
   renderer <- asks cRenderer
   cam <- gets vCamera
   moveCamera renderer cam

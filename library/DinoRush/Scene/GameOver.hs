@@ -7,7 +7,9 @@ import KeyState
 
 import DinoRush.Effect.Renderer
 import DinoRush.Effect.Camera
+import DinoRush.Effect.HUD
 import DinoRush.Engine.Input
+import DinoRush.Engine.Common
 import DinoRush.Scene.Play
 import DinoRush.Engine.Play
 import DinoRush.Engine.GameOver
@@ -17,7 +19,7 @@ import DinoRush.Manager.Scene
 class Monad m => GameOver m where
   gameOverStep :: m ()
 
-gameOverStep' :: (HasPlayVars s, HasGameOverVars s, MonadState s m, SceneManager m, HasInput m, Renderer m, CameraControl m) => m ()
+gameOverStep' :: (HasPlayVars s, HasCommonVars s, HasGameOverVars s, MonadState s m, SceneManager m, HasInput m, Renderer m, CameraControl m, HUD m) => m ()
 gameOverStep' = do
   input <- getInput
   updateGameOver
@@ -32,7 +34,7 @@ drawGameOver :: (Renderer m, CameraControl m, MonadState s m, HasGameOverVars s)
 drawGameOver = do
   gov <- gets (view gameOverVars)
   drawBlackOverlay (govFadeout gov)
-  enableHUD
+  disableZoom
   drawGameOverText (470,300)
   when (gameOverShowPressSpace $ govSpaceFlashing gov) $ drawPressSpaceText (560,500)
-  disableHUD
+  enableZoom

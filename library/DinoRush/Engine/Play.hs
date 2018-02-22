@@ -12,7 +12,6 @@ import DinoRush.Engine.Types
 
 data PlayVars = PlayVars
   { pvScore :: Score
-  , pvHiscore :: Score
   , pvStocks :: Stocks
   , pvSpeed :: Percent
   , pvZoom :: Float
@@ -31,10 +30,9 @@ data PlayVars = PlayVars
 
 makeClassy ''PlayVars
 
-initPlayVars :: [(Int, ObstacleTag)] -> Score -> PlayVars
-initPlayVars upcomingObstacles hiscore = PlayVars
+initPlayVars :: [(Int, ObstacleTag)] -> PlayVars
+initPlayVars upcomingObstacles = PlayVars
   { pvScore = 0
-  , pvHiscore = hiscore
   , pvStocks = 3
   , pvSpeed = 1
   , pvShowDino = True

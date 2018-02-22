@@ -6,9 +6,11 @@ import Control.Lens (view)
 import Control.Monad.State (MonadState, gets)
 
 import DinoRush.Effect.Renderer
+import DinoRush.Effect.HUD
 import DinoRush.Effect.Camera
 import DinoRush.Engine.Dino
 import DinoRush.Engine.Frame
+import DinoRush.Engine.Common
 import DinoRush.Scene.Play
 import DinoRush.Engine.Play
 import DinoRush.Manager.Input
@@ -17,7 +19,7 @@ import DinoRush.Manager.Scene
 class Monad m => Death m where
   deathStep :: m ()
 
-deathStep' :: (HasPlayVars s, MonadState s m, SceneManager m, HasInput m, Renderer m, CameraControl m) => m ()
+deathStep' :: (HasPlayVars s, HasCommonVars s, MonadState s m, SceneManager m, HasInput m, Renderer m, CameraControl m, HUD m) => m ()
 deathStep' = do
   updateDeath
   drawPlay

@@ -3,6 +3,7 @@ module DinoRush.State where
 
 import Control.Lens
 
+import DinoRush.Engine.Common
 import DinoRush.Engine.Scene
 import DinoRush.Engine.Input
 import DinoRush.Engine.Camera
@@ -12,7 +13,8 @@ import DinoRush.Engine.GameOver
 import DinoRush.Engine.Title
 
 data Vars = Vars
-  { vScene :: Scene
+  { vCommon :: CommonVars
+  , vScene :: Scene
   , vNextScene :: Scene
   , vTitle :: TitleVars
   , vPlay :: PlayVars
@@ -22,7 +24,10 @@ data Vars = Vars
   } deriving (Show, Eq)
 
 initVars :: [(Int, ObstacleTag)] -> Vars
-initVars mkObstacles = Vars Scene'Title Scene'Title initTitleVars (initPlayVars mkObstacles 0) initGameOverVars initInput initCamera
+initVars mkObstacles = Vars initCommonVars Scene'Title Scene'Title initTitleVars (initPlayVars mkObstacles) initGameOverVars initInput initCamera
+
+instance HasCommonVars Vars where
+  commonVars = lens vCommon (\v s -> v { vCommon = s })
 
 instance HasTitleVars Vars where
   titleVars = lens vTitle (\v s -> v { vTitle = s })

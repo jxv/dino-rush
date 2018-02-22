@@ -10,6 +10,7 @@ import KeyState
 
 import DinoRush.Config
 import DinoRush.Effect.Renderer
+import DinoRush.Effect.HUD
 import DinoRush.Engine.Input
 import DinoRush.Engine.Frame
 import DinoRush.Engine.Dino
@@ -20,7 +21,7 @@ import DinoRush.Manager.Scene
 class Monad m => Title m where
   titleStep :: m ()
 
-titleStep' :: (HasTitleVars s, MonadReader Config m, MonadState s m, Renderer m, HasInput m, SceneManager m) => m ()
+titleStep' :: (HasTitleVars s, MonadReader Config m, MonadState s m, Renderer m, HasInput m, SceneManager m, HUD m) => m ()
 titleStep' = do
   input <- getInput
   when (ksStatus (iSpace input) == KeyStatus'Pressed) (toScene Scene'Play)
@@ -43,7 +44,7 @@ updateTitle = do
     , tvFlashing = tvFlashing tv + 0.025
     })
 
-drawTitle :: (HasTitleVars s, MonadReader Config m, MonadState s m, Renderer m, HasInput m, SceneManager m) => m ()
+drawTitle :: (HasTitleVars s, MonadReader Config m, MonadState s m, Renderer m, HasInput m, SceneManager m, HUD m) => m ()
 drawTitle = do
   tv <- gets (view titleVars)
 
@@ -60,6 +61,9 @@ drawTitle = do
   drawJungle (0, jungleY)
   drawGround (0, groundY)
   drawRiver (0, riverY)
+
+  drawHiscore
+
   drawTitleText (300, 180)
 
   when (titleShowPressSpace $ tvFlashing tv) $ drawPressSpaceText (560,500)

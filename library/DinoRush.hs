@@ -20,6 +20,7 @@ import DinoRush.Effect.Camera
 import DinoRush.Effect.Clock
 import DinoRush.Effect.Logger
 import DinoRush.Effect.Renderer
+import DinoRush.Effect.HUD
 import DinoRush.Engine.Obstacle
 import DinoRush.Wrapper.SDLInput
 import DinoRush.Wrapper.SDLRenderer
@@ -119,7 +120,7 @@ instance Renderer DinoRush where
   drawGround = drawHorizontalScrollImage (rGroundSprites . cResources)
   drawRiver = drawHorizontalScrollImage (rRiverSprites . cResources)
   drawBlackOverlay = drawBlackOverlay'
-  drawHiscore = drawTextureSprite (rHiscoreSprite . cResources)
+  drawHiscoreText = drawTextureSprite (rHiscoreSprite . cResources)
   drawPauseText = drawTextureSprite (rPauseSprite . cResources)
   drawGameOverText = drawTextureSprite (rGameOverSprite . cResources)
   drawPressSpaceText = drawTextureSprite (rSpaceSprite . cResources)
@@ -144,5 +145,9 @@ instance GameOver DinoRush where
 
 instance CameraControl DinoRush where
   adjustCamera = adjustCamera'
-  enableHUD = enableHUD'
-  disableHUD = disableHUD'
+  disableZoom = disableZoom'
+  enableZoom = enableZoom'
+
+instance HUD DinoRush where
+  drawScore = drawScore'
+  drawHiscore = drawHiscore'

@@ -12,7 +12,9 @@ import DinoRush.Effect.Audio
 import DinoRush.Effect.Clock
 import DinoRush.Effect.Camera
 import DinoRush.Effect.Logger
+import DinoRush.Effect.HUD
 import DinoRush.Effect.Renderer
+import DinoRush.Engine.Common
 import DinoRush.Engine.Input
 import DinoRush.Engine.Camera
 import DinoRush.Engine.Frame
@@ -22,7 +24,6 @@ import DinoRush.Engine.Dino
 import DinoRush.Engine.Obstacle
 import DinoRush.Engine.Play
 import DinoRush.Engine.Sfx
-import DinoRush.Engine.Font
 import DinoRush.Engine.Physics
 import DinoRush.Manager.Scene
 import DinoRush.Manager.Input
@@ -35,7 +36,7 @@ stepHorizontalDistance dist speed = if dist' <= -1280 then dist' + 1280 else dis
   where
     dist' = dist + speed
 
-drawPlay :: (HasPlayVars s, MonadState s m, Renderer m, CameraControl m) => m ()
+drawPlay :: (HasPlayVars s, MonadState s m, Renderer m, CameraControl m, HUD m) => m ()
 drawPlay = do
   dinoAnimations <- getDinoAnimations
   mountainAnimations <- getMountainAnimations
@@ -48,22 +49,16 @@ drawPlay = do
   when (pvShowDino pv) $ drawDino dinoLoc (truncate dinoX, dinoHeight (dsHeight $ pvDinoState pv))
   drawObstacles (pvObstacles pv)
   drawRiver (truncate $ pvRiverScroll pv, riverY)
-  enableHUD
+  disableZoom
   drawStocks pv dinoAnimations
-  drawHiscore (1150, 16)
-  drawScore (pvHiscore pv) (1234, 50)
-  drawScore (pvScore pv) (1234, 100)
-  disableHUD
+  drawHiscore
+  drawScore
+  enableZoom
   where
     drawStocks pv dinoAnimations =
       flip mapM_ [1..(fromIntegral $ pvStocks pv)] $ \stock -> do
         let idleLoc = Animate.currentLocation dinoAnimations (Animate.initPosition DinoKey'Kick)
         drawDino idleLoc (20 + 48 * (stock - 1), 32)
-
-drawScore :: Renderer m => Score -> (Int, Int) -> m ()
-drawScore score (x,y) = mapM_
-  (\(i, n) -> drawNumber n (x - i * 16, y))
-  (zip [0..] (toNumberReverse (fromIntegral score)))
 
 drawObstacles :: Renderer m => [ObstacleState] -> m ()
 drawObstacles obstacles = do
@@ -77,7 +72,7 @@ drawObstacles obstacles = do
       ObstacleInfo'Rock pos -> drawRock (Animate.currentLocation rockAnimations pos) (x, rockY)
       ObstacleInfo'Bird pos -> drawBird (Animate.currentLocation birdAnimations pos) (x, birdY)
 
-playStep' :: (HasPlayVars s, MonadState s m, Logger m, CameraControl m, Clock m, Renderer m, Audio m, HasInput m, SceneManager m) => m ()
+playStep' :: (HasPlayVars s, HasCommonVars s, MonadState s m, Logger m, CameraControl m, Clock m, Renderer m, Audio m, HasInput m, SceneManager m, HUD m) => m ()
 playStep' = do
   input <- getInput
   when (ksStatus (iSpace input) == KeyStatus'Pressed) (toScene Scene'Pause)
@@ -214,13 +209,15 @@ updateScrolling = do
 updateStocks :: (MonadState s m, HasPlayVars s) => Bool -> m ()
 updateStocks collision = modifyPlayVars $ \pv -> pv { pvStocks = pvStocks pv - (if collision then 1 else 0) }
 
-updateHiscore :: (MonadState s m, HasPlayVars s) => m ()
-updateHiscore = modifyPlayVars $ \pv -> pv { pvHiscore = max (pvHiscore pv) (pvScore pv) }
+updateHiscore :: (MonadState s m, HasCommonVars s, HasPlayVars s) => m ()
+updateHiscore = do
+  score <- gets (pvScore . view playVars)
+  modify $ commonVars %~ \cv -> cv { cvHiscore = max (cvHiscore cv) score }
 
 getDead :: (MonadState s m, HasPlayVars s) => m Bool
 getDead = (<= 0) <$> gets (pvStocks . view playVars)
 
-updatePlay :: (HasPlayVars s, MonadState s m, Logger m, Clock m, CameraControl m, Renderer m, HasInput m, SceneManager m) => m ()
+updatePlay :: (HasPlayVars s, HasCommonVars s, MonadState s m, Logger m, Clock m, CameraControl m, Renderer m, HasInput m, SceneManager m) => m ()
 updatePlay = do
   input <- getInput
   clearSfx
