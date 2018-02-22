@@ -35,8 +35,8 @@ titleTransition = do
 
 playTransition :: (HasPlayVars a, MonadState a m, Audio m) => m ()
 playTransition = do
-  PlayVars{pvUpcomingObstacles} <- gets (view playVars)
-  modify $ playVars .~ (initPlayVars pvUpcomingObstacles)
+  PlayVars{pvUpcomingObstacles,pvHiscore} <- gets (view playVars)
+  modify $ playVars .~ (initPlayVars pvUpcomingObstacles pvHiscore)
   playGameMusic
 
 deathTransition :: (Audio m) => m ()

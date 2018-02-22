@@ -32,10 +32,10 @@ data PlayVars = PlayVars
 
 makeClassy ''PlayVars
 
-initPlayVars :: [(Int, ObstacleTag)] -> PlayVars
-initPlayVars upcomingObstacles = PlayVars
+initPlayVars :: [(Int, ObstacleTag)] -> Score -> PlayVars
+initPlayVars upcomingObstacles hiscore = PlayVars
   { pvScore = 0
-  , pvHiscore = 0
+  , pvHiscore = hiscore
   , pvStocks = 3
   , pvSpeed = 1
   , pvShowDino = True

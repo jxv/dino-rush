@@ -22,7 +22,7 @@ data Vars = Vars
   } deriving (Show, Eq)
 
 initVars :: [(Int, ObstacleTag)] -> Vars
-initVars mkObstacles = Vars Scene'Title Scene'Title initTitleVars (initPlayVars mkObstacles) initGameOverVars initInput initCamera
+initVars mkObstacles = Vars Scene'Title Scene'Title initTitleVars (initPlayVars mkObstacles 0) initGameOverVars initInput initCamera
 
 instance HasTitleVars Vars where
   titleVars = lens vTitle (\v s -> v { vTitle = s })
