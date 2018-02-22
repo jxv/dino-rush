@@ -16,7 +16,6 @@ data PlayVars = PlayVars
   , pvStocks :: Stocks
   , pvSpeed :: Percent
   , pvZoom :: Float
-  , pvProgress :: Distance
   , pvShowDino :: Bool
   , pvDinoPos :: Animate.Position DinoKey Seconds
   , pvSfx :: [Sfx]
@@ -39,7 +38,6 @@ initPlayVars upcomingObstacles hiscore = PlayVars
   , pvStocks = 3
   , pvSpeed = 1
   , pvShowDino = True
-  , pvProgress = 0
   , pvZoom = 1
   , pvDinoState = DinoState DinoAction'Move Nothing Nothing Nothing
   , pvDinoPos = Animate.initPosition DinoKey'Move

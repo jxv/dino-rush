@@ -23,26 +23,44 @@ class Monad m => Title m where
 titleStep' :: (HasTitleVars s, MonadReader Config m, MonadState s m, Renderer m, HasInput m, SceneManager m) => m ()
 titleStep' = do
   input <- getInput
-  animations <- getDinoAnimations
+  when (ksStatus (iSpace input) == KeyStatus'Pressed) (toScene Scene'Play)
+  updateTitle
+  drawTitle
+
+updateTitle :: (HasTitleVars s, MonadReader Config m, MonadState s m, Renderer m, HasInput m, SceneManager m) => m ()
+updateTitle = do
+  dinoAnimations <- getDinoAnimations
+  dinoPos <- gets (tvDinoPos . view titleVars)
+  let dinoPos' = Animate.stepPosition dinoAnimations dinoPos frameDeltaSeconds
+
   mountainAnimations <- getMountainAnimations
-  pos <- gets (tvPlayer . view titleVars)
   mountainPos <- gets (tvMountainPos . view titleVars)
-  let pos' = Animate.stepPosition animations pos frameDeltaSeconds
-  let loc = Animate.currentLocation animations pos'
   let mountainPos' = Animate.stepPosition mountainAnimations mountainPos frameDeltaSeconds
-  let mountainLoc = Animate.currentLocation mountainAnimations mountainPos'
-  drawMountain mountainLoc (0, mountainY)
-  drawJungle (0, jungleY)
-  drawGround (0, groundY)
-  drawDino loc (truncate dinoX, dinoY)
-  drawRiver (0, riverY)
-  drawTitleText (300, 180)
+
   modify $ titleVars %~ (\tv -> tv
-    { tvPlayer = pos'
+    { tvDinoPos = dinoPos'
     , tvMountainPos = mountainPos'
     , tvFlashing = tvFlashing tv + 0.025
     })
+
+drawTitle :: (HasTitleVars s, MonadReader Config m, MonadState s m, Renderer m, HasInput m, SceneManager m) => m ()
+drawTitle = do
   tv <- gets (view titleVars)
+
+  dinoAnimations <- getDinoAnimations
+  let dinoPos = tvDinoPos tv
+  let dinoLoc = Animate.currentLocation dinoAnimations dinoPos
+  drawDino dinoLoc (truncate dinoX, dinoY)
+
+  mountainAnimations <- getMountainAnimations
+  let mountainPos = tvMountainPos tv
+  let mountainLoc = Animate.currentLocation mountainAnimations mountainPos
+  drawMountain mountainLoc (0, mountainY)
+
+  drawJungle (0, jungleY)
+  drawGround (0, groundY)
+  drawRiver (0, riverY)
+  drawTitleText (300, 180)
+
   when (titleShowPressSpace $ tvFlashing tv) $ drawPressSpaceText (560,500)
   when (titleShowPressEscape $ tvFlashing tv) $ drawPressEscapeText (490,500)
-  when (ksStatus (iSpace input) == KeyStatus'Pressed) (toScene Scene'Play)

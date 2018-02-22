@@ -9,7 +9,7 @@ import DinoRush.Engine.Dino
 import DinoRush.Engine.Mountain
 
 data TitleVars = TitleVars
-  { tvPlayer :: Animate.Position DinoKey Seconds
+  { tvDinoPos :: Animate.Position DinoKey Seconds
   , tvMountainPos :: Animate.Position MountainKey Seconds
   , tvFlashing :: Float
   } deriving (Show, Eq)
