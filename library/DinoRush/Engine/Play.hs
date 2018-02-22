@@ -7,7 +7,6 @@ import Control.Lens
 import DinoRush.Engine.Dino
 import DinoRush.Engine.Mountain
 import DinoRush.Engine.Obstacle
-import DinoRush.Engine.Sfx
 import DinoRush.Engine.Types
 
 data PlayVars = PlayVars
@@ -17,7 +16,6 @@ data PlayVars = PlayVars
   , pvZoom :: Float
   , pvShowDino :: Bool
   , pvDinoPos :: Animate.Position DinoKey Seconds
-  , pvSfx :: [Sfx]
   , pvMountainPos :: Animate.Position MountainKey Seconds
   , pvDinoState :: DinoState
   , pvMountainScroll :: Distance
@@ -39,7 +37,6 @@ initPlayVars upcomingObstacles = PlayVars
   , pvZoom = 1
   , pvDinoState = DinoState DinoAction'Move Nothing Nothing Nothing
   , pvDinoPos = Animate.initPosition DinoKey'Move
-  , pvSfx = []
   , pvMountainPos = Animate.initPosition MountainKey'Idle
   , pvMountainScroll = 0
   , pvJungleScroll = 0

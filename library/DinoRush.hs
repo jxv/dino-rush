@@ -21,6 +21,7 @@ import DinoRush.Effect.Clock
 import DinoRush.Effect.Logger
 import DinoRush.Effect.Renderer
 import DinoRush.Effect.HUD
+import DinoRush.Effect.Sfx
 import DinoRush.Engine.Obstacle
 import DinoRush.Wrapper.SDLInput
 import DinoRush.Wrapper.SDLRenderer
@@ -151,3 +152,8 @@ instance CameraControl DinoRush where
 instance HUD DinoRush where
   drawScore = drawScore'
   drawHiscore = drawHiscore'
+
+instance AudioSfx DinoRush where
+  playSfx = playSfx'
+  clearSfx = clearSfx'
+  addSfxs = addSfxs'

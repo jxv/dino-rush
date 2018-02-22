@@ -13,6 +13,7 @@ import DinoRush.Effect.Camera
 import DinoRush.Effect.Clock
 import DinoRush.Effect.Logger
 import DinoRush.Effect.Renderer
+import DinoRush.Effect.Sfx
 import DinoRush.Engine.Camera
 import DinoRush.Engine.Input
 import DinoRush.Engine.Frame
@@ -57,6 +58,7 @@ mainLoop ::
   ( MonadReader Config m
   , MonadState Vars m
   , Audio m
+  , AudioSfx m
   , Logger m
   , Clock m
   , CameraControl m
@@ -74,6 +76,7 @@ mainLoop = do
   clearScreen
   scene <- gets vScene
   step scene
+  playSfx
   drawScreen
   delayMilliseconds frameDeltaMilliseconds
   nextScene <- gets vNextScene

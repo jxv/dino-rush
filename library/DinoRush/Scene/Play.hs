@@ -14,6 +14,7 @@ import DinoRush.Effect.Camera
 import DinoRush.Effect.Logger
 import DinoRush.Effect.HUD
 import DinoRush.Effect.Renderer
+import DinoRush.Effect.Sfx
 import DinoRush.Engine.Common
 import DinoRush.Engine.Input
 import DinoRush.Engine.Camera
@@ -72,28 +73,12 @@ drawObstacles obstacles = do
       ObstacleInfo'Rock pos -> drawRock (Animate.currentLocation rockAnimations pos) (x, rockY)
       ObstacleInfo'Bird pos -> drawBird (Animate.currentLocation birdAnimations pos) (x, birdY)
 
-playStep' :: (HasPlayVars s, HasCommonVars s, MonadState s m, Logger m, CameraControl m, Clock m, Renderer m, Audio m, HasInput m, SceneManager m, HUD m) => m ()
+playStep' :: (HasPlayVars s, HasCommonVars s, MonadState s m, Logger m, CameraControl m, Clock m, Renderer m, Audio m, AudioSfx m, HasInput m, SceneManager m, HUD m) => m ()
 playStep' = do
   input <- getInput
   when (ksStatus (iSpace input) == KeyStatus'Pressed) (toScene Scene'Pause)
   updatePlay
-  sfxPlay
   drawPlay
-
-sfxPlay :: (Audio m, HasPlayVars s, MonadState s m) => m ()
-sfxPlay = do
-  PlayVars{pvSfx} <- gets (view playVars)
-  forM_ pvSfx $ \sfx -> case sfx of
-    Sfx'Jump -> playJumpSfx
-    Sfx'Duck -> playDuckSfx
-    Sfx'Point -> playPointSfx
-    Sfx'Bird -> playBirdSfx
-    Sfx'Hurt -> playHurtSfx
-    Sfx'Lava -> playLavaSfx
-    Sfx'Quake -> playQuakeSfx
-    Sfx'Rock -> playRockSfx
-    Sfx'Recover -> playRecoverSfx
-    Sfx'Stock -> playStockSfx
 
 stepZoom :: Float -> DinoAction -> Float
 stepZoom zoom dinoAction = case dinoAction of
@@ -128,13 +113,10 @@ detectCollision obstacles dinoState = or $ flip map obstacles $ \obs ->
 modifyPlayVars :: (MonadState s m, HasPlayVars s) => (PlayVars -> PlayVars) -> m ()
 modifyPlayVars f = modify $ playVars %~ f
 
-clearSfx :: (MonadState s m, HasPlayVars s) => m ()
-clearSfx = modifyPlayVars $ \pv -> pv { pvSfx = [] }
-
 updateSpeed :: (MonadState s m, HasPlayVars s) => Step DinoAction -> m ()
 updateSpeed da = modifyPlayVars $ \pv -> pv { pvSpeed = stepSpeed da (pvSpeed pv) }
 
-updateDino :: (MonadState s m, HasPlayVars s, Renderer m) => Step DinoAction -> m ()
+updateDino :: (MonadState s m, HasPlayVars s, Renderer m, AudioSfx m) => Step DinoAction -> m ()
 updateDino sda = do
   dinoAnimations <- getDinoAnimations
   let sfx = case sda of
@@ -146,12 +128,12 @@ updateDino sda = do
           DinoAction'Move -> case da of
             DinoAction'Hurt -> [Sfx'Recover]
             _ -> []
+  addSfxs sfx
   modifyPlayVars $ \pv -> let
     ds = stepDinoState sda (pvDinoState pv)
     in pv
       { pvDinoState = ds
       , pvShowDino = showDino ds
-      , pvSfx = pvSfx pv ++ sfx
       , pvDinoPos = stepDinoPosition sda dinoAnimations (pvDinoPos pv)
       }
 
@@ -164,9 +146,9 @@ updateCamera = do
   let cam = lerpCamera ((1 - zoom) ** (1.8 :: Float)) duckCamera initCamera
   adjustCamera cam
 
-updateObstacles :: (MonadState s m, HasPlayVars s) => m ()
+updateObstacles :: (MonadState s m, HasPlayVars s, AudioSfx m) => m ()
 updateObstacles = do
-  PlayVars{pvUpcomingObstacles,pvObstacles,pvSpeed} <- gets (view playVars)
+  PlayVars{pvUpcomingObstacles,pvObstacles,pvSpeed,pvScore} <- gets (view playVars)
   let (obstacles, removedCount, upcomingObstacles, newObstacleTag) = iterateObstacles pvUpcomingObstacles pvSpeed pvObstacles
   let pointSfx = if removedCount > 0 then [Sfx'Point] else []
   let obstacleSfx = case newObstacleTag of
@@ -175,15 +157,15 @@ updateObstacles = do
           ObstacleTag'Lava -> [Sfx'Lava]
           ObstacleTag'Rock -> [Sfx'Rock]
           ObstacleTag'Bird -> [Sfx'Bird]
+  let score = pvScore + fromIntegral removedCount
+  let stockSfx = if addStocks pvScore score then [Sfx'Stock] else []
+  addSfxs $ pointSfx ++ obstacleSfx ++ stockSfx
   modifyPlayVars $ \pv -> let
-    score = pvScore pv + fromIntegral removedCount
-    stockSfx = if addStocks (pvScore pv) score then [Sfx'Stock] else []
     in pv
       { pvObstacles = obstacles
-      , pvSfx = pvSfx pv ++ pointSfx ++ obstacleSfx ++ stockSfx
       , pvScore = score
       , pvUpcomingObstacles = upcomingObstacles
-      , pvStocks = nextStocks (pvScore pv) score (pvStocks pv)
+      , pvStocks = nextStocks pvScore score (pvStocks pv)
       }
 
 tryCollision :: (MonadState s m, HasPlayVars s) => Step DinoAction -> m (Bool, Step DinoAction)
@@ -217,7 +199,7 @@ updateHiscore = do
 getDead :: (MonadState s m, HasPlayVars s) => m Bool
 getDead = (<= 0) <$> gets (pvStocks . view playVars)
 
-updatePlay :: (HasPlayVars s, HasCommonVars s, MonadState s m, Logger m, Clock m, CameraControl m, Renderer m, HasInput m, SceneManager m) => m ()
+updatePlay :: (HasPlayVars s, HasCommonVars s, MonadState s m, Logger m, Clock m, CameraControl m, Renderer m, HasInput m, AudioSfx m, SceneManager m) => m ()
 updatePlay = do
   input <- getInput
   clearSfx
