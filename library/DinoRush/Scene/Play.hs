@@ -51,7 +51,8 @@ drawPlay = do
   enableHUD
   drawStocks pv dinoAnimations
   drawHiscore (1150, 16)
-  drawScore (pvScore pv) (1234, 128)
+  drawScore (pvHiscore pv) (1234, 50)
+  drawScore (pvScore pv) (1234, 100)
   disableHUD
   where
     drawStocks pv dinoAnimations =
