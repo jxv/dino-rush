@@ -141,8 +141,6 @@ stepSpeed sda speed = clamp speed' 1 20
       DinoAction'Jump -> speed
       DinoAction'Hurt -> speed - 0.15
 
-
-
 showDino :: DinoState -> Bool
 showDino DinoState{dsRecover} = case dsRecover of
   Nothing -> True

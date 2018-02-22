@@ -37,5 +37,12 @@ titleStep' = do
   drawDino loc (truncate dinoX, dinoY)
   drawRiver (0, riverY)
   drawTitleText (300, 180)
-  modify $ titleVars %~ (\tv -> tv { tvPlayer = pos', tvMountainPos = mountainPos' })
+  modify $ titleVars %~ (\tv -> tv
+    { tvPlayer = pos'
+    , tvMountainPos = mountainPos'
+    , tvFlashing = tvFlashing tv + 0.025
+    })
+  tv <- gets (view titleVars)
+  when (titleShowPressSpace $ tvFlashing tv) $ drawPressSpaceText (560,500)
+  when (titleShowPressEscape $ tvFlashing tv) $ drawPressEscapeText (490,500)
   when (ksStatus (iSpace input) == KeyStatus'Pressed) (toScene Scene'Play)
