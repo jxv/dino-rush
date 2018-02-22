@@ -11,24 +11,29 @@ import KeyState
 import DinoRush.Config
 import DinoRush.Effect.Renderer
 import DinoRush.Effect.HUD
+import DinoRush.Effect.Sfx
 import DinoRush.Engine.Input
 import DinoRush.Engine.Frame
 import DinoRush.Engine.Dino
 import DinoRush.Engine.Title
+import DinoRush.Engine.Common
+import DinoRush.Engine.Quake
+import DinoRush.Engine.Step
+import DinoRush.Engine.Sfx
 import DinoRush.Manager.Input
 import DinoRush.Manager.Scene
 
 class Monad m => Title m where
   titleStep :: m ()
 
-titleStep' :: (HasTitleVars s, MonadReader Config m, MonadState s m, Renderer m, HasInput m, SceneManager m, HUD m) => m ()
+titleStep' :: (HasTitleVars s, HasCommonVars s, MonadReader Config m, MonadState s m, Renderer m, HasInput m, SceneManager m, HUD m, AudioSfx m) => m ()
 titleStep' = do
   input <- getInput
   when (ksStatus (iSpace input) == KeyStatus'Pressed) (toScene Scene'Play)
   updateTitle
   drawTitle
 
-updateTitle :: (HasTitleVars s, MonadReader Config m, MonadState s m, Renderer m, HasInput m, SceneManager m) => m ()
+updateTitle :: (HasTitleVars s, HasCommonVars s, MonadReader Config m, MonadState s m, Renderer m, HasInput m, SceneManager m, AudioSfx m) => m ()
 updateTitle = do
   dinoAnimations <- getDinoAnimations
   dinoPos <- gets (tvDinoPos . view titleVars)
@@ -37,6 +42,10 @@ updateTitle = do
   mountainAnimations <- getMountainAnimations
   mountainPos <- gets (tvMountainPos . view titleVars)
   let mountainPos' = Animate.stepPosition mountainAnimations mountainPos frameDeltaSeconds
+
+  sq <- stepQuake <$> gets (cvQuake . view commonVars)
+  addSfxs $ if startQuake sq then [Sfx'Quake] else []
+  modify $ commonVars %~ (\cv -> cv{ cvQuake = smash sq })
 
   modify $ titleVars %~ (\tv -> tv
     { tvDinoPos = dinoPos'

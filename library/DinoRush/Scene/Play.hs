@@ -202,7 +202,6 @@ getDead = (<= 0) <$> gets (pvStocks . view playVars)
 updatePlay :: (HasPlayVars s, HasCommonVars s, MonadState s m, Logger m, Clock m, CameraControl m, Renderer m, HasInput m, AudioSfx m, SceneManager m) => m ()
 updatePlay = do
   input <- getInput
-  clearSfx
   da <- (stepDinoAction input . pvDinoState) <$> gets (view playVars)
   updateSpeed da
   updateObstacles

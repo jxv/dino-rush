@@ -74,6 +74,7 @@ mainLoop = do
   updateInput
   input <- getInput
   clearScreen
+  clearSfx
   scene <- gets vScene
   step scene
   playSfx

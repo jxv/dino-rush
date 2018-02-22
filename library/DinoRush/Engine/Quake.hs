@@ -11,8 +11,16 @@ data Quake
 
 stepQuake :: Quake -> Step Quake
 stepQuake q@(Quake'Progress p)
-  | p + 0.01 >= 1 = Step'Change q (Quake'Dormant 30)
-  | otherwise = Step'Sustain (Quake'Progress $ p + 0.01)
+  | p' >= 1 = Step'Change q (Quake'Dormant 30)
+  | otherwise = Step'Sustain (Quake'Progress p')
+  where
+    p' = p + 0.01
 stepQuake q@(Quake'Dormant s)
-  | s - frameDeltaSeconds <= 0 = Step'Change q (Quake'Progress 0)
-  | otherwise = Step'Sustain (Quake'Dormant$ s - frameDeltaSeconds)
+  | s' <= 0 = Step'Change q (Quake'Progress 0)
+  | otherwise = Step'Sustain (Quake'Dormant s')
+  where
+    s' = s - frameDeltaSeconds
+
+startQuake :: Step Quake -> Bool
+startQuake (Step'Change _ (Quake'Progress _)) = True
+startQuake _ = False
