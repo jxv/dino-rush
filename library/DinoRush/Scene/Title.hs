@@ -17,9 +17,6 @@ import DinoRush.Engine.Frame
 import DinoRush.Engine.Dino
 import DinoRush.Engine.Title
 import DinoRush.Engine.Common
-import DinoRush.Engine.Quake
-import DinoRush.Engine.Step
-import DinoRush.Engine.Sfx
 import DinoRush.Manager.Input
 import DinoRush.Manager.Scene
 
@@ -42,10 +39,6 @@ updateTitle = do
   mountainAnimations <- getMountainAnimations
   mountainPos <- gets (tvMountainPos . view titleVars)
   let mountainPos' = Animate.stepPosition mountainAnimations mountainPos frameDeltaSeconds
-
-  sq <- stepQuake <$> gets (cvQuake . view commonVars)
-  addSfxs $ if startQuake sq then [Sfx'Quake] else []
-  modify $ commonVars %~ (\cv -> cv{ cvQuake = smash sq })
 
   modify $ titleVars %~ (\tv -> tv
     { tvDinoPos = dinoPos'

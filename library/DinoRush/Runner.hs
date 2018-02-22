@@ -14,6 +14,7 @@ import DinoRush.Effect.Clock
 import DinoRush.Effect.Logger
 import DinoRush.Effect.Renderer
 import DinoRush.Effect.Sfx
+import DinoRush.Effect.Quake
 import DinoRush.Engine.Camera
 import DinoRush.Engine.Input
 import DinoRush.Engine.Frame
@@ -76,6 +77,7 @@ mainLoop = do
   clearScreen
   clearSfx
   scene <- gets vScene
+  updateQuake
   step scene
   playSfx
   drawScreen
