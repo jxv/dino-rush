@@ -78,7 +78,7 @@ drawPlay = do
   enableZoom
   where
     drawStocks pv dinoAnimations =
-      flip mapM_ [1..(fromIntegral $ pvStocks pv)] $ \stock -> do
+      flip mapM_ [1..(fromIntegral $ pvStocks pv - 1)] $ \stock -> do
         let idleLoc = Animate.currentLocation dinoAnimations (Animate.initPosition DinoKey'Kick)
         drawDino idleLoc (20 + 48 * (stock - 1), 32)
 
