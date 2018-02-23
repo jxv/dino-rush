@@ -70,5 +70,5 @@ drawTitle = do
 
   drawTitleText (300, 180)
 
-  when (titleShowPressSpace $ tvFlashing tv) $ drawPressSpaceText (560,500)
+  when (titleShowPressSpace $ tvFlashing tv) $ drawPressSpaceText (550,500)
   when (titleShowPressEscape $ tvFlashing tv) $ drawPressEscapeText (490,500)

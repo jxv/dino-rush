@@ -36,5 +36,5 @@ drawGameOver = do
   drawBlackOverlay (govFadeout gov)
   disableZoom
   drawGameOverText (470,300)
-  when (gameOverShowPressSpace $ govSpaceFlashing gov) $ drawPressSpaceText (560,500)
+  when (gameOverShowPressSpace $ govSpaceFlashing gov) $ drawPressSpaceText (550,500)
   enableZoom
