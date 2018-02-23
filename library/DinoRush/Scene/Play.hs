@@ -25,6 +25,7 @@ import DinoRush.Engine.Dino
 import DinoRush.Engine.Obstacle
 import DinoRush.Engine.Play
 import DinoRush.Engine.Sfx
+import DinoRush.Engine.Quake
 import DinoRush.Engine.Physics
 import DinoRush.Manager.Scene
 import DinoRush.Manager.Input
@@ -37,19 +38,20 @@ stepHorizontalDistance dist speed = if dist' <= -1280 then dist' + 1280 else dis
   where
     dist' = dist + speed
 
-drawPlay :: (HasPlayVars s, MonadState s m, Renderer m, CameraControl m, HUD m) => m ()
+drawPlay :: (HasPlayVars s, HasCommonVars s, MonadState s m, Renderer m, CameraControl m, HUD m) => m ()
 drawPlay = do
   dinoAnimations <- getDinoAnimations
   mountainAnimations <- getMountainAnimations
+  quake <- gets (cvQuake . view commonVars)
   pv <- gets (view playVars)
   let dinoLoc = Animate.currentLocation dinoAnimations (pvDinoPos pv)
   let mountainLoc = Animate.currentLocation mountainAnimations (pvMountainPos pv)
-  drawMountain mountainLoc (truncate $ pvMountainScroll pv, mountainY)
-  drawJungle (truncate $ pvJungleScroll pv, jungleY)
-  drawGround (truncate $ pvGroundScroll pv, groundY)
-  when (pvShowDino pv) $ drawDino dinoLoc (truncate dinoX, dinoHeight (dsHeight $ pvDinoState pv))
-  drawObstacles (pvObstacles pv)
-  drawRiver (truncate $ pvRiverScroll pv, riverY)
+  drawMountain mountainLoc $ applyQuakeToMountain quake (truncate $ pvMountainScroll pv, mountainY)
+  drawJungle $ applyQuakeToJungle quake (truncate $ pvJungleScroll pv, jungleY)
+  drawGround $ applyQuakeToGround quake (truncate $ pvGroundScroll pv, groundY)
+  when (pvShowDino pv) $ drawDino dinoLoc $ applyQuakeToGround quake (truncate dinoX, dinoHeight (dsHeight $ pvDinoState pv))
+  drawObstacles quake (pvObstacles pv)
+  drawRiver $ applyQuakeToRiver quake (truncate $ pvRiverScroll pv, riverY)
   disableZoom
   drawStocks pv dinoAnimations
   drawHiscore
@@ -61,17 +63,17 @@ drawPlay = do
         let idleLoc = Animate.currentLocation dinoAnimations (Animate.initPosition DinoKey'Kick)
         drawDino idleLoc (20 + 48 * (stock - 1), 32)
 
-drawObstacles :: Renderer m => [ObstacleState] -> m ()
-drawObstacles obstacles = do
+drawObstacles :: Renderer m => Quake -> [ObstacleState] -> m ()
+drawObstacles quake obstacles = do
   lavaAnimations <- getLavaAnimations
   rockAnimations <- getRockAnimations
   birdAnimations <- getBirdAnimations
   forM_ obstacles $ \ObstacleState{osInfo,osDistance} -> let
     x = truncate osDistance
     in case osInfo of
-      ObstacleInfo'Lava pos -> drawLava (Animate.currentLocation lavaAnimations pos) (x, lavaY)
-      ObstacleInfo'Rock pos -> drawRock (Animate.currentLocation rockAnimations pos) (x, rockY)
-      ObstacleInfo'Bird pos -> drawBird (Animate.currentLocation birdAnimations pos) (x, birdY)
+      ObstacleInfo'Lava pos -> drawLava (Animate.currentLocation lavaAnimations pos) $ applyQuakeToGround quake (x, lavaY)
+      ObstacleInfo'Rock pos -> drawRock (Animate.currentLocation rockAnimations pos) $ applyQuakeToGround quake (x, rockY)
+      ObstacleInfo'Bird pos -> drawBird (Animate.currentLocation birdAnimations pos) $ applyQuakeToGround quake (x, birdY)
 
 playStep' :: (HasPlayVars s, HasCommonVars s, MonadState s m, Logger m, CameraControl m, Clock m, Renderer m, Audio m, AudioSfx m, HasInput m, SceneManager m, HUD m) => m ()
 playStep' = do

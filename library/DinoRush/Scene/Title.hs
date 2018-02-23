@@ -17,6 +17,7 @@ import DinoRush.Engine.Frame
 import DinoRush.Engine.Dino
 import DinoRush.Engine.Title
 import DinoRush.Engine.Common
+import DinoRush.Engine.Quake
 import DinoRush.Manager.Input
 import DinoRush.Manager.Scene
 
@@ -46,23 +47,24 @@ updateTitle = do
     , tvFlashing = tvFlashing tv + 0.025
     })
 
-drawTitle :: (HasTitleVars s, MonadReader Config m, MonadState s m, Renderer m, HasInput m, SceneManager m, HUD m) => m ()
+drawTitle :: (HasTitleVars s, HasCommonVars s, MonadReader Config m, MonadState s m, Renderer m, HasInput m, SceneManager m, HUD m) => m ()
 drawTitle = do
   tv <- gets (view titleVars)
-
-  dinoAnimations <- getDinoAnimations
-  let dinoPos = tvDinoPos tv
-  let dinoLoc = Animate.currentLocation dinoAnimations dinoPos
-  drawDino dinoLoc (truncate dinoX, dinoY)
+  quake <- gets (cvQuake . view commonVars)
 
   mountainAnimations <- getMountainAnimations
   let mountainPos = tvMountainPos tv
   let mountainLoc = Animate.currentLocation mountainAnimations mountainPos
-  drawMountain mountainLoc (0, mountainY)
+  drawMountain mountainLoc $ applyQuakeToMountain quake (0, mountainY)
 
-  drawJungle (0, jungleY)
-  drawGround (0, groundY)
-  drawRiver (0, riverY)
+  drawJungle $ applyQuakeToJungle quake (0, jungleY)
+  drawGround $ applyQuakeToGround quake (0, groundY)
+  drawRiver $ applyQuakeToRiver quake (0, riverY)
+
+  dinoAnimations <- getDinoAnimations
+  let dinoPos = tvDinoPos tv
+  let dinoLoc = Animate.currentLocation dinoAnimations dinoPos
+  drawDino dinoLoc $ applyQuakeToGround quake (truncate dinoX, dinoY)
 
   drawHiscore
 

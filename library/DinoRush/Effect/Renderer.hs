@@ -96,6 +96,7 @@ drawHorizontalScrollSprite ss scale clip (x,y) = do
   sheet <- asks (Animate.ssImage . ss)
   let clip'@(SDL.Rectangle _ dim) = rectFromClip clip
   let dim' = fromIntegral scale *^ dim
+  drawTexture renderer sheet (Just clip') (Just $ SDL.Rectangle (SDL.P $ SDL.V2 (fromIntegral x - 1280) (fromIntegral y)) dim')
   drawTexture renderer sheet (Just clip') (Just $ SDL.Rectangle (SDL.P $ SDL.V2 (fromIntegral x) (fromIntegral y)) dim')
   drawTexture renderer sheet (Just clip') (Just $ SDL.Rectangle (SDL.P $ SDL.V2 (fromIntegral x + 1280) (fromIntegral y)) dim')
 
@@ -108,6 +109,7 @@ drawHorizontalScrollImage getTex (x,y) = do
   tex <- asks getTex
   SDL.TextureInfo{textureWidth,textureHeight} <- queryTexture tex
   let dim = SDL.V2 textureWidth textureHeight
+  drawTexture renderer tex Nothing (Just $ SDL.Rectangle (SDL.P $ SDL.V2 (fromIntegral x - 1280) (fromIntegral y)) dim)
   drawTexture renderer tex Nothing (Just $ SDL.Rectangle (SDL.P $ SDL.V2 (fromIntegral x) (fromIntegral y)) dim)
   drawTexture renderer tex Nothing (Just $ SDL.Rectangle (SDL.P $ SDL.V2 (fromIntegral x + 1280) (fromIntegral y)) dim)
 
