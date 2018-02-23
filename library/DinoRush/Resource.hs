@@ -15,13 +15,14 @@ import DinoRush.Engine.Font
 import DinoRush.Engine.Bird
 import DinoRush.Engine.Lava
 import DinoRush.Engine.Mountain
+import DinoRush.Engine.River
 import DinoRush.Engine.Rock
 
 data Resources = Resources
   { rMountainSprites :: Animate.SpriteSheet MountainKey SDL.Texture Seconds
+  , rRiverSprites :: Animate.SpriteSheet RiverKey SDL.Texture Seconds
   , rJungleSprites :: SDL.Texture
   , rGroundSprites :: SDL.Texture
-  , rRiverSprites :: SDL.Texture
   , rDinoSprites :: Animate.SpriteSheet DinoKey SDL.Texture Seconds
   , rBirdSprites :: Animate.SpriteSheet BirdKey SDL.Texture Seconds
   , rLavaSprites :: Animate.SpriteSheet LavaKey SDL.Texture Seconds
@@ -75,7 +76,7 @@ loadResources renderer = do
   mountainSprites <- Animate.readSpriteSheetJSON loadTexture "resource/mountain.json" :: IO (Animate.SpriteSheet MountainKey SDL.Texture Seconds)
   jungle <- loadTexture "resource/jungle.png" Nothing
   ground <- loadTexture "resource/ground.png" Nothing
-  river <- loadTexture "resource/river.png" Nothing
+  riverSprites <- Animate.readSpriteSheetJSON loadTexture "resource/river.json" :: IO (Animate.SpriteSheet RiverKey SDL.Texture Seconds)
   pauseSprite <- toTexture =<< Font.solid bigFont (V4 255 255 255 255) "PAUSED"
   spaceSprite <- toTexture =<< Font.solid smallFont (V4 255 255 255 255) "PRESS SPACE"
   escapeSprite <- toTexture =<< Font.solid smallFont (V4 255 255 255 255) "PRESS ESCAPE TO QUIT"
@@ -116,7 +117,7 @@ loadResources renderer = do
     { rMountainSprites = mountainSprites
     , rJungleSprites = jungle
     , rGroundSprites = ground
-    , rRiverSprites = river
+    , rRiverSprites = riverSprites
     , rDinoSprites = dinoSprites
     , rBirdSprites = birdSprites
     , rLavaSprites = lavaSprites
@@ -150,7 +151,7 @@ freeResources r = do
   SDL.destroyTexture $ Animate.ssImage (rMountainSprites r)
   SDL.destroyTexture (rJungleSprites r)
   SDL.destroyTexture (rGroundSprites r)
-  SDL.destroyTexture (rRiverSprites r)
+  SDL.destroyTexture $ Animate.ssImage (rRiverSprites r)
   SDL.destroyTexture $ Animate.ssImage (rDinoSprites r)
   SDL.destroyTexture $ Animate.ssImage (rBirdSprites r)
   SDL.destroyTexture $ Animate.ssImage (rLavaSprites r)

@@ -59,16 +59,18 @@ drawPlay :: (HasPlayVars s, HasCommonVars s, MonadState s m, Renderer m, CameraC
 drawPlay = do
   dinoAnimations <- getDinoAnimations
   mountainAnimations <- getMountainAnimations
+  riverAnimations <- getRiverAnimations
   quake <- gets (cvQuake . view commonVars)
   pv <- gets (view playVars)
   let dinoLoc = Animate.currentLocation dinoAnimations (pvDinoPos pv)
   let mountainLoc = Animate.currentLocation mountainAnimations (pvMountainPos pv)
+  let riverLoc = Animate.currentLocation riverAnimations (pvRiverPos pv)
   drawMountain mountainLoc $ applyQuakeToMountain quake (truncate $ pvMountainScroll pv, mountainY)
   drawJungle $ applyQuakeToJungle quake (truncate $ pvJungleScroll pv, jungleY)
   drawGround $ applyQuakeToGround quake (truncate $ pvGroundScroll pv, groundY)
   when (pvShowDino pv) $ drawDino dinoLoc $ applyQuakeToGround quake (truncate dinoX, dinoHeight (dsHeight $ pvDinoState pv))
   drawObstacles quake (pvObstacles pv)
-  drawRiver $ applyQuakeToRiver quake (truncate $ pvRiverScroll pv, riverY)
+  drawRiver riverLoc $ applyQuakeToRiver quake (truncate $ pvRiverScroll pv, riverY)
   disableZoom
   drawStocks pv dinoAnimations
   drawHiscore
@@ -164,10 +166,12 @@ tryCollision da = do
 updateScrolling :: (Renderer m, HasPlayVars s, MonadState s m) => m ()
 updateScrolling = do
   mountainAnimations <- getMountainAnimations
+  riverAnimations <- getRiverAnimations
   modifyPlayVars $ \pv -> let
     speed = pvSpeed pv
     in pv
       { pvMountainPos = Animate.stepPosition mountainAnimations (pvMountainPos pv) frameDeltaSeconds
+      , pvRiverPos = Animate.stepPosition riverAnimations (pvRiverPos pv) frameDeltaSeconds
       , pvMountainScroll = stepHorizontalDistance (realToFrac $ pvMountainScroll pv) (realToFrac (-speed) / 3)
       , pvJungleScroll = stepHorizontalDistance (realToFrac $ pvJungleScroll pv) (realToFrac (-speed) / 2)
       , pvGroundScroll = stepHorizontalDistance (realToFrac $ pvGroundScroll pv) (realToFrac (-speed))

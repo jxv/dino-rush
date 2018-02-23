@@ -41,9 +41,14 @@ updateTitle = do
   mountainPos <- gets (tvMountainPos . view titleVars)
   let mountainPos' = Animate.stepPosition mountainAnimations mountainPos frameDeltaSeconds
 
+  riverAnimations <- getRiverAnimations
+  riverPos <- gets (tvRiverPos . view titleVars)
+  let riverPos' = Animate.stepPosition riverAnimations riverPos frameDeltaSeconds
+
   modify $ titleVars %~ (\tv -> tv
     { tvDinoPos = dinoPos'
     , tvMountainPos = mountainPos'
+    , tvRiverPos = riverPos'
     , tvFlashing = tvFlashing tv + 0.025
     })
 
@@ -59,7 +64,11 @@ drawTitle = do
 
   drawJungle $ applyQuakeToJungle quake (0, jungleY)
   drawGround $ applyQuakeToGround quake (0, groundY)
-  drawRiver $ applyQuakeToRiver quake (0, riverY)
+
+  riverAnimations <- getRiverAnimations
+  let riverPos = tvRiverPos tv
+  let riverLoc = Animate.currentLocation riverAnimations riverPos
+  drawRiver riverLoc $ applyQuakeToRiver quake (0, riverY)
 
   dinoAnimations <- getDinoAnimations
   let dinoPos = tvDinoPos tv

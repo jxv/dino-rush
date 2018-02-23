@@ -15,6 +15,7 @@ import DinoRush.Engine.Rock
 import DinoRush.Engine.Bird
 import DinoRush.Engine.Font
 import DinoRush.Engine.Mountain
+import DinoRush.Engine.River
 import DinoRush.Wrapper.SDLRenderer
 
 class Monad m => Renderer m where
@@ -25,14 +26,15 @@ class Monad m => Renderer m where
   getRockAnimations :: m (Animations RockKey)
   getBirdAnimations :: m (Animations BirdKey)
   getMountainAnimations :: m (Animations MountainKey)
+  getRiverAnimations :: m (Animations RiverKey)
   drawDino :: DrawSprite DinoKey m
   drawLava :: DrawSprite LavaKey m
   drawRock :: DrawSprite RockKey m
   drawBird :: DrawSprite BirdKey m
   drawMountain :: DrawSprite MountainKey m
+  drawRiver :: DrawSprite RiverKey m
   drawJungle :: (Int, Int) -> m ()
   drawGround :: (Int, Int) -> m ()
-  drawRiver :: (Int, Int) -> m ()
   drawBlackOverlay :: Percent -> m ()
   drawHiscoreText :: (Int, Int) -> m ()
   drawPauseText :: (Int, Int) -> m ()
@@ -117,7 +119,7 @@ drawBlackOverlay' (Percent percent) = do
   SDL.rendererDrawBlendMode renderer $= SDL.BlendNone
 
 --
-  
+
 rectFromClip :: Animate.SpriteClip key -> SDL.Rectangle CInt
 rectFromClip Animate.SpriteClip{scX,scY,scW,scH} = SDL.Rectangle (SDL.P (V2 (num scX) (num scY))) (V2 (num scW) (num scH))
   where
