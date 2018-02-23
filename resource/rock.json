@@ -2,7 +2,7 @@
   "image": "resource/rock.png",
   "alpha": [255,0,255],
   "clips": [
-    [ 0, 0, 32, 32 ]
+    [ 0, 0, 36, 36 ]
   ],
   "animations": {
     "Idle": [ [0,0.2] ]
