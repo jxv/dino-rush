@@ -1,4 +1,7 @@
-# dino-rush
+# Dino Rush
+
+![Game Play](https://raw.githubusercontent.com/jxv/dino-rush/master/propaganda/gameplay.gif)
+
 
 ## OSX build
 
