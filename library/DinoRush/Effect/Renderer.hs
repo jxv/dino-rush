@@ -17,11 +17,6 @@ import DinoRush.Engine.Font
 import DinoRush.Engine.Mountain
 import DinoRush.Wrapper.SDLRenderer
 
-rectFromClip :: Animate.SpriteClip key -> SDL.Rectangle CInt
-rectFromClip Animate.SpriteClip{scX,scY,scW,scH} = SDL.Rectangle (SDL.P (V2 (num scX) (num scY))) (V2 (num scW) (num scH))
-  where
-    num = fromIntegral
-
 class Monad m => Renderer m where
   clearScreen :: m ()
   drawScreen :: m ()
@@ -120,3 +115,15 @@ drawBlackOverlay' (Percent percent) = do
   SDL.rendererDrawColor renderer $= (V4 0 0 0 (truncate $ 255 * percent))
   SDL.fillRect renderer Nothing
   SDL.rendererDrawBlendMode renderer $= SDL.BlendNone
+
+--
+  
+rectFromClip :: Animate.SpriteClip key -> SDL.Rectangle CInt
+rectFromClip Animate.SpriteClip{scX,scY,scW,scH} = SDL.Rectangle (SDL.P (V2 (num scX) (num scY))) (V2 (num scW) (num scH))
+  where
+    num = fromIntegral
+
+stepHorizontalDistance :: Distance -> Distance -> Distance
+stepHorizontalDistance dist speed = if dist' <= -1280 then dist' + 1280 else dist'
+  where
+    dist' = dist + speed

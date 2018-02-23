@@ -83,3 +83,16 @@ lastObstacleDistance os = maximum $ (realToFrac arenaWidth - 1) : map osDistance
 
 canAddObstacle :: Distance -> Bool
 canAddObstacle dist = dist < realToFrac arenaWidth
+
+iterateObstacles :: [(Int, ObstacleTag)] -> Percent -> [ObstacleState] -> ([ObstacleState], Int, [(Int, ObstacleTag)], Maybe ObstacleTag)
+iterateObstacles upcomingObstacles speed obstacles = let
+  (removed, remained) = removeOutOfBoundObstacles $ stepObstacles (realToFrac speed) obstacles
+  newObstacle = if canAddObstacle (lastObstacleDistance remained)
+    then let
+      pair = head $ upcomingObstacles
+      in Just (snd pair, placeObstacle pair)
+    else Nothing
+  (upcomingObstacles', obstacles') = case fmap snd newObstacle of
+    Nothing -> (upcomingObstacles, remained)
+    Just obstacle -> (tail $ upcomingObstacles, obstacle : remained)
+  in (obstacles', length removed, upcomingObstacles', fmap fst newObstacle)

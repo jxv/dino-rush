@@ -154,3 +154,16 @@ addStocks s s' = or [pass 1, pass 5, pass 10, pass 20, pass 35, pass 50, pass 75
 
 nextStocks :: Score -> Score -> Stocks -> Stocks
 nextStocks s s' st = min 10 (st + if addStocks s s' then 1 else 0)
+
+stepZoom :: Float -> DinoAction -> Float
+stepZoom zoom dinoAction = case dinoAction of
+  DinoAction'Duck -> clamp (zoom - 0.01) 0 1
+  _ -> clamp (zoom + 0.05) 0 1
+
+applyHurt :: Bool -> Step DinoAction -> Maybe Percent -> Step DinoAction
+applyHurt collision stepDa recover
+  | collision && recover == Nothing = case stepDa of
+      Step'Sustain DinoAction'Hurt -> stepDa
+      Step'Sustain da -> Step'Change da DinoAction'Hurt
+      Step'Change da _ -> Step'Change da DinoAction'Hurt
+  | otherwise = stepDa

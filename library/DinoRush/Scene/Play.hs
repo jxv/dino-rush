@@ -19,7 +19,6 @@ import DinoRush.Engine.Common
 import DinoRush.Engine.Input
 import DinoRush.Engine.Camera
 import DinoRush.Engine.Frame
-import DinoRush.Engine.Types
 import DinoRush.Engine.Step
 import DinoRush.Engine.Dino
 import DinoRush.Engine.Obstacle
@@ -33,10 +32,28 @@ import DinoRush.Manager.Input
 class Monad m => Play m where
   playStep :: m ()
 
-stepHorizontalDistance :: Distance -> Distance -> Distance
-stepHorizontalDistance dist speed = if dist' <= -1280 then dist' + 1280 else dist'
-  where
-    dist' = dist + speed
+playStep' :: (HasPlayVars s, HasCommonVars s, MonadState s m, Logger m, CameraControl m, Clock m, Renderer m, Audio m, AudioSfx m, HasInput m, SceneManager m, HUD m) => m ()
+playStep' = do
+  input <- getInput
+  when (ksStatus (iSpace input) == KeyStatus'Pressed) (toScene Scene'Pause)
+  updatePlay
+  drawPlay
+
+updatePlay :: (HasPlayVars s, HasCommonVars s, MonadState s m, Logger m, Clock m, CameraControl m, Renderer m, HasInput m, AudioSfx m, SceneManager m) => m ()
+updatePlay = do
+  input <- getInput
+  da <- (stepDinoAction input . pvDinoState) <$> gets (view playVars)
+  updateSpeed da
+  updateObstacles
+  (collision, da') <- tryCollision da
+  updateZoom da'
+  updateDino da'
+  updateCamera
+  updateScrolling
+  updateStocks collision
+  updateHiscore
+  isDead <- getDead
+  when isDead (toScene Scene'Death)
 
 drawPlay :: (HasPlayVars s, HasCommonVars s, MonadState s m, Renderer m, CameraControl m, HUD m) => m ()
 drawPlay = do
@@ -74,39 +91,6 @@ drawObstacles quake obstacles = do
       ObstacleInfo'Lava pos -> drawLava (Animate.currentLocation lavaAnimations pos) $ applyQuakeToGround quake (x, lavaY)
       ObstacleInfo'Rock pos -> drawRock (Animate.currentLocation rockAnimations pos) $ applyQuakeToGround quake (x, rockY)
       ObstacleInfo'Bird pos -> drawBird (Animate.currentLocation birdAnimations pos) $ applyQuakeToGround quake (x, birdY)
-
-playStep' :: (HasPlayVars s, HasCommonVars s, MonadState s m, Logger m, CameraControl m, Clock m, Renderer m, Audio m, AudioSfx m, HasInput m, SceneManager m, HUD m) => m ()
-playStep' = do
-  input <- getInput
-  when (ksStatus (iSpace input) == KeyStatus'Pressed) (toScene Scene'Pause)
-  updatePlay
-  drawPlay
-
-stepZoom :: Float -> DinoAction -> Float
-stepZoom zoom dinoAction = case dinoAction of
-  DinoAction'Duck -> clamp (zoom - 0.01) 0 1
-  _ -> clamp (zoom + 0.05) 0 1
-
-iterateObstacles :: [(Int, ObstacleTag)] -> Percent -> [ObstacleState] -> ([ObstacleState], Int, [(Int, ObstacleTag)], Maybe ObstacleTag)
-iterateObstacles upcomingObstacles speed obstacles = let
-  (removed, remained) = removeOutOfBoundObstacles $ stepObstacles (realToFrac speed) obstacles
-  newObstacle = if canAddObstacle (lastObstacleDistance remained)
-    then let
-      pair = head $ upcomingObstacles
-      in Just (snd pair, placeObstacle pair)
-    else Nothing
-  (upcomingObstacles', obstacles') = case fmap snd newObstacle of
-    Nothing -> (upcomingObstacles, remained)
-    Just obstacle -> (tail $ upcomingObstacles, obstacle : remained)
-  in (obstacles', length removed, upcomingObstacles', fmap fst newObstacle)
-
-applyHurt :: Bool -> Step DinoAction -> Maybe Percent -> Step DinoAction
-applyHurt collision stepDa recover
-  | collision && recover == Nothing = case stepDa of
-      Step'Sustain DinoAction'Hurt -> stepDa
-      Step'Sustain da -> Step'Change da DinoAction'Hurt
-      Step'Change da _ -> Step'Change da DinoAction'Hurt
-  | otherwise = stepDa
 
 detectCollision :: [ObstacleState] -> DinoState -> Bool
 detectCollision obstacles dinoState = or $ flip map obstacles $ \obs ->
@@ -200,19 +184,3 @@ updateHiscore = do
 
 getDead :: (MonadState s m, HasPlayVars s) => m Bool
 getDead = (<= 0) <$> gets (pvStocks . view playVars)
-
-updatePlay :: (HasPlayVars s, HasCommonVars s, MonadState s m, Logger m, Clock m, CameraControl m, Renderer m, HasInput m, AudioSfx m, SceneManager m) => m ()
-updatePlay = do
-  input <- getInput
-  da <- (stepDinoAction input . pvDinoState) <$> gets (view playVars)
-  updateSpeed da
-  updateObstacles
-  (collision, da') <- tryCollision da
-  updateZoom da'
-  updateDino da'
-  updateCamera
-  updateScrolling
-  updateStocks collision
-  updateHiscore
-  isDead <- getDead
-  when isDead (toScene Scene'Death)
