@@ -134,9 +134,12 @@ updateCamera = do
   let cam = lerpCamera ((1 - zoom) ** (1.8 :: Float)) duckCamera initCamera
   adjustCamera cam
 
-updateObstacles :: (MonadState s m, HasPlayVars s, AudioSfx m) => m ()
+updateObstacles :: (MonadState s m, HasPlayVars s, Renderer m, AudioSfx m) => m ()
 updateObstacles = do
   PlayVars{pvUpcomingObstacles,pvObstacles,pvSpeed,pvScore} <- gets (view playVars)
+  lavaAnimations <- getLavaAnimations
+  rockAnimations <- getRockAnimations
+  birdAnimations <- getBirdAnimations
   let (obstacles, removedCount, upcomingObstacles, newObstacleTag) = iterateObstacles pvUpcomingObstacles pvSpeed pvObstacles
   let pointSfx = if removedCount > 0 then [Sfx'Point] else []
   let obstacleSfx = case newObstacleTag of
@@ -145,12 +148,16 @@ updateObstacles = do
           ObstacleTag'Lava -> [Sfx'Lava]
           ObstacleTag'Rock -> [Sfx'Rock]
           ObstacleTag'Bird -> [Sfx'Bird]
+  let updateObstaclePos oi = case oi of
+        ObstacleInfo'Lava pos -> ObstacleInfo'Lava $ Animate.stepPosition lavaAnimations pos frameDeltaSeconds
+        ObstacleInfo'Rock pos -> ObstacleInfo'Rock $ Animate.stepPosition rockAnimations pos frameDeltaSeconds
+        ObstacleInfo'Bird pos -> ObstacleInfo'Bird $ Animate.stepPosition birdAnimations pos frameDeltaSeconds
   let score = pvScore + fromIntegral removedCount
   let stockSfx = if addStocks pvScore score then [Sfx'Stock] else []
   addSfxs $ pointSfx ++ obstacleSfx ++ stockSfx
   modifyPlayVars $ \pv -> let
     in pv
-      { pvObstacles = obstacles
+      { pvObstacles = map (\os -> os { osInfo = updateObstaclePos (osInfo os) }) obstacles
       , pvScore = score
       , pvUpcomingObstacles = upcomingObstacles
       , pvStocks = nextStocks pvScore score (pvStocks pv)
