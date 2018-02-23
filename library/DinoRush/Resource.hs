@@ -77,7 +77,7 @@ loadResources renderer = do
   stockSfx <- Mixer.load "resource/stock.wav"
   recoverSfx <- Mixer.load "resource/recover.wav"
   mountainSprites <- Animate.readSpriteSheetJSON loadTexture "resource/mountain.json" :: IO (Animate.SpriteSheet MountainKey SDL.Texture Seconds)
-  jungle <- loadTexture "resource/jungle.png" Nothing
+  jungle <- loadTexture "resource/jungle.png" (Just alphaColorDef) 
   ground <- loadTexture "resource/ground.png" (Just alphaColorDef)
   riverSprites <- Animate.readSpriteSheetJSON loadTexture "resource/river.json" :: IO (Animate.SpriteSheet RiverKey SDL.Texture Seconds)
   pauseSprite <- toTexture =<< Font.solid bigFont (V4 255 255 255 255) "PAUSED"

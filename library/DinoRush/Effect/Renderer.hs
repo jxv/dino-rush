@@ -58,7 +58,7 @@ drawScreen' = do
 
 mountainY, jungleY, groundY, riverY :: Int
 mountainY = -16
-jungleY = 16 * 16
+jungleY = 16 * 0
 groundY = 16 * 28
 riverY = 16 * 36
 

@@ -118,7 +118,7 @@ instance Renderer DinoRush where
   drawRock = drawSprite (rRockSprites . cResources)
   drawBird = drawSprite (rBirdSprites . cResources)
   drawMountain = drawHorizontalScrollSprite (rMountainSprites . cResources) 16
-  drawJungle = drawHorizontalScrollImage (rJungleSprites . cResources) 1
+  drawJungle = drawHorizontalScrollImage (rJungleSprites . cResources) 4
   drawGround = drawHorizontalScrollImage (rGroundSprites . cResources) 2
   drawRiver = drawHorizontalScrollSprite (rRiverSprites . cResources) 4
   drawBlackOverlay = drawBlackOverlay'
