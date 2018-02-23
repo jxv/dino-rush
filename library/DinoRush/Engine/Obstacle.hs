@@ -33,7 +33,7 @@ data ObstacleState = ObstacleState
 
 lavaY, rockY, birdY :: Num a => a
 lavaY = 16 * 28
-rockY = 16 * 26
+rockY = 16 * 26 + 2
 birdY = 16 * 22
 
 obstacleAabb :: ObstacleState -> Aabb

@@ -100,15 +100,16 @@ drawHorizontalScrollSprite ss scale clip (x,y) = do
 getSpriteAnimations :: (MonadReader Config m) => (Config -> Animate.SpriteSheet key SDL.Texture Seconds) -> m (Animations key)
 getSpriteAnimations ss = asks (Animate.ssAnimations . ss)
 
-drawHorizontalScrollImage :: (MonadReader Config m, SDLRenderer m) => (Config -> SDL.Texture) -> (Int, Int) -> m ()
-drawHorizontalScrollImage getTex (x,y) = do
+drawHorizontalScrollImage :: (MonadReader Config m, SDLRenderer m) => (Config -> SDL.Texture) -> Int -> (Int, Int) -> m ()
+drawHorizontalScrollImage getTex scale (x,y) = do
   renderer <- asks cRenderer
   tex <- asks getTex
   SDL.TextureInfo{textureWidth,textureHeight} <- queryTexture tex
   let dim = SDL.V2 textureWidth textureHeight
-  drawTexture renderer tex Nothing (Just $ SDL.Rectangle (SDL.P $ SDL.V2 (fromIntegral x - 1280) (fromIntegral y)) dim)
-  drawTexture renderer tex Nothing (Just $ SDL.Rectangle (SDL.P $ SDL.V2 (fromIntegral x) (fromIntegral y)) dim)
-  drawTexture renderer tex Nothing (Just $ SDL.Rectangle (SDL.P $ SDL.V2 (fromIntegral x + 1280) (fromIntegral y)) dim)
+  let dim' = fromIntegral scale *^ dim
+  drawTexture renderer tex Nothing (Just $ SDL.Rectangle (SDL.P $ SDL.V2 (fromIntegral x - 1280) (fromIntegral y)) dim')
+  drawTexture renderer tex Nothing (Just $ SDL.Rectangle (SDL.P $ SDL.V2 (fromIntegral x) (fromIntegral y)) dim')
+  drawTexture renderer tex Nothing (Just $ SDL.Rectangle (SDL.P $ SDL.V2 (fromIntegral x + 1280) (fromIntegral y)) dim')
 
 drawBlackOverlay' :: (MonadReader Config m, SDLRenderer m, MonadIO m) => Percent -> m ()
 drawBlackOverlay' (Percent percent) = do

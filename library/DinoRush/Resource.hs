@@ -56,6 +56,9 @@ loadSurface path alpha = do
     Nothing -> return ()
   return surface
 
+alphaColorDef :: Animate.Color
+alphaColorDef = (0xff,0x00,0xff)
+
 loadResources :: SDL.Renderer -> IO Resources
 loadResources renderer = do
   smallFont <- Font.load "resource/Computer Speak v0.3.ttf" 24
@@ -75,7 +78,7 @@ loadResources renderer = do
   recoverSfx <- Mixer.load "resource/recover.wav"
   mountainSprites <- Animate.readSpriteSheetJSON loadTexture "resource/mountain.json" :: IO (Animate.SpriteSheet MountainKey SDL.Texture Seconds)
   jungle <- loadTexture "resource/jungle.png" Nothing
-  ground <- loadTexture "resource/ground.png" Nothing
+  ground <- loadTexture "resource/ground.png" (Just alphaColorDef)
   riverSprites <- Animate.readSpriteSheetJSON loadTexture "resource/river.json" :: IO (Animate.SpriteSheet RiverKey SDL.Texture Seconds)
   pauseSprite <- toTexture =<< Font.solid bigFont (V4 255 255 255 255) "PAUSED"
   spaceSprite <- toTexture =<< Font.solid smallFont (V4 255 255 255 255) "PRESS SPACE"
