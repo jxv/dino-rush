@@ -14,6 +14,7 @@ data PlayVars = PlayVars
   { pvScore :: Score
   , pvStocks :: Stocks
   , pvSpeed :: Percent
+  , pvSeconds :: Seconds
   , pvZoom :: Float
   , pvShowDino :: Bool
   , pvDinoPos :: Animate.Position DinoKey Seconds
@@ -34,6 +35,7 @@ initPlayVars :: [(Int, ObstacleTag)] -> PlayVars
 initPlayVars upcomingObstacles = PlayVars
   { pvScore = 0
   , pvStocks = 3
+  , pvSeconds = 0
   , pvSpeed = 1
   , pvShowDino = True
   , pvZoom = 1

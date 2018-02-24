@@ -129,6 +129,7 @@ instance Renderer DinoRush where
   drawPressEscapeText = drawTextureSprite (rEscapeSprite . cResources)
   drawTitleText = drawTextureSprite (rTitleSprite . cResources)
   drawNumber n = drawTextureSprite (flip rNumberSprites n . cResources)
+  drawControlsText = drawTextureSprite (rControlsSprite . cResources)
 
 instance Title DinoRush where
   titleStep = titleStep'
@@ -153,6 +154,7 @@ instance CameraControl DinoRush where
 instance HUD DinoRush where
   drawScore = drawScore'
   drawHiscore = drawHiscore'
+  drawControls = drawControls'
 
 instance AudioSfx DinoRush where
   playSfx = playSfx'

@@ -43,6 +43,7 @@ updatePlay :: (HasPlayVars s, HasCommonVars s, MonadState s m, Logger m, Clock m
 updatePlay = do
   input <- getInput
   da <- (stepDinoAction input . pvDinoState) <$> gets (view playVars)
+  updateSeconds
   updateSpeed da
   updateObstacles
   (collision, da') <- tryCollision da
@@ -72,6 +73,7 @@ drawPlay = do
   drawObstacles quake (pvObstacles pv)
   drawRiver riverLoc $ applyQuakeToRiver quake (truncate $ pvRiverScroll pv, riverY)
   disableZoom
+  drawControls
   drawStocks pv dinoAnimations
   drawHiscore
   drawScore
@@ -100,6 +102,9 @@ detectCollision obstacles dinoState = or $ flip map obstacles $ \obs ->
 
 modifyPlayVars :: (MonadState s m, HasPlayVars s) => (PlayVars -> PlayVars) -> m ()
 modifyPlayVars f = modify $ playVars %~ f
+
+updateSeconds :: (MonadState s m, HasPlayVars s) => m ()
+updateSeconds = modifyPlayVars $ \pv -> pv { pvSeconds = pvSeconds pv + frameDeltaSeconds }
 
 updateSpeed :: (MonadState s m, HasPlayVars s) => Step DinoAction -> m ()
 updateSpeed da = modifyPlayVars $ \pv -> pv { pvSpeed = stepSpeed da (pvSpeed pv) }

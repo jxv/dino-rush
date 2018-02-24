@@ -46,6 +46,7 @@ data Resources = Resources
   , rHiscoreSprite :: SDL.Texture
   , rTitleSprite :: SDL.Texture
   , rNumberSprites :: Number -> SDL.Texture
+  , rControlsSprite :: SDL.Texture
   }
 
 loadSurface :: FilePath -> Maybe Animate.Color -> IO SDL.Surface
@@ -77,8 +78,9 @@ loadResources renderer = do
   stockSfx <- Mixer.load "resource/stock.wav"
   recoverSfx <- Mixer.load "resource/recover.wav"
   mountainSprites <- Animate.readSpriteSheetJSON loadTexture "resource/mountain.json" :: IO (Animate.SpriteSheet MountainKey SDL.Texture Seconds)
-  jungle <- loadTexture "resource/jungle.png" (Just alphaColorDef) 
+  jungle <- loadTexture "resource/jungle.png" (Just alphaColorDef)
   ground <- loadTexture "resource/ground.png" (Just alphaColorDef)
+  controlsSprite <- loadTexture "resource/controls.png" (Just alphaColorDef)
   riverSprites <- Animate.readSpriteSheetJSON loadTexture "resource/river.json" :: IO (Animate.SpriteSheet RiverKey SDL.Texture Seconds)
   pauseSprite <- toTexture =<< Font.solid bigFont (V4 255 255 255 255) "PAUSED"
   spaceSprite <- toTexture =<< Font.solid smallFont (V4 255 255 255 255) "PRESS SPACE"
@@ -144,6 +146,7 @@ loadResources renderer = do
     , rHiscoreSprite = hiscoreSprite
     , rTitleSprite = titleSprite
     , rNumberSprites = numberSprites
+    , rControlsSprite = controlsSprite
     }
   where
     toTexture surface = SDL.createTextureFromSurface renderer surface
@@ -165,6 +168,7 @@ freeResources r = do
   SDL.destroyTexture (rGameOverSprite r)
   SDL.destroyTexture (rHiscoreSprite r)
   SDL.destroyTexture (rTitleSprite r)
+  SDL.destroyTexture (rControlsSprite r)
 
   Mixer.free (rGameMusic r)
   Mixer.free (rJumpSfx r)

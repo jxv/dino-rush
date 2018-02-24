@@ -1,6 +1,7 @@
 module DinoRush.Effect.HUD where
 
 import Control.Lens (view)
+import Control.Monad (when)
 import Control.Monad.State (MonadState, gets)
 
 import DinoRush.Engine.Common
@@ -11,6 +12,7 @@ import DinoRush.Effect.Renderer
 class Monad m => HUD m where
   drawHiscore :: m ()
   drawScore :: m ()
+  drawControls :: m ()
 
 drawHiscore' :: (Renderer m, MonadState s m, HasCommonVars s) => m ()
 drawHiscore' = do
@@ -22,6 +24,11 @@ drawScore' :: (Renderer m, MonadState s m, HasPlayVars s) => m ()
 drawScore' = do
   pv <- gets (view playVars)
   drawNumbers (fromIntegral $ pvScore pv) (1234, 100)
+
+drawControls' :: (Renderer m, MonadState s m, HasPlayVars s) => m ()
+drawControls' = do
+  pv <- gets (view playVars)
+  when (pvSeconds pv < 2) $ drawControlsText (200,470)
 
 drawNumbers :: Renderer m => Integer -> (Int, Int) -> m ()
 drawNumbers int (x,y) = mapM_

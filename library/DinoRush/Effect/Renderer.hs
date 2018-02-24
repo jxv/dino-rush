@@ -43,6 +43,7 @@ class Monad m => Renderer m where
   drawPressEscapeText :: (Int, Int) -> m ()
   drawTitleText :: (Int, Int) -> m ()
   drawNumber :: Number -> (Int, Int) -> m ()
+  drawControlsText :: (Int, Int) -> m ()
 
 clearScreen' :: (SDLRenderer m, MonadReader Config m) => m ()
 clearScreen' = do
