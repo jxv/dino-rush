@@ -16,6 +16,13 @@ stack build
 
 sdl2_mixer must be complied with libmikmod
 
+## Ubuntu build
+
+```
+sudo apt install libsdl2-dev libsdl2-ttf-dev libsdl2-image-dev libmikmod-dev libsdl2-mixer-dev
+stack build
+```
+
 ## Windows build
 
 ```
