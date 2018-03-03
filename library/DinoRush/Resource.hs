@@ -8,6 +8,8 @@ import qualified Animate
 import Data.Text.Conversions (toText)
 import Data.StateVar (($=))
 import SDL.Vect
+import qualified SDL.Raw.Video as Raw
+import qualified SDL.Internal.Numbered as Numbered
 
 import DinoRush.Engine.Types
 import DinoRush.Engine.Dino
@@ -49,9 +51,19 @@ data Resources = Resources
   , rControlsSprite :: SDL.Texture
   }
 
+-- | Produce a new 'SDL.Surface' based on an existing one, but
+-- optimized for blitting to the specified 'SDL.PixelFormat'.
+convertSurface :: SDL.Surface -> SDL.PixelFormat -> IO SDL.Surface
+convertSurface (SDL.Surface s _) pixFmt = do
+  fmt <- Raw.allocFormat (Numbered.toNumber pixFmt)
+  surface <- SDL.Surface <$> Raw.convertSurface s fmt 0 <*> pure Nothing
+  surface <$ Raw.freeFormat fmt
+
 loadSurface :: FilePath -> Maybe Animate.Color -> IO SDL.Surface
 loadSurface path alpha = do
-  surface <- Image.load path
+  surface0 <- Image.load path
+  surface <- convertSurface surface0 SDL.RGBA8888
+  SDL.freeSurface surface0
   case alpha of
     Just (r,g,b) -> SDL.surfaceColorKey surface $= (Just $ V4 r g b 0x00)
     Nothing -> return ()
