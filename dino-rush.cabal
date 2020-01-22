@@ -1,11 +1,4 @@
 cabal-version: 1.12
-
--- This file has been generated from package.yaml by hpack version 0.31.2.
---
--- see: https://github.com/sol/hpack
---
--- hash: a77de1815c991cf7fc0aed37a07169bf2adec6ef2afb720c9b989c0ebd52e466
-
 name:           dino-rush
 version:        0.0.0
 synopsis:       A Skinner box, running platformer with a dinosaur
@@ -19,7 +12,6 @@ license:        BSD3
 license-file:   LICENSE
 build-type:     Simple
 extra-source-files:
-    package.yaml
     README.md
     stack.yaml
 data-files:
@@ -113,20 +105,5 @@ executable dino-rush
   ghc-options: -Wall -rtsopts -threaded -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
-    , dino-rush
-  default-language: Haskell2010
-
-test-suite dino-rush-tests
-  type: exitcode-stdio-1.0
-  main-is: Main.hs
-  other-modules:
-      Spec
-      Paths_dino_rush
-  hs-source-dirs:
-      tests
-  default-extensions: DuplicateRecordFields FlexibleContexts FlexibleInstances GeneralizedNewtypeDeriving LambdaCase NamedFieldPuns ScopedTypeVariables OverloadedStrings
-  ghc-options: -Wall -rtsopts -threaded -with-rtsopts=-N
-  build-depends:
-      base
     , dino-rush
   default-language: Haskell2010
