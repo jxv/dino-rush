@@ -1,6 +1,0 @@
-resolver: lts-12.26
-packages:
-- '.'
-extra-deps:
-- animate-0.7.0@sha256:5794ef071baed7ab3e9d4b5a9ada8490131d986c7c5e41643520ae6424bcf13c,1712
-- key-state-0.2.0@sha256:db4c798d81323183660753d0ca4a5b9e71206aa901abe5c6169022b48408cce9,1345
