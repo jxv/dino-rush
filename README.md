@@ -1,5 +1,8 @@
 # Dino Rush
 
+![cabal](https://github.com/haskell-game-archives/dino-rush/workflows/cabal/badge.svg)
+![stack](https://github.com/haskell-game-archives/dino-rush/workflows/stack/badge.svg)
+
 ![Game Play](https://raw.githubusercontent.com/jxv/dino-rush/master/propaganda/gameplay.gif)
 
 
