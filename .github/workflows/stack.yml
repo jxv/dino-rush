@@ -16,7 +16,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-18.04, windows-2019, macos-10.15]
+        os: [ubuntu-18.04, macos-10.15]
         resolver: ["lts-14", "nightly"]
 
     steps:
@@ -32,11 +32,17 @@ jobs:
         path: ~/.stack
         key: ${{ runner.os }}-${{ matrix.resolver }}-v1-stack
 
-    - name: Install libralies
+    - name: Install libralies (linux)
       if: runner.os == 'Linux'
       run: |
         sudo apt-get update
-        sudo apt-get install -y libsdl2-dev libsdl2-ttf-dev libsdl2-mixer-dev
+        sudo apt-get install -y libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev
+    
+    - name: Install libralies (mac)
+      if: runner.os == 'macOS'
+      run: |
+        brew update
+        brew install sdl2 pkg-config sdl2 sdl2_image sdl2_mixer sdl2_ttf
 
     - name: Install dependencies
       run: stack test --only-dependencies --resolver ${{ matrix.resolver }}
