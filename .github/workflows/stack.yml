@@ -1,0 +1,53 @@
+name: stack
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - '*'
+  schedule:
+    - cron: "00 15 * * *"
+
+jobs:
+  build:
+    name: ${{ matrix.os }} (${{ matrix.resolver }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-18.04, macos-10.15]
+        resolver: ["lts-14", "nightly"]
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: mstksg/setup-stack@v2
+
+    - name: Display stack version
+      run: stack --version
+
+    - name: Cache ~/.stack
+      uses: actions/cache@v1.1.2
+      with:
+        path: ~/.stack
+        key: ${{ runner.os }}-${{ matrix.resolver }}-v1-stack
+
+    - name: Install libralies (linux)
+      if: runner.os == 'Linux'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev
+    
+    - name: Install libralies (mac)
+      if: runner.os == 'macOS'
+      run: |
+        brew update
+        brew install sdl2 pkg-config sdl2 sdl2_image sdl2_mixer sdl2_ttf
+
+    - name: Install dependencies
+      run: stack test --only-dependencies --resolver ${{ matrix.resolver }}
+
+    - name: Build
+      run: |
+        stack test --fast --resolver ${{ matrix.resolver }}
+        stack install --fast --resolver ${{ matrix.resolver }}
