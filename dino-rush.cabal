@@ -11,7 +11,7 @@ copyright:          2018 Joe Vargas
 license:            BSD-3-Clause
 license-file:       LICENSE
 build-type:         Simple
-tested-with:        GHC ==8.6.5
+tested-with:        GHC ==8.6.5 || ==8.8.2
 extra-source-files:
   README.md
   stack.yaml
@@ -25,7 +25,7 @@ source-repository head
   location: https://github.com/jxv/dino-rush
 
 common common
-  build-depends:      base ^>=4.12
+  build-depends:      base >=4.12 && <4.14
   default-extensions:
     DuplicateRecordFields
     FlexibleContexts
@@ -48,7 +48,7 @@ library
     , bytestring        ^>=0.10
     , containers        ^>=0.6
     , key-state         ^>=0.2
-    , lens              ^>=4.17
+    , lens              >=4.17 && <4.19
     , linear            ^>=1.20
     , mtl               ^>=2.2
     , random            ^>=1.1
