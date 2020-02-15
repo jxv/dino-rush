@@ -1,109 +1,118 @@
-cabal-version: 1.12
-name:           dino-rush
-version:        0.0.0
-synopsis:       A Skinner box, running platformer with a dinosaur
-description:    A Skinner box, running platformer with a dinosaur
-category:       Game
-homepage:       https://github.com/jxv/dino-rush#readme
-bug-reports:    https://github.com/jxv/dino-rush/issues
-maintainer:     Joe Vargas
-copyright:      2018 Joe Vargas
-license:        BSD3
-license-file:   LICENSE
-build-type:     Simple
+cabal-version:      2.4
+name:               dino-rush
+version:            0.0.0
+synopsis:           A Skinner box, running platformer with a dinosaur
+description:        A Skinner box, running platformer with a dinosaur
+category:           Game
+homepage:           https://github.com/jxv/dino-rush#readme
+bug-reports:        https://github.com/jxv/dino-rush/issues
+maintainer:         Joe Vargas
+copyright:          2018 Joe Vargas
+license:            BSD-3-Clause
+license-file:       LICENSE
+build-type:         Simple
+tested-with:        GHC ==8.6.5
 extra-source-files:
-    README.md
-    stack.yaml
+  README.md
+  stack.yaml
+
 data-files:
-    resource/dino.json
-    resource/dino.png
+  resource/dino.json
+  resource/dino.png
 
 source-repository head
-  type: git
+  type:     git
   location: https://github.com/jxv/dino-rush
 
+common common
+  build-depends:      base ^>=4.12
+  default-extensions:
+    DuplicateRecordFields
+    FlexibleContexts
+    FlexibleInstances
+    GeneralizedNewtypeDeriving
+    LambdaCase
+    NamedFieldPuns
+    OverloadedStrings
+    ScopedTypeVariables
+
+  ghc-options:        -Wall
+  default-language:   Haskell2010
+
 library
-  exposed-modules:
-      DinoRush
-      DinoRush.Config
-      DinoRush.Effect.Audio
-      DinoRush.Effect.Camera
-      DinoRush.Effect.Clock
-      DinoRush.Effect.HUD
-      DinoRush.Effect.Logger
-      DinoRush.Effect.Quake
-      DinoRush.Effect.Renderer
-      DinoRush.Effect.Sfx
-      DinoRush.Engine.Bird
-      DinoRush.Engine.Camera
-      DinoRush.Engine.Common
-      DinoRush.Engine.Dino
-      DinoRush.Engine.Font
-      DinoRush.Engine.Frame
-      DinoRush.Engine.GameOver
-      DinoRush.Engine.Input
-      DinoRush.Engine.Lava
-      DinoRush.Engine.Mountain
-      DinoRush.Engine.Obstacle
-      DinoRush.Engine.Physics
-      DinoRush.Engine.Play
-      DinoRush.Engine.Quake
-      DinoRush.Engine.River
-      DinoRush.Engine.Rock
-      DinoRush.Engine.Scene
-      DinoRush.Engine.Sfx
-      DinoRush.Engine.Step
-      DinoRush.Engine.Title
-      DinoRush.Engine.Types
-      DinoRush.Manager.Input
-      DinoRush.Manager.Scene
-      DinoRush.Resource
-      DinoRush.Runner
-      DinoRush.Scene.Death
-      DinoRush.Scene.GameOver
-      DinoRush.Scene.Pause
-      DinoRush.Scene.Play
-      DinoRush.Scene.Title
-      DinoRush.State
-      DinoRush.Wrapper.SDLInput
-      DinoRush.Wrapper.SDLRenderer
-  other-modules:
-      Paths_dino_rush
-  hs-source-dirs:
-      library
-  default-extensions: DuplicateRecordFields FlexibleContexts FlexibleInstances GeneralizedNewtypeDeriving LambdaCase NamedFieldPuns ScopedTypeVariables OverloadedStrings
-  ghc-options: -Wall
+  import:          common
+  hs-source-dirs:  library
   build-depends:
-      StateVar
-    , aeson
-    , animate
-    , base >=4.7 && <5
-    , bytestring
-    , containers
-    , key-state
-    , lens
-    , linear
-    , mtl
-    , random
-    , safe
-    , safe-exceptions
-    , sdl2
-    , sdl2-image
-    , sdl2-mixer
-    , sdl2-ttf
-    , text
-    , text-conversions
-  default-language: Haskell2010
+    , aeson             ^>=1.4
+    , animate           ^>=0.7
+    , bytestring        ^>=0.10
+    , containers        ^>=0.6
+    , key-state         ^>=0.2
+    , lens              ^>=4.17
+    , linear            ^>=1.20
+    , mtl               ^>=2.2
+    , random            ^>=1.1
+    , safe              ^>=0.3
+    , safe-exceptions   ^>=0.1
+    , sdl2              ^>=2.5
+    , sdl2-image        ^>=2.0
+    , sdl2-mixer        ^>=1.1
+    , sdl2-ttf          ^>=2.1
+    , StateVar          ^>=1.2
+    , text              ^>=1.2
+    , text-conversions  ^>=0.3
+
+  exposed-modules:
+    DinoRush
+    DinoRush.Config
+    DinoRush.Effect.Audio
+    DinoRush.Effect.Camera
+    DinoRush.Effect.Clock
+    DinoRush.Effect.HUD
+    DinoRush.Effect.Logger
+    DinoRush.Effect.Quake
+    DinoRush.Effect.Renderer
+    DinoRush.Effect.Sfx
+    DinoRush.Engine.Bird
+    DinoRush.Engine.Camera
+    DinoRush.Engine.Common
+    DinoRush.Engine.Dino
+    DinoRush.Engine.Font
+    DinoRush.Engine.Frame
+    DinoRush.Engine.GameOver
+    DinoRush.Engine.Input
+    DinoRush.Engine.Lava
+    DinoRush.Engine.Mountain
+    DinoRush.Engine.Obstacle
+    DinoRush.Engine.Physics
+    DinoRush.Engine.Play
+    DinoRush.Engine.Quake
+    DinoRush.Engine.River
+    DinoRush.Engine.Rock
+    DinoRush.Engine.Scene
+    DinoRush.Engine.Sfx
+    DinoRush.Engine.Step
+    DinoRush.Engine.Title
+    DinoRush.Engine.Types
+    DinoRush.Manager.Input
+    DinoRush.Manager.Scene
+    DinoRush.Resource
+    DinoRush.Runner
+    DinoRush.Scene.Death
+    DinoRush.Scene.GameOver
+    DinoRush.Scene.Pause
+    DinoRush.Scene.Play
+    DinoRush.Scene.Title
+    DinoRush.State
+    DinoRush.Wrapper.SDLInput
+    DinoRush.Wrapper.SDLRenderer
+
+  other-modules:   Paths_dino_rush
 
 executable dino-rush
-  main-is: Main.hs
-  other-modules:
-      Paths_dino_rush
-  hs-source-dirs:
-      executable
-  default-extensions: DuplicateRecordFields FlexibleContexts FlexibleInstances GeneralizedNewtypeDeriving LambdaCase NamedFieldPuns ScopedTypeVariables OverloadedStrings
-  ghc-options: -Wall -rtsopts -threaded -with-rtsopts=-N
-  build-depends:
-      base >=4.7 && <5
-    , dino-rush
-  default-language: Haskell2010
+  import:         common
+  hs-source-dirs: executable
+  main-is:        Main.hs
+  build-depends:  dino-rush
+  other-modules:  Paths_dino_rush
+  ghc-options:    -rtsopts -threaded -with-rtsopts=-N -O2
