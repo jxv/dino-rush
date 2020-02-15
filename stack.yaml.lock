@@ -20,7 +20,7 @@ packages:
     hackage: key-state-0.2.0@sha256:db4c798d81323183660753d0ca4a5b9e71206aa901abe5c6169022b48408cce9,1345
 snapshots:
 - completed:
-    size: 524162
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/14/21.yaml
-    sha256: 9a55dd75853718f2bbbe951872b36a3b7802fcd71796e0f25b8664f24e34c666
-  original: lts-14.21
+    size: 524163
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/14/25.yaml
+    sha256: 97548b4e927a8a862d4a203687ca18a3f5d2ae75b4b72c946fb29c17df1a5082
+  original: lts-14.25
