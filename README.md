@@ -2,8 +2,9 @@
 
 ![Game Play](https://raw.githubusercontent.com/jxv/dino-rush/master/propaganda/gameplay.gif)
 
-Blog post:  http://jxv.io/blog/2018-02-28-A-Game-in-Haskell.html
-Discussion: https://www.reddit.com/r/haskell/comments/813yik/a_game_in_haskell_dino_rush/
+**Blog:** http://jxv.io/blog/2018-02-28-A-Game-in-Haskell.html
+
+**Discussion:** https://www.reddit.com/r/haskell/comments/813yik/a_game_in_haskell_dino_rush/
 
 
 ## OSX build
